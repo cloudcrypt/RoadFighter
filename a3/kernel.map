@@ -1,0 +1,121 @@
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD build/main.o
+LOAD build/jtag.o
+LOAD build/framebuffer.o
+LOAD build/img.o
+LOAD build/gameMap.o
+
+.init           0x00008000        0x4
+ *(.init)
+ .init          0x00008000        0x4 build/main.o
+                0x00008000                _start
+
+.data           0x00009080     0x21c0
+ *(.data)
+ .data          0x00009080        0x0 build/main.o
+ .data          0x00009080        0x0 build/jtag.o
+ .data          0x00009080       0x70 build/framebuffer.o
+                0x000090e0                FrameBufferPointer
+ .data          0x000090f0     0x1e40 build/img.o
+                0x000090f0                grass
+                0x000098f0                road
+                0x0000a0f0                car
+ .data          0x0000af30      0x310 build/gameMap.o
+                0x0000af30                fuel
+                0x0000af34                lives
+                0x0000af38                leftEdgeSize
+                0x0000af3c                rightEdgeSize
+                0x0000af40                grid
+ *.c.o(*)
+
+.igot.plt       0x0000b240        0x0
+ .igot.plt      0x00000000        0x0 build/main.o
+
+.text           0x0000b240      0x26c
+ *.c.o(.text)
+ *(.text)
+ .text          0x0000b240      0x114 build/main.o
+ .text          0x0000b354       0x8c build/jtag.o
+                0x0000b354                EnableJTAG
+ .text          0x0000b3e0       0x80 build/framebuffer.o
+                0x0000b3e0                InitFrameBuffer
+ .text          0x0000b460        0x0 build/img.o
+ .text          0x0000b460       0x4c build/gameMap.o
+                0x0000b460                initializeGameMap
+OUTPUT(build/output.elf elf32-littlearm)
+
+.glue_7         0x0000b4ac        0x0
+ .glue_7        0x00000000        0x0 linker stubs
+
+.glue_7t        0x0000b4ac        0x0
+ .glue_7t       0x00000000        0x0 linker stubs
+
+.vfp11_veneer   0x0000b4ac        0x0
+ .vfp11_veneer  0x00000000        0x0 linker stubs
+
+.v4_bx          0x0000b4ac        0x0
+ .v4_bx         0x00000000        0x0 linker stubs
+
+.iplt           0x0000b4ac        0x0
+ .iplt          0x00000000        0x0 build/main.o
+
+.rel.dyn        0x0000b4ac        0x0
+ .rel.iplt      0x00000000        0x0 build/main.o
+
+.bss            0x0000b4ac        0x0
+ .bss           0x0000b4ac        0x0 build/main.o
+ .bss           0x0000b4ac        0x0 build/jtag.o
+ .bss           0x0000b4ac        0x0 build/framebuffer.o
+ .bss           0x0000b4ac        0x0 build/img.o
+ .bss           0x0000b4ac        0x0 build/gameMap.o
+
+.ARM.attributes
+                0x00000000       0x29
+ .ARM.attributes
+                0x00000000       0x29 build/main.o
+ .ARM.attributes
+                0x00000029       0x29 build/jtag.o
+ .ARM.attributes
+                0x00000052       0x29 build/framebuffer.o
+ .ARM.attributes
+                0x0000007b       0x29 build/img.o
+ .ARM.attributes
+                0x000000a4       0x29 build/gameMap.o
+
+.debug_line     0x00000000      0x1b8
+ .debug_line    0x00000000       0x9e build/main.o
+ .debug_line    0x0000009e       0x61 build/jtag.o
+ .debug_line    0x000000ff       0x67 build/framebuffer.o
+ .debug_line    0x00000166       0x52 build/gameMap.o
+
+.debug_info     0x00000000      0x1aa
+ .debug_info    0x00000000       0x65 build/main.o
+ .debug_info    0x00000065       0x69 build/jtag.o
+ .debug_info    0x000000ce       0x70 build/framebuffer.o
+ .debug_info    0x0000013e       0x6c build/gameMap.o
+
+.debug_abbrev   0x00000000       0x4e
+ .debug_abbrev  0x00000000       0x12 build/main.o
+ .debug_abbrev  0x00000012       0x14 build/jtag.o
+ .debug_abbrev  0x00000026       0x14 build/framebuffer.o
+ .debug_abbrev  0x0000003a       0x14 build/gameMap.o
+
+.debug_aranges  0x00000000       0x88
+ .debug_aranges
+                0x00000000       0x28 build/main.o
+ .debug_aranges
+                0x00000028       0x20 build/jtag.o
+ .debug_aranges
+                0x00000048       0x20 build/framebuffer.o
+ .debug_aranges
+                0x00000068       0x20 build/gameMap.o
+
+.debug_ranges   0x00000000       0x20
+ .debug_ranges  0x00000000       0x20 build/main.o
