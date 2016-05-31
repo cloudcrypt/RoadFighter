@@ -55,7 +55,7 @@ haltLoop$:
 	b	haltLoop$
 
 DisplayMap:
-	push	{r4-r6, lr}
+	push	{r4-r7, lr}
 	x	.req	r5
 	y	.req	r6
 	addrs	.req	r7
@@ -91,7 +91,7 @@ DisplayMap:
 	.unreq	x
 	.unreq	y
 	.unreq	addrs
-	pop	{r4-r6, pc}
+	pop	{r4-r7, pc}
 
 // DrawTileImage(imgAddrs, startTX, startTY, dimX, dimY)
 DrawTileImage:
