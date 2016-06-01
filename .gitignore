@@ -1,7 +1,6 @@
 *.elf
 *.o
 *.img
-*.ld
 *.list
 *.map
 build/
