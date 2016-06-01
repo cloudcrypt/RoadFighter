@@ -1,8 +1,8 @@
 .section .text
 .global 	InitializeSNES
+.global 	UpdateSNESInput
 InitializeSNES:
 	
-	push 	{lr}
 	// GPIO 9 (LAT) is on GPIOFSEL0
 	ldr		r0, =0x3F200000
 	ldr		r1, [r0]
@@ -26,8 +26,7 @@ InitializeSNES:
 	str		r1, [r0]
 
 	// return
-	bx		lr		
-	mov 	pc, lr				//return
+	bx		lr
 
 UpdateSNESInput:
 
@@ -45,7 +44,9 @@ UpdateSNESInput:
 	bl 		Write_Latch
 
 	bl 		Read_SNES			//Read input
-	push 	{pc}
+	ldr 	r1, =SNESInput
+	str 	r0, [r1]
+	pop 	{pc}
 
 //Writes value to latch
 //r0: value to write to latch
@@ -97,6 +98,7 @@ Read_Data:
 
 //Waits for specified time in micro seconds
 //r0: micros to wait
+.global Wait
 Wait:
 	
 	ldr 	r3, =0x3F003004		//Clock addr
@@ -143,8 +145,7 @@ read_loop:
 	blt 	read_loop
 	mov 	r0, r5				//Set return value
 
-	pop 	{r4-r5,lr}
-	mov 	pc, lr				//return
+	pop 	{r4-r5,pc}
 
 .section .data
 
