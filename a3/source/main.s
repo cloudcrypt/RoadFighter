@@ -18,12 +18,12 @@ main:
 	bl	DisplayMap
 
 	ldr	r0, =car
-	mov	r1, #512
-	mov	r2, #384
+	mov	r1, #5
+	mov	r2, #0
 	mov	r3, #32
 	mov	r4, #57
 	push	{r0, r1, r2, r3, r4}
-	bl	DrawImage
+	bl	DrawTileImage
 
 	// x	.req	r4
 	// y	.req	r5
@@ -95,7 +95,14 @@ DisplayMap:
 
 // DrawTileImage(imgAddrs, startTX, startTY, dimX, dimY)
 DrawTileImage:
-	
+	pop	{r0, r1, r2, r3, r4}
+	push	{lr}
+	mov	r1, r1, lsl #5
+	mov	r2, r2, lsl #5
+	push	{r0, r1, r2, r3, r4}
+	bl	DrawImage
+	pop	{pc}
+
 
 // DrawImage(imgAddrs, startX, startY, dimX, dimY)
 DrawImage:
