@@ -54,10 +54,10 @@ fuel:	.int	100
 lives:	.int	3
 .global	leftEdgeSize
 leftEdgeSize:
-	.int	11
+	.int	5
 .global	rightEdgeSize
 rightEdgeSize:
-	.int	11
+	.int	5
 .global	grid
 grid:	.rept	768
 	.byte	0
