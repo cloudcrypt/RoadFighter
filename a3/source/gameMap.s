@@ -1,7 +1,7 @@
 .section .text
 .global initializeGameMap
 initializeGameMap:
-	push	{r4-r8}
+	push	{r4-r8, lr}
 	x		.req	r4
 	y		.req	r5
 	addrs		.req	r6
@@ -24,12 +24,17 @@ initializeGameMap:
 	mov	r0, #0
 
 	cmp	x, rightEdge
+	// init to grass tile:
 	movlt	r0, #1
 
 	cmp	x, leftEdge
 	movlt	r0, #0
 
 	strb	r0, [addrs], #1
+
+	mov	r0, x
+	mov	r1, y
+	bl	setChanged
 
 	add	x, #1
 	cmp	x, #32
@@ -39,13 +44,53 @@ initializeGameMap:
 	cmp	y, #24
 	bne	yLoop
 
-	pop	{r4-r8}
 	.unreq	x
 	.unreq	y
 	.unreq	addrs
 	.unreq	leftEdge
 	.unreq	rightEdge
-	bx	lr
+	pop	{r4-r8, pc}
+
+.global setChanged
+// setChanged(gridX, gridY)
+setChanged:
+	push	{r4, r5, lr}
+	// offset = (y * 32) + x
+	add	r4, r0, r1, lsl #5
+
+	ldr	r5, =grid
+	ldrb	r0, [r5, r4]
+
+	mov	r1, #0b10
+	orr	r0, r1
+
+	strb	r0, [r5, r4]
+
+	pop	{r4, r5, pc}
+
+.global clearChanged
+// clearChanged(gridX, gridY)
+clearChanged:
+	push	{r4, r5, lr}
+	// offset = (y * 32) + x
+	add	r4, r0, r1, lsl #5
+
+	ldr	r5, =grid
+	ldrb	r0, [r5, r4]
+
+	mov	r1, #0b10
+	bic	r0, r1
+
+	strb	r0, [r5, r4]
+
+	pop	{r4, r5, pc}
+
+
+		
+// setValue(register, type)
+setType:
+	
+
 
 .section .data
 .global fuel
