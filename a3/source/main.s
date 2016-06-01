@@ -15,7 +15,7 @@ main:
 
 	bl	initializeGameMap
 
-	bl	DisplayMap
+	bl	RenderMap
 
 inputloop:
 	bl 	UpdateSNESInput
@@ -90,7 +90,7 @@ inputloop:
 haltLoop$:
 	b	haltLoop$
 
-DisplayMap:
+RenderMap:
 	push	{r4-r7, lr}
 	x	.req	r5
 	y	.req	r6
@@ -105,9 +105,14 @@ DisplayMap:
 	xLoop1:
 
 	ldrb	r0, [addrs], #1
-	cmp	r0, #1
-	ldreq	r0, =road
-	ldrne	r0, =grass
+
+	mov	r1, #0b10
+	tst	r0, r1
+	beq	ignoreTile
+
+	tst	r0, #0b1
+	ldrne	r0, =road
+	ldreq	r0, =grass
 	mov	r1, x, lsl #5
 	mov	r2, y, lsl #5
 	mov	r3, #32
@@ -115,6 +120,11 @@ DisplayMap:
 	push	{r0, r1, r2, r3, r4}
 	bl	DrawImage
 
+	mov	r0, x
+	mov	r1, y
+	bl	clearChanged
+
+	ignoreTile:
 	add	x, #1
 	cmp	x, #32
 	bne	xLoop1
