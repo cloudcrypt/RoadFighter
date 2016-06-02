@@ -127,8 +127,8 @@ RenderMap:
 	beq	ignoreTile
 
 	tst	r0, #0b1
-	ldrne	r0, =road
-	ldreq	r0, =grass
+	ldrne	r0, =road3
+	ldreq	r0, =grass2
 	mov	r1, x, lsl #5
 	mov	r2, y, lsl #5
 	mov	r3, #32
