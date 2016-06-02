@@ -11,13 +11,26 @@ main:
 	
 	bl	EnableJTAG
 	bl	InitFrameBuffer
-	bl  InitializeSNES
+	bl  	InitializeSNES
 
-	bl	initializeGameMap
+	bl	InitializeMap
 
 	bl	RenderMap
 
+	ldr	r0, =1000000
+	bl	Wait
+
 inputloop:
+
+	bl	GenerateNextRow
+
+	bl	ShiftMap
+
+	bl	RenderMap
+
+	//ldr	r0, =1000000
+	//bl	Wait
+
 	bl 	UpdateSNESInput
 
 	tst	r0, #1
@@ -57,7 +70,7 @@ inputloop:
 	push	{r0, r1, r2, r3, r4}
 	bl	DrawTileImage
 
-	ldr r0, =100000
+	ldr r0, =200000
 	bl 	Wait
 
 	b 	inputloop
@@ -111,8 +124,8 @@ RenderMap:
 	beq	ignoreTile
 
 	tst	r0, #0b1
-	ldrne	r0, =road
-	ldreq	r0, =grass
+	ldrne	r0, =road3
+	ldreq	r0, =grass2
 	mov	r1, x, lsl #5
 	mov	r2, y, lsl #5
 	mov	r3, #32
@@ -122,7 +135,7 @@ RenderMap:
 
 	mov	r0, x
 	mov	r1, y
-	bl	clearChanged
+	bl	ClearChanged
 
 	ignoreTile:
 	add	x, #1
