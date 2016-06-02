@@ -11,11 +11,27 @@ main:
 	
 	bl	EnableJTAG
 	bl	InitFrameBuffer
-	bl  InitializeSNES
+	bl  	InitializeSNES
 
-	bl	initializeGameMap
+	bl	InitializeMap
 
 	bl	RenderMap
+
+	ldr	r0, =1000000
+	bl	Wait
+
+	testLoop:
+	bl	GenerateNextRow
+
+	bl	ShiftMap
+
+	bl	RenderMap
+
+	ldr	r0, =1000000
+	bl	Wait
+
+	b	testLoop
+
 
 inputloop:
 	bl 	UpdateSNESInput
@@ -122,7 +138,7 @@ RenderMap:
 
 	mov	r0, x
 	mov	r1, y
-	bl	clearChanged
+	bl	ClearChanged
 
 	ignoreTile:
 	add	x, #1
