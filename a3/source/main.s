@@ -20,7 +20,18 @@ main:
 	ldr	r0, =1000000
 	bl	Wait
 
+	ldr	r4, =seed
 inputloop:
+mainLoop:
+	// this is not working?????????
+	// or maybe I'm doing something wrong,
+	// but, I'm not getting a sequence of random
+	// numbers!
+	ldr	r0, [r4]
+	mov	r1, #0
+	mov	r2, #15
+	bl	RandomNumber
+	str	r0, [r4]
 
 	bl	GenerateNextRow
 
@@ -28,8 +39,10 @@ inputloop:
 
 	bl	RenderMap
 
-	//ldr	r0, =1000000
-	//bl	Wait
+	ldr	r0, =1000000
+	bl	Wait
+
+	b	mainLoop
 
 	bl 	UpdateSNESInput
 
@@ -117,15 +130,20 @@ RenderMap:
 
 	xLoop1:
 
-	ldrb	r0, [addrs], #1
+	ldrb	r2, [addrs], #1
 
 	mov	r1, #0b10
-	tst	r0, r1
+	tst	r2, r1
 	beq	ignoreTile
 
-	tst	r0, #0b1
-	ldrne	r0, =road3
+	tst	r2, #0b1
+	ldrne	r0, =road
 	ldreq	r0, =grass2
+
+	lsr	r1, r2, #3
+	cmp	r1, #1
+	ldreq	r0, =roadYellowRight
+
 	mov	r1, x, lsl #5
 	mov	r2, y, lsl #5
 	mov	r3, #32
@@ -270,3 +288,5 @@ DrawPixel:
 	// moveq	r1, y
 	// ldreq	r2, =0xF000
 	// bleq	DrawPixel
+.section .data
+seed:	.int	123

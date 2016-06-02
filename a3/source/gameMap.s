@@ -76,14 +76,24 @@ GenerateNextRow:
 	mov	x, #0
 
 	rowLoop2:
-	mov	r0, #1
-	// mov	r0, #0
+	mov	r0, #0
 
-	// cmp	x, rightEdge
-	// movlt	r0, #1
+	cmp	x, rightEdge
+	movlt	r0, #1
 
-	// cmp	x, leftEdge
-	// movlt	r0, #0
+	cmp	x, leftEdge
+	movlt	r0, #0
+
+	mov	r1, #0
+
+	cmp	x, #15
+	moveq	r1, #1
+
+	cmp	x, #16
+	moveq	r1, #2
+
+	lsl	r1, #3
+	orr	r0, r1
 
 	strb	r0, [addrs], #1
 
