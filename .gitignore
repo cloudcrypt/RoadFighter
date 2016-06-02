@@ -1,0 +1,6 @@
+*.elf
+*.o
+*.img
+*.list
+*.map
+build/
