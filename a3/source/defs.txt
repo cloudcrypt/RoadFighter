@@ -1,0 +1,9 @@
+Tile Types:
+ 0: Default
+ 1: Yellow Line Left
+ 2: Yellow Line Right
+ 3: White Dash Top
+ 4: White Dash Bottom
+ 5: Road Edge Left
+ 6: Road Edge Right
+
