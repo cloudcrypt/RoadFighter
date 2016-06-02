@@ -20,20 +20,17 @@ main:
 	ldr	r0, =1000000
 	bl	Wait
 
-	testLoop:
+inputloop:
+
 	bl	GenerateNextRow
 
 	bl	ShiftMap
 
 	bl	RenderMap
 
-	ldr	r0, =1000000
-	bl	Wait
+	//ldr	r0, =1000000
+	//bl	Wait
 
-	b	testLoop
-
-
-inputloop:
 	bl 	UpdateSNESInput
 
 	tst	r0, #1
@@ -73,7 +70,7 @@ inputloop:
 	push	{r0, r1, r2, r3, r4}
 	bl	DrawTileImage
 
-	ldr r0, =100000
+	ldr r0, =200000
 	bl 	Wait
 
 	b 	inputloop
