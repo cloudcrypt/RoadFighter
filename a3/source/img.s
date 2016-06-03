@@ -2,7 +2,7 @@
 .global tiles
 .align 2
 tiles:	.word	default, roadYellowRight, roadYellowLeft, roadDashedBottom, roadDashedTop
-	.word	roadSideLeft, roadSideRight
+	.word	roadSideLeft, roadSideRight, grassBush
 default:
 	.int	0
 .global grass

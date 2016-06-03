@@ -20,18 +20,15 @@ main:
 	ldr	r0, =1000000
 	bl	Wait
 
-	ldr	r4, =seed
 inputloop:
 mainLoop:
 	// this is not working?????????
 	// or maybe I'm doing something wrong,
 	// but, I'm not getting a sequence of random
 	// numbers!
-	ldr	r0, [r4]
-	mov	r1, #0
-	mov	r2, #15
-	bl	RandomNumber
-	str	r0, [r4]
+	// mov	r1, #1
+	// mov	r2, #10
+	// bl	RandomNumber
 
 	bl	GenerateNextRow
 
@@ -39,10 +36,10 @@ mainLoop:
 
 	bl	RenderMap
 
-	ldr	r0, =1000000
-	bl	Wait
+	// ldr	r0, =1000000
+	// bl	Wait
 
-	b	mainLoop
+	//b	mainLoop
 
 	bl 	UpdateSNESInput
 
@@ -83,10 +80,12 @@ mainLoop:
 	push	{r0, r1, r2, r3, r4}
 	bl	DrawTileImage
 
-	ldr r0, =200000
-	bl 	Wait
+	//ldr r0, =200000
+	//bl 	Wait
 
 	b 	inputloop
+
+
 	// x	.req	r4
 	// y	.req	r5
 	// imgAddrs	.req	r6
@@ -294,5 +293,3 @@ DrawPixel:
 	// moveq	r1, y
 	// ldreq	r2, =0xF000
 	// bleq	DrawPixel
-.section .data
-seed:	.int	123
