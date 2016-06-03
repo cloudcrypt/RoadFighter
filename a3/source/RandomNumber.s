@@ -1,12 +1,14 @@
 // xorshift random
 
 
-// random (seed, start, end)
-// random (r0, r1, r2)
+// random (start, end)
+// random (r1, r2)
 // return (r0)
 .globl RandomNumber
 RandomNumber:
 	push 	{lr}
+	ldr 	r0, =0x3F003004
+	ldr 	r0, [r0]
 
 	eor 	r0, r0, lsr #12
 	eor 	r0, r0, lsl #25
