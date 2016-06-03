@@ -136,14 +136,20 @@ RenderMap:
 	tst	r2, r1
 	beq	ignoreTile
 
+	lsr	r1, r2, #3
+	cmp	r1, #0
+	beq 	defaultTile
+
+	ldr 	r0, =tiles
+	ldr 	r0, [r0, r1, lsl #2]
+	b 	displayTile
+
+	defaultTile:
 	tst	r2, #0b1
 	ldrne	r0, =road
-	ldreq	r0, =grass2
+	ldreq	r0, =grass
 
-	lsr	r1, r2, #3
-	cmp	r1, #1
-	ldreq	r0, =roadYellowRight
-
+	displayTile:
 	mov	r1, x, lsl #5
 	mov	r2, y, lsl #5
 	mov	r3, #32

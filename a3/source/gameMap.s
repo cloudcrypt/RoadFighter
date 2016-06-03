@@ -77,14 +77,14 @@ GenerateNextRow:
 
 	rowLoop2:
 	mov	r0, #0
+	mov	r1, #0
 
 	cmp	x, rightEdge
 	movlt	r0, #1
 
 	cmp	x, leftEdge
 	movlt	r0, #0
-
-	mov	r1, #0
+	moveq	r1, #5
 
 	cmp	x, #15
 	moveq	r1, #1
@@ -92,6 +92,31 @@ GenerateNextRow:
 	cmp	x, #16
 	moveq	r1, #2
 
+	sub 	r2, rightEdge, #1
+	cmp 	x, r2
+	moveq	r1, #6
+
+	cmp	x, #9
+	cmpne	x, #21
+	bne	prepareTileType	
+
+	ldrb	r2, [addrs]
+	lsr	r2, #3
+	cmp 	r2, #0
+	bne	notFirstGeneration
+
+	cmp 	x, #9
+	moveq	r1, #3
+	cmp 	x, #21
+	moveq 	r1, #4
+	b 	prepareTileType
+
+	notFirstGeneration:
+	cmp	r2, #4
+	moveq	r1, #3
+	movne	r1, #4	
+
+	prepareTileType:
 	lsl	r1, #3
 	orr	r0, r1
 
