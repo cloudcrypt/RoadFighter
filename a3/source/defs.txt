@@ -6,4 +6,5 @@ Tile Types:
  4: White Dash Top
  5: Road Edge Left
  6: Road Edge Right
+ 7: Grass with Bush
 
