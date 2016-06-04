@@ -37,6 +37,9 @@ mainLoop:
 	// mov	r2, #10
 	// bl	RandomNumber
 
+	ldr 	r0, =100000 
+	bl 	Wait
+
 	bl	GenerateNextRow
 
 	bl	ShiftMap
