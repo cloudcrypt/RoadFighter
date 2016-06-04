@@ -1,15 +1,14 @@
 .section .text
 .global InitializeMap
 InitializeMap:
-	push	{r4-r11, lr}
+	push	{r4-r10, lr}
 	x		.req	r4
 	y		.req	r5
 	addrs		.req	r6
 	leftEdge 	.req	r7
 	rightEdge 	.req	r8
 	dashType	.req	r9
-	baseType	.req	r10
-	tileType	.req	r11
+	tileType	.req	r10
 	ldr	addrs, =grid
 	ldr	r0, =leftEdgeSize
 	ldr	leftEdge, [r0]
@@ -24,58 +23,56 @@ InitializeMap:
 	mov	x, #0
 
 	xLoop:
-	mov	baseType, #0
 	mov	tileType, #0
 
 	cmp	x, rightEdge
-	movlt	baseType, #1
+	movlt	tileType, #1
 
 	cmp	x, leftEdge
-	movlt	baseType, #0
-	moveq	tileType, #5
+	movlt	tileType, #0
+	moveq	tileType, #6
 
-	cmp	baseType, #0
+	cmp	tileType, #0
 	bne	notGrass
-	mov	r0, #7
-	mov	r1, #0
+	mov	r0, #8
+	mov	r1, #1
 	bl	RandomizeTileType
 	mov	tileType, r0
 
 	notGrass:
 	cmp	x, #15
-	moveq	tileType, #1
+	moveq	tileType, #2
 
 	cmp	x, #16
-	moveq	tileType, #2
+	moveq	tileType, #3
 
 	sub 	r2, rightEdge, #1
 	cmp 	x, r2
-	moveq	tileType, #6
+	moveq	tileType, #7
 
 	cmp	x, #9
 	cmpne	x, #21
-	bne	prepareTileType
+	bne	prepareTile
 
 	cmp	dashType, #0
 	beq	evenRow
 
 	cmp	x, #9
-	moveq	tileType, #3
-	cmp	x, #21
 	moveq	tileType, #4
-	b	prepareTileType
+	cmp	x, #21
+	moveq	tileType, #5
+	b	prepareTile
 
 	evenRow:
 	cmp	x, #9
-	moveq	tileType, #4
+	moveq	tileType, #5
 	cmp	x, #21
-	moveq	tileType, #3
+	moveq	tileType, #4
 
-	prepareTileType:
+	prepareTile:
 	lsl	tileType, #3
-	orr	baseType, tileType
 
-	strb	baseType, [addrs], #1
+	strb	tileType, [addrs], #1
 
 	mov	r0, x
 	mov	r1, y
@@ -100,20 +97,18 @@ InitializeMap:
 	.unreq	leftEdge
 	.unreq	rightEdge
 	.unreq	dashType
-	.unreq	baseType
 	.unreq	tileType
-	pop	{r4-r11, pc}
+	pop	{r4-r10, pc}
 
 .global	GenerateNextRow
 GenerateNextRow:
-	push	{r4-r8, lr}
+	push	{r4-r9, lr}
 	x		.req	r4
 	y		.req	r5
 	addrs		.req	r6
 	leftEdge 	.req	r7
 	rightEdge 	.req	r8
-	baseType	.req	r9
-	tileType	.req	r10
+	tileType	.req	r9
 	ldr	addrs, =nextRow
 	ldr	r0, =leftEdgeSize
 	ldr	leftEdge, [r0]
@@ -123,37 +118,36 @@ GenerateNextRow:
 	mov	x, #0
 
 	rowLoop2:
-	mov	baseType, #0
 	mov	tileType, #0
 
 	cmp	x, rightEdge
-	movlt	baseType, #1
+	movlt	tileType, #1
 
 	cmp	x, leftEdge
-	movlt	baseType, #0
-	moveq	tileType, #5
+	movlt	tileType, #0
+	moveq	tileType, #6
 
-	cmp	baseType, #0
+	cmp	tileType, #0
 	bne	notGrass2
-	mov	r0, #7
+	mov	r0, #8
 	mov	r1, #1
 	bl	RandomizeTileType
 	mov	tileType, r0
 
 	notGrass2:
 	cmp	x, #15
-	moveq	tileType, #1
+	moveq	tileType, #2
 
 	cmp	x, #16
-	moveq	tileType, #2
+	moveq	tileType, #3
 
 	sub 	r2, rightEdge, #1
 	cmp 	x, r2
-	moveq	tileType, #6
+	moveq	tileType, #7
 
 	cmp	x, #9
 	cmpne	x, #21
-	bne	prepareTileType2	
+	bne	prepareTile2	
 
 	ldrb	r2, [addrs]
 	lsr	r2, #3
@@ -161,21 +155,20 @@ GenerateNextRow:
 	bne	notFirstGeneration
 
 	cmp 	x, #9
-	moveq	tileType, #3
+	moveq	tileType, #4
 	cmp 	x, #21
-	moveq 	tileType, #4
-	b 	prepareTileType2
+	moveq 	tileType, #5
+	b 	prepareTile2
 
 	notFirstGeneration:
-	cmp	r2, #4
-	moveq	tileType, #3
-	movne	tileType, #4	
+	cmp	r2, #5
+	moveq	tileType, #4
+	movne	tileType, #5	
 
-	prepareTileType2:
+	prepareTile2:
 	lsl	tileType, #3
-	orr	baseType, tileType
 
-	strb	baseType, [addrs], #1
+	strb	tileType, [addrs], #1
 
 	add	x, #1
 	cmp	x, #32
@@ -186,9 +179,8 @@ GenerateNextRow:
 	.unreq	addrs
 	.unreq	leftEdge
 	.unreq	rightEdge
-	.unreq	baseType
 	.unreq	tileType
-	pop	{r4-r8, pc}
+	pop	{r4-r9, pc}
 
 .global	ShiftMap
 ShiftMap:
