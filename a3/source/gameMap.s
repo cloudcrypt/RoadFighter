@@ -70,7 +70,12 @@ InitializeMap:
 	moveq	tileType, #4
 
 	prepareTile:
+	mov	r0, tileType
 	lsl	tileType, #3
+	cmp	r0, #0
+	orreq	tileType, #0b100
+	cmp	r0, #8
+	orreq	tileType, #0b100
 
 	strb	tileType, [addrs], #1
 
@@ -88,7 +93,7 @@ InitializeMap:
 	movne	dashType, #0
 
 	add	y, #1
-	cmp	y, #24
+	cmp	y, #23
 	bne	yLoop
 
 	.unreq	x
@@ -193,7 +198,7 @@ ShiftMap:
 	currentRow	.req	r9
 	higherRow	.req	r10
 	ldr	addrs, =grid
-	mov	row, #23
+	mov	row, #22
 
 	rowLoop:
 	mov	wordCtr, #7
@@ -323,7 +328,7 @@ leftEdgeSize:
 rightEdgeSize:
 	.int	5
 .global	grid
-grid:	.rept	768
+grid:	.rept	736
 	.byte	0
 	.endr
 	.align
