@@ -1,10 +1,9 @@
 .section .data
 .global tiles
 .align 2
-tiles:	.word	default, roadYellowRight, roadYellowLeft, roadDashedBottom, roadDashedTop
+tiles:	.word	grass, road, roadYellowRight, roadYellowLeft
+	.word	roadDashedBottom, roadDashedTop
 	.word	roadSideLeft, roadSideRight, grassBush
-default:
-	.int	0
 .global grass
 grass:
 	.ascii "dl\246|\202t\"}cd\303t\243lEdDd\243tdd\343|\303tclCdDd\"}\302t"

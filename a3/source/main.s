@@ -17,8 +17,8 @@ main:
 
 	bl	RenderMap
 
-	ldr	r0, =1000000
-	bl	Wait
+	//ldr	r0, =1000000
+	//bl	Wait
 
 inputloop:
 mainLoop:
@@ -129,26 +129,17 @@ RenderMap:
 
 	xLoop1:
 
-	ldrb	r2, [addrs], #1
+	ldrb	r1, [addrs], #1
 
-	mov	r1, #0b10
-	tst	r2, r1
+	mov	r2, #0b10
+	tst	r1, r2
 	beq	ignoreTile
 
-	lsr	r1, r2, #3
-	cmp	r1, #0
-	beq 	defaultTile
+	lsr	r1, #3
 
 	ldr 	r0, =tiles
 	ldr 	r0, [r0, r1, lsl #2]
-	b 	displayTile
 
-	defaultTile:
-	tst	r2, #0b1
-	ldrne	r0, =road
-	ldreq	r0, =grass
-
-	displayTile:
 	mov	r1, x, lsl #5
 	mov	r2, y, lsl #5
 	mov	r3, #32
