@@ -17,6 +17,39 @@ main:
 
 	bl	RenderMap
 
+	mov	r0, #'T'
+	mov	r1, #0
+	mov	r2, #0
+	bl	DrawChar
+
+	mov	r0, #'e'
+	mov	r1, #8
+	mov	r2, #0
+	bl	DrawChar
+
+	mov	r0, #'s'
+	mov	r1, #16
+	mov	r2, #0
+	bl	DrawChar
+
+	mov	r0, #'t'
+	mov	r1, #24
+	mov	r2, #0
+	bl	DrawChar
+
+	mov	r0, #' '
+	mov	r1, #42
+	mov	r2, #0
+	bl	DrawChar
+
+	mov	r0, #'!'
+	mov	r1, #40
+	mov	r2, #0
+	bl	DrawChar
+
+inf:	
+	b	inf
+
 	//ldr	r0, =1000000
 	//bl	Wait
 
@@ -36,8 +69,8 @@ mainLoop:
 
 	bl	RenderMap
 
-	// ldr	r0, =1000000
-	// bl	Wait
+	//ldr	r0, =2000000
+	//bl	Wait
 
 	//b	mainLoop
 
@@ -121,7 +154,7 @@ RenderMap:
 	y	.req	r6
 	addrs	.req	r7
 	ldr	addrs, =grid
-	mov	y, #0
+	mov	y, #1
 
 	yLoop1:
 
@@ -148,7 +181,7 @@ RenderMap:
 	bl	DrawImage
 
 	mov	r0, x
-	mov	r1, y
+	sub	r1, y, #1
 	bl	ClearChanged
 
 	ignoreTile:
@@ -159,12 +192,12 @@ RenderMap:
 	add	y, #1
 	cmp	y, #24
 	bne	yLoop1
-
 	
 	.unreq	x
 	.unreq	y
 	.unreq	addrs
 	pop	{r4-r7, pc}
+
 
 // DrawTileImage(imgAddrs, startTX, startTY, dimX, dimY)
 DrawTileImage:
@@ -224,6 +257,36 @@ DrawImage:
 	.unreq	dimY
 	pop	{r4, r5, r6, r7, r8, r9, pc}
 
+ClearScreen:
+	push	{r4, r5, lr}
+
+	x		.req	r4
+	y		.req	r5
+	mov	y, #0
+
+	yLoop2:
+	mov	x, #0
+
+	xLoop2:
+
+	mov	r0, x
+	mov	r1, y
+	mov	r2, #0
+	bl	DrawPixel
+
+	add	x, #1
+	cmp	x, #1024
+	bne	xLoop2
+
+	add	y, #1
+	cmp	y, #768
+	bne	yLoop2
+
+	clearScreenEnd:
+	.unreq	x
+	.unreq	y
+	pop	{r4, r5, pc}
+
 
 
 
@@ -251,6 +314,96 @@ DrawPixel:
 	.unreq	offset
 	pop	{r4}
 	bx	lr
+
+DrawChar:
+	push	{r4-r10, lr}
+	char	.req	r4
+	startX	.req	r5
+	startY	.req	r6
+	fontAd	.req	r7
+	byteCtr	.req	r8
+	bitCtr	.req	r9
+	byte	.req	r10
+	mov	char, r0
+	mov	startX, r1
+	mov	startY, r2
+	ldr	fontAd, =font
+	mov	byteCtr, #0
+
+	byteLoop:
+	add	r0, fontAd, byteCtr
+	ldrb	byte, [r0, char, lsl #4]
+	mov	bitCtr, #0
+
+	bitLoop:
+	mov	r0, #0b1
+	lsl	r0, bitCtr
+	tst	byte, r0
+	beq	ignoreBit
+
+	add	r0, startX, bitCtr
+	lsl	r0, #1
+	add	r1, startY, byteCtr
+	lsl	r1, #1
+	ldr	r2, =0xFFFF
+	bl	DrawPixel
+
+	add	r0, startX, bitCtr
+	lsl	r0, #1
+	add	r0, #1
+	add	r1, startY, byteCtr
+	lsl	r1, #1
+	ldr	r2, =0xFFFF
+	bl	DrawPixel
+
+	add	r0, startX, bitCtr
+	lsl	r0, #1
+	add	r1, startY, byteCtr
+	lsl	r1, #1
+	add	r1, #1
+	ldr	r2, =0xFFFF
+	bl	DrawPixel
+
+	add	r0, startX, bitCtr
+	lsl	r0, #1
+	add	r0, #1
+	add	r1, startY, byteCtr
+	lsl	r1, #1
+	add	r1, #1
+	ldr	r2, =0xFFFF
+	bl	DrawPixel
+
+	ignoreBit:
+	add	bitCtr, #1
+	cmp	bitCtr, #8
+	bne	bitLoop
+
+	add	byteCtr, #1
+	cmp	byteCtr, #16
+	bne	byteLoop
+
+	.unreq	char
+	.unreq	startX
+	.unreq	startY
+	.unreq	fontAd
+	.unreq	byteCtr
+	.unreq	bitCtr
+	.unreq	byte
+	pop	{r4-r10, pc}
+
+
+
+
+
+
+
+
+
+
+
+.section .data
+.align 4
+font:	.incbin	"font.bin"
 
 
 	// cmp	y, #0
