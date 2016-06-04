@@ -175,6 +175,58 @@ RenderMap:
 	.unreq	addrs
 	pop	{r4-r7, pc}
 
+//DrawPreciseImage(imgAddres, startTX, startTY)
+//Can only be used to draw tiles! Cannot use to draw cars!
+DrawPreciseImage:
+	push 	{r4-r10, lr}
+
+	x 		.req 	r4
+	y 		.req 	r5
+	imgAddrs1 	.req 	r6
+	imgAddrs2 	.req 	r7
+	xOffset		.req 	r8
+	yOffset		.req 	r9
+
+	cmp 	r2, #23
+	moveq 	r3, #32
+	moveq 	r4, #32
+	pusheq 	{r0, r1, r2, r3, r4}
+	beq 	DrawTileImage
+
+
+	mov 	imgAddrs1, r0
+	add 	imgAddrs2, r0, #32 	
+	lsl 	xOffset,  r1, #5 
+	/*mov	imgAddrs, r0
+	add	dimX, r3, r1
+	add	dimY, r4, r2
+	mov	startX, r1
+	mov	y, r2
+
+	yLoop:
+	cmp	y, #768
+	beq	drawImageEnd
+	mov	x, startX
+
+	xLoop:
+
+	mov	r0, x
+	mov	r1, y
+	ldrh	r2, [imgAddrs], #2
+	cmp	r2, #0
+	blne	DrawPixel
+
+	add	x, #1
+	cmp	x, dimX
+	bne	xLoop
+
+	add	y, #1
+	cmp	y, dimY
+	bne	yLoop */
+
+
+	pop 	{r4-r10, pc}
+
 // DrawTileImage(imgAddrs, startTX, startTY, dimX, dimY)
 DrawTileImage:
 	pop	{r0, r1, r2, r3, r4}
