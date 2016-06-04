@@ -37,6 +37,7 @@ InitializeMap:
 	cmp	baseType, #0
 	bne	notGrass
 	mov	r0, #7
+	mov	r1, #0
 	bl	RandomizeTileType
 	mov	tileType, r0
 
@@ -135,6 +136,7 @@ GenerateNextRow:
 	cmp	baseType, #0
 	bne	notGrass2
 	mov	r0, #7
+	mov	r1, #1
 	bl	RandomizeTileType
 	mov	tileType, r0
 
@@ -268,11 +270,9 @@ RandomizeTileType:
 	mov	r4, r0
 	mov	r5, r1
 
-	mov	r1, #1
-	mov	r2, #10
 	bl	RandomNumber
 
-	cmp	r0, #10
+	cmp	r0, r5
 	movge	r0, #0
 	movlt	r0, r4	
 
