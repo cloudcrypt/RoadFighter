@@ -52,21 +52,21 @@ InitializeMap:
 	cmp 	x, r2
 	moveq	tileType, #6
 
-	cmp	x, #10
+	cmp	x, #9
 	cmpne	x, #21
 	bne	prepareTileType
 
 	cmp	dashType, #0
 	beq	evenRow
 
-	cmp	x, #10
+	cmp	x, #9
 	moveq	tileType, #3
 	cmp	x, #21
 	moveq	tileType, #4
 	b	prepareTileType
 
 	evenRow:
-	cmp	x, #10
+	cmp	x, #9
 	moveq	tileType, #4
 	cmp	x, #21
 	moveq	tileType, #3
@@ -151,7 +151,7 @@ GenerateNextRow:
 	cmp 	x, r2
 	moveq	tileType, #6
 
-	cmp	x, #10
+	cmp	x, #9
 	cmpne	x, #21
 	bne	prepareTileType2	
 
@@ -160,7 +160,7 @@ GenerateNextRow:
 	cmp 	r2, #0
 	bne	notFirstGeneration
 
-	cmp 	x, #10
+	cmp 	x, #9
 	moveq	tileType, #3
 	cmp 	x, #21
 	moveq 	tileType, #4

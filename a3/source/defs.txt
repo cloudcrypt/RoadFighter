@@ -1,10 +1,11 @@
 Tile Types:
- 0: Default
- 1: Yellow Line Right
- 2: Yellow Line Left
- 3: White Dash Bottom
- 4: White Dash Top
- 5: Road Edge Left
- 6: Road Edge Right
- 7: Grass with Bush
+ 0: Default Grass
+ 1: Default Road
+21: Yellow Line Right
+32: Yellow Line Left
+43: White Dash Bottom
+54: White Dash Top
+65: Road Edge Left
+76: Road Edge Right
+87: Grass with Bush
 
