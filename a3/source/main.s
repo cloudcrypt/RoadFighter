@@ -17,38 +17,10 @@ main:
 
 	bl	RenderMap
 
-	mov	r0, #'T'
+	ldr	r0, =testString
 	mov	r1, #0
 	mov	r2, #0
-	bl	DrawChar
-
-	mov	r0, #'e'
-	mov	r1, #8
-	mov	r2, #0
-	bl	DrawChar
-
-	mov	r0, #'s'
-	mov	r1, #16
-	mov	r2, #0
-	bl	DrawChar
-
-	mov	r0, #'t'
-	mov	r1, #24
-	mov	r2, #0
-	bl	DrawChar
-
-	mov	r0, #' '
-	mov	r1, #42
-	mov	r2, #0
-	bl	DrawChar
-
-	mov	r0, #'!'
-	mov	r1, #40
-	mov	r2, #0
-	bl	DrawChar
-
-inf:	
-	b	inf
+	bl	DrawString
 
 	//ldr	r0, =1000000
 	//bl	Wait
@@ -315,6 +287,36 @@ DrawPixel:
 	pop	{r4}
 	bx	lr
 
+DrawString:
+	push	{r4-r7, lr}
+	string	.req	r4
+	startX	.req	r5
+	startY	.req	r6
+	charCtr	.req	r7
+	mov	string, r0
+	mov	startX, r1
+	mov	startY, r2
+	mov	charCtr, #0
+	charLoop:
+	ldrb	r0, [string, charCtr]
+	cmp	r0, #0
+	beq	drawStringEnd
+
+	add	r1, startX, charCtr, lsl #3
+	mov	r2, startY
+	bl	DrawChar
+
+	add	charCtr, #1
+	b	charLoop
+
+	bne	charLoop
+	drawStringEnd:
+	.unreq	string
+	.unreq	startX
+	.unreq	startY
+	.unreq	charCtr
+	pop	{r4-r7, pc}
+
 DrawChar:
 	push	{r4-r10, lr}
 	char	.req	r4
@@ -404,6 +406,8 @@ DrawChar:
 .section .data
 .align 4
 font:	.incbin	"font.bin"
+testString:
+	.asciz	"Fuel: 100       Lives: 3"
 
 
 	// cmp	y, #0
