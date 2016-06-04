@@ -70,8 +70,13 @@ InitializeMap:
 	moveq	tileType, #4
 
 	prepareTile:
+	mov	r0, tileType
 	lsl	tileType, #3
-
+	cmp	r0, #0
+	orreq	tileType, #0b100
+	cmp	r0, #8
+	orreq	tileType, #0b100
+	
 	strb	tileType, [addrs], #1
 
 	mov	r0, x
