@@ -179,7 +179,7 @@ RenderMap:
 	y	.req	r6
 	addrs	.req	r7
 	ldr	addrs, =grid
-	mov	y, #0
+	mov	y, #1
 
 	yLoop2:
 
@@ -219,7 +219,7 @@ RenderMap:
 	doneDraw:
 
 	mov	r0, x
-	mov	r1, y
+	sub	r1, y, #1
 	bl	ClearChanged
 
 	ignoreTile1:
@@ -252,26 +252,23 @@ DrawPreciseImage:
 	mov 	imgAddrs2, r1 	
 	lsl 	xOffset,  r2, #5 
 	lsl 	yOffset, r3, #5
-	break1:
-
 
 	mov 	y, #0
 
 	outLoop:
-
 	mov 	x, #0
 
 	inLoop:
 
 	ldrh 	r2, [imgAddrs1], #2
 	ldrh 	r1, [imgAddrs2], #2
-	cmpbreak:
+	
 	cmp 	r1, r2
 	beq 	equal
 
 	add 	r0, xOffset, x
 	add 	r1, yOffset, y
-	loopbreak:
+	
 	cmp	r2, #0
 	blne	DrawPixel
 
