@@ -10,12 +10,14 @@ main:
 	mov     sp, #0x8000
 	
 	bl	EnableJTAG
+	bl 	EnableL1Cache
+
 	bl	InitFrameBuffer
 	bl  	InitializeSNES
 
 	bl	InitializeMap
 
-	bl	RenderMap
+	bl	InitialRenderMap
 
 	//ldr	r0, =1000000
 	//bl	Wait
@@ -115,7 +117,7 @@ mainLoop:
 haltLoop$:
 	b	haltLoop$
 
-RenderMap:
+InitialRenderMap:
 	push	{r4-r7, lr}
 	x	.req	r5
 	y	.req	r6
@@ -140,12 +142,12 @@ RenderMap:
 	ldr 	r0, =tiles
 	ldr 	r0, [r0, r1, lsl #2]
 
-	mov	r1, x, lsl #5
-	mov	r2, y, lsl #5
+	mov	r1, x
+	mov	r2, y
 	mov	r3, #32
 	mov	r4, #32
 	push	{r0, r1, r2, r3, r4}
-	bl	DrawImage
+	bl	DrawTileImage
 
 	mov	r0, x
 	mov	r1, y
@@ -166,7 +168,71 @@ RenderMap:
 	.unreq	addrs
 	pop	{r4-r7, pc}
 
-//DrawPreciseImage(imgAddres, startTX, startTY)
+RenderMap:
+	
+	push	{r4-r7, lr}
+	x	.req	r5
+	y	.req	r6
+	addrs	.req	r7
+	ldr	addrs, =grid
+	mov	y, #0
+
+	yLoop2:
+
+	mov	x, #0
+
+	xLoop2:
+
+	ldrb	r1, [addrs], #1
+
+	mov	r2, #0b10
+	tst	r1, r2
+	beq	ignoreTile1
+
+	lsr	r1, #3
+
+	ldr 	r3, =tiles
+	ldr 	r0, [r3, r1, lsl #2]
+
+	cmp 	y, #23
+	beq 	drawFullTile
+	ldrneb 	r1, [addrs, #31]
+	lsrne	r1, #3
+	ldrne 	r1, [r3, r1, lsl #2]
+	movne	r2, x
+	movne	r3, y
+	blne	DrawPreciseImage
+	b 	doneDraw
+
+	drawFullTile:
+	moveq	r1, x
+	moveq	r2, y
+	moveq	r3, #32
+	moveq	r4, #32
+	pusheq	{r0, r1, r2, r3, r4}
+	bleq	DrawTileImage
+
+	doneDraw:
+
+	mov	r0, x
+	mov	r1, y
+	bl	ClearChanged
+
+	ignoreTile1:
+	add	x, #1
+	cmp	x, #32
+	bne	xLoop2
+
+	add	y, #1
+	cmp	y, #24
+	bne	yLoop2
+
+	.unreq	x
+	.unreq	y
+	.unreq	addrs
+	pop	{r4-r7, pc}
+
+//DrawPreciseImage(imgAddress1, imgAddress2, startTX, startTY)
 //Can only be used to draw tiles! Cannot use to draw cars!
 DrawPreciseImage:
 	push 	{r4-r10, lr}
@@ -178,43 +244,42 @@ DrawPreciseImage:
 	xOffset		.req 	r8
 	yOffset		.req 	r9
 
-	cmp 	r2, #23
-	moveq 	r3, #32
-	moveq 	r4, #32
-	pusheq 	{r0, r1, r2, r3, r4}
-	beq 	DrawTileImage
-
-
 	mov 	imgAddrs1, r0
-	add 	imgAddrs2, r0, #32 	
-	lsl 	xOffset,  r1, #5 
-	/*mov	imgAddrs, r0
-	add	dimX, r3, r1
-	add	dimY, r4, r2
-	mov	startX, r1
-	mov	y, r2
+	mov 	imgAddrs2, r1 	
+	lsl 	xOffset,  r2, #5 
+	lsl 	yOffset, r3, #5
+	break1:
 
-	yLoop:
-	cmp	y, #768
-	beq	drawImageEnd
-	mov	x, startX
 
-	xLoop:
+	mov 	y, #0
 
-	mov	r0, x
-	mov	r1, y
-	ldrh	r2, [imgAddrs], #2
+	outLoop:
+
+	mov 	x, #0
+
+	inLoop:
+
+	ldrh 	r2, [imgAddrs1], #2
+	ldrh 	r1, [imgAddrs2], #2
+	cmpbreak:
+	cmp 	r1, r2
+	beq 	equal
+
+	add 	r0, xOffset, x
+	add 	r1, yOffset, y
+	loopbreak:
 	cmp	r2, #0
 	blne	DrawPixel
 
-	add	x, #1
-	cmp	x, dimX
-	bne	xLoop
+	equal:
 
-	add	y, #1
-	cmp	y, dimY
-	bne	yLoop */
+	add 	x, #1
+	cmp 	x, #32
+	bne 	inLoop
 
+	add 	y, #1
+	cmp 	y, #32
+	bne 	outLoop
 
 	pop 	{r4-r10, pc}
 
@@ -304,35 +369,15 @@ DrawPixel:
 	pop	{r4}
 	bx	lr
 
+EnableL1Cache:
+	push 	{lr}
 
-	// cmp	y, #0
-	// moveq	r0, x
-	// moveq	r1, y
-	// ldreq	r2, =0xF000
-	// bleq	DrawPixel
+	//Make everything go really fast!
+	mrc 	p15, #0, r0, c1, c0, #0
+	orr 	r0, #0x4
+	orr 	r0, #0x800
+	orr 	r0, #0x1000
+	mcr 	p15, #0, r0, c1, c0, #0
 
-	// ldr	r0, =767
-	// cmp	y, r0
-	// moveq	r0, x
-	// moveq	r1, y
-	// ldreq	r2, =0xF000
-	// bleq	DrawPixel
+	pop 	{pc}
 
-	// cmp	x, #0
-	// moveq	r0, x
-	// moveq	r1, y
-	// ldreq	r2, =0xF000
-	// bleq	DrawPixel
-
-	// ldr	r0, =1023
-	// cmp	x, r0
-	// moveq	r0, x
-	// moveq	r1, y
-	// ldreq	r2, =0xF000
-	// bleq	DrawPixel
-
-	// cmp	x, y
-	// moveq	r0, x
-	// moveq	r1, y
-	// ldreq	r2, =0xF000
-	// bleq	DrawPixel
