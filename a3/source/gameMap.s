@@ -309,9 +309,21 @@ ClearChanged:
 
 	pop	{r4, r5, pc}
 
-		
-// setValue(register, type)
-setType:
+// SetCollideable(gridX, gridY)
+.global	SetCollideable
+SetCollideable:
+	push	{lr}
+
+
+	pop		{pc}
+
+// ClearCollideable(gridX, gridY)
+.global	ClearCollideable
+ClearCollideable:
+	push	{lr}
+
+
+	pop		{pc}
 
 	
 

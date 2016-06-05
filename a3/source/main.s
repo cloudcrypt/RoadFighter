@@ -12,6 +12,11 @@ main:
 	bl	EnableJTAG
 	bl 	EnableL1Cache
 
+testLoop:
+	bl	GenerateNewCars
+break:
+	b	testLoop	
+
 	bl	InitFrameBuffer
 	bl  	InitializeSNES
 
