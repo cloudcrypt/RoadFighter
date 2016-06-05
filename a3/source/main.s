@@ -15,6 +15,8 @@ main:
 	bl	InitFrameBuffer
 	bl  	InitializeSNES
 
+	bl drawMenu
+
 	bl	InitializeMap
 
 	bl	InitialRenderMap
