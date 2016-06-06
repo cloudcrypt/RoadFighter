@@ -22,29 +22,34 @@ drawMenu:
 	ldr 	r0, =menuStart
 	bl 		menuSelection
 
-	//awaitSelection:
+	awaitSelection:
 
 		bl 		Read_SNES
 
 		// check if A was pressed
-		// tst 	r0, #0x100 // #0b100000000	
-		// beq 	optionSelected
+		mvn 	r2, #0x100
+		teq 	r0, r2 // #0b100000000	
+		beq 	optionSelected
 
-		//check if up was pressed
-		tst		r0, #0x10 // #0b10000
+		// check if up was pressed
+		mvn 	r2, #0x10 // #0b10000
+		teq		r0, r2 
+		bne 	awaitSelection
 		cmp 	r4, #0
 		ldreq 	r0, =menuQuit
 		ldrne 	r0, =menuStart
 		bl 		menuSelection
-		//b 		awaitSelection
+		b 		awaitSelection
 
 		//check if down was pressed
-		tst 	r0, #0x20 // #0b100000
+		mvn 	r2, #0x20
+		tst 	r0, r2 // #0b100000
+		bne 	awaitSelection
 		cmp 	r4, #0
 		ldreq 	r0, =menuQuit
 		ldrne 	r0, =menuStart
 		bl 		menuSelection		
-		//b 		awaitSelection
+		b 		awaitSelection
 
 	optionSelected:
 	pop 	{r4, pc}
