@@ -12,7 +12,12 @@ main:
 	bl	EnableJTAG
 	bl 	EnableL1Cache
 
-	mov 	r0, #0b1010 
+	mov 	r0, #0b01 
+	mov 	r1, #0
+	mov 	r2, #8
+	bl 	SetCarCell
+
+	mov 	r0, #0b1110 
 	mov 	r1, #0
 	mov 	r2, #2
 	bl 	SetCarCell

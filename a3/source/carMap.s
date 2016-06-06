@@ -167,6 +167,8 @@ ShiftCarGrid:
 	pop	{r2}
 
 	// get row above victimCar and shift car to row - car len
+	bic 	car, #0b1111
+	orr 	car, #0b0101
 	sub	r2, len
 	mov	r0, car
 	mov	r1, lane
