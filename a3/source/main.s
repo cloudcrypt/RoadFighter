@@ -11,30 +11,32 @@ main:
 	
 	bl	EnableJTAG
 	bl 	EnableL1Cache
+	
 
-	mov 	r0, #0b01 
+	mov 	r3, #0b01 
 	mov 	r1, #0
 	mov 	r2, #8
-	bl 	SetCarCell
+	/*bl 	SetCarCell
 
 	mov 	r0, #0b1110 
 	mov 	r1, #0
 	mov 	r2, #2
 	bl 	SetCarCell
 
-testLoop:
+testLoop: Can use for car generation and testing
 	
 	bl 	ShiftCarGrid
 
 break:
-	b	testLoop	
+	b	testLoop*/	
 
 	bl	InitFrameBuffer
 	bl  	InitializeSNES
 
 	bl	InitializeMap
 
-	bl	InitialRenderMap
+	//bl	InitialRenderMap
+	bl 	RenderMap
 
 	ldr	r0, =testString
 	mov	r1, #0
@@ -46,13 +48,6 @@ break:
 
 inputloop:
 mainLoop:
-	// this is not working?????????
-	// or maybe I'm doing something wrong,
-	// but, I'm not getting a sequence of random
-	// numbers!
-	// mov	r1, #1
-	// mov	r2, #10
-	// bl	RandomNumber
 
 	ldr 	r0, =100000 
 	bl 	Wait
@@ -62,9 +57,6 @@ mainLoop:
 	bl	ShiftMap
 
 	bl	RenderMap
-
-	//ldr	r0, =2000000
-	//bl	Wait
 
 	//b	mainLoop
 
@@ -220,12 +212,12 @@ RenderMap:
 
 	cmp 	y, #23
 	beq 	drawFullTile
-	ldrneb 	r1, [addrs, #31]
-	lsrne	r1, #3
-	ldrne 	r1, [r3, r1, lsl #2]
-	movne	r2, x
-	movne	r3, y
-	blne	DrawPreciseImage
+	//ldrneb 	r1, [addrs, #31]
+	//lsrne	r1, #3
+	//ldrne 	r1, [r3, r1, lsl #2]
+	movne	r1, x
+	movne	r2, y
+	blne	DrawPreciseImageMod
 	b 	doneDraw
 
 	drawFullTile:
@@ -301,6 +293,63 @@ DrawPreciseImage:
 	add 	y, #1
 	cmp 	y, #32
 	bne 	outLoop
+
+	pop 	{r4-r10, pc}
+
+//Modified draw precise image so that it only needs the new tile, 
+//and reads the framebuffer for comparison
+//does not call draw pixel, contains that functionality
+//DrawPreciseImageMod(imgAddress1, startTX, startTY)
+DrawPreciseImageMod:
+	push 	{r4-r10, lr}
+
+	x 		.req 	r4
+	y 		.req 	r5
+	imgAddrs1 	.req 	r6
+	frameBuffer 	.req 	r7
+	xOffset		.req 	r8
+	yOffset		.req 	r9
+
+	mov 	imgAddrs1, r0
+	ldr 	frameBuffer, =FrameBufferPointer 	//Get pointer
+	ldr 	frameBuffer, [frameBuffer]		//load pointer
+	lsl 	xOffset,  r1, #6 
+	lsl 	yOffset, r2, #6
+
+	add 	frameBuffer, xOffset
+	add 	frameBuffer, yOffset, lsl #10
+
+	mov 	y, #0
+
+	outLoop1:
+	mov 	x, #0
+
+	inLoop1:
+
+	ldrh 	r2, [imgAddrs1], #2
+	lsl	r3, x, #1
+	ldrh 	r1, [frameBuffer, r3]
+	
+	cmp 	r1, r2
+	beq 	equalColour
+
+	add 	r0, xOffset, x
+	add 	r1, yOffset, y
+	
+	cmp	r2, #0
+	lslne	r3, x, #1
+	strneh	r2, [framebuffer, r3]
+
+	equalColour:
+
+	add 	x, #1
+	cmp 	x, #32
+	bne 	inLoop1
+
+	add 	y, #1
+	add 	frameBuffer, #2048
+	cmp 	y, #32
+	bne 	outLoop1
 
 	pop 	{r4-r10, pc}
 
