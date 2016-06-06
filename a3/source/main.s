@@ -12,8 +12,15 @@ main:
 	bl	EnableJTAG
 	bl 	EnableL1Cache
 
+	mov 	r0, #0b1010 
+	mov 	r1, #0
+	mov 	r2, #2
+	bl 	SetCarCell
+
 testLoop:
-	bl	GenerateNewCars
+	
+	bl 	ShiftCarGrid
+
 break:
 	b	testLoop	
 

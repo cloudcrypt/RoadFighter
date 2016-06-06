@@ -101,6 +101,10 @@ ShiftCarGrid:
 
 	// check vel for this shift cycle
 	cmp	vel, #0
+	moveq 	r0, car
+	moveq	r1, lane
+	moveq 	r2, row
+	bleq 	SetCarCell
 	beq	ignoreLane2
 
 	// clear car from grid
