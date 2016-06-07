@@ -222,6 +222,9 @@ ShiftMap:
 	and	r2, currentRow, r0
 	and	r3, higherRow, r0
 
+	lsr	r2, #3
+	lsr r3, #3	
+
 	cmp	r2, r3
 	beq	noChange
 	mov	r0, #0b10
@@ -303,6 +306,43 @@ ClearChanged:
 	ldrb	r0, [r5, r4]
 
 	mov	r1, #0b10
+	bic	r0, r1
+
+	strb	r0, [r5, r4]
+
+	pop	{r4, r5, pc}
+
+.global SetCar
+//takes x and y tile values
+SetCar:
+	
+	push	{r4, r5, lr}
+	// offset = (y * 32) + x
+	add	r4, r0, r1, lsl #5
+
+	ldr	r5, =grid
+	ldrb	r0, [r5, r4]
+
+	mov	r1, #0b1
+	orr	r0, r1
+
+	strb	r0, [r5, r4]
+
+	pop	{r4, r5, pc}
+
+
+.global ClearCar
+//takes x and y tiles values
+ClearCar:
+
+	push	{r4, r5, lr}
+	// offset = (y * 32) + x
+	add	r4, r0, r1, lsl #5
+
+	ldr	r5, =grid
+	ldrb	r0, [r5, r4]
+
+	mov	r1, #0b1
 	bic	r0, r1
 
 	strb	r0, [r5, r4]
