@@ -96,6 +96,7 @@ mainLoop:
 	add 	r1, #1
 	bl 	SetCar
 
+
 	bl	RenderMap
 
 	//b	mainLoop
@@ -104,7 +105,25 @@ mainLoop:
 
 	mov 	r4, r0
 
-	mov 	r0, r4
+	ldr	r1, =0xFFFF
+	cmp	r0, r1
+	beq	noChange
+	ldr 	r2, =playerPosX
+	ldr 	r3, =playerPosY
+	ldr 	r0, [r2]
+	ldr 	r1, [r3]
+	sub	r1, #1
+	bl	SetChanged
+	ldr 	r0, [r2]
+	ldr 	r1, [r3]
+	//add	r1, #1
+	bl	SetChanged
+	ldr 	r0, [r2]
+	ldr 	r1, [r3]
+	add	r1, #1
+	bl	SetChanged
+	noChange:
+	mov	r0, r4
 
 	tst	r0, #1
 	ldreq 	r1, =playerPosY
