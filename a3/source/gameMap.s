@@ -279,6 +279,8 @@ RandomizeTileType:
 // setChanged(gridX, gridY)
 SetChanged:
 	push	{r4, r5, lr}
+	cmp	r1, #0
+	blt	setChangedInNextRow
 	// offset = (y * 32) + x
 	add	r4, r0, r1, lsl #5
 
@@ -289,13 +291,25 @@ SetChanged:
 	orr	r0, r1
 
 	strb	r0, [r5, r4]
+	b	setChangedEnd
 
+	setChangedInNextRow:
+	mov	r4, r0
+	ldr	r5, =nextRow
+	ldrb	r0, [r5, r4]
+
+	orr	r0, #0b10
+	strb	r0, [r5, r4]
+
+	setChangedEnd:
 	pop	{r4, r5, pc}
 
 .global ClearChanged
 // clearChanged(gridX, gridY)
 ClearChanged:
 	push	{r4, r5, lr}
+	cmp	r1, #0
+	blt	clearChangedEnd
 	// offset = (y * 32) + x
 	add	r4, r0, r1, lsl #5
 
@@ -307,13 +321,15 @@ ClearChanged:
 
 	strb	r0, [r5, r4]
 
+	clearChangedEnd:
 	pop	{r4, r5, pc}
 
 .global SetCar
 //takes x and y tile values
-SetCar:
-	
+SetCar:	
 	push	{r4, r5, lr}
+	cmp	r1, #0
+	blt	setCarEnd
 	// offset = (y * 32) + x
 	add	r4, r0, r1, lsl #5
 
@@ -325,14 +341,16 @@ SetCar:
 
 	strb	r0, [r5, r4]
 
+	setCarEnd:
 	pop	{r4, r5, pc}
 
 
 .global ClearCar
 //takes x and y tiles values
 ClearCar:
-
 	push	{r4, r5, lr}
+	cmp	r1, #0
+	blt	clearCarEnd
 	// offset = (y * 32) + x
 	add	r4, r0, r1, lsl #5
 
@@ -344,6 +362,7 @@ ClearCar:
 
 	strb	r0, [r5, r4]
 
+	clearCarEnd:
 	pop	{r4, r5, pc}
 
 // SetCollideable(gridX, gridY)

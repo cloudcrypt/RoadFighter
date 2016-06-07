@@ -55,6 +55,16 @@ testLoop:
 	//bl 	ShiftCarGrid
 	b	testLoop*/
 
+	ldr 	r2, =playerPosX
+	ldr 	r3, =playerPosY
+	ldr 	r0, [r2]
+	ldr 	r1, [r3]
+	bl 	SetCar
+	ldr 	r0, [r2]
+	ldr 	r1, [r3]
+	add 	r1, #1
+	bl 	SetCar
+
 	//bl	InitialRenderMap
 	bl 	RenderMap
 
@@ -62,6 +72,8 @@ testLoop:
 	mov	r1, #0
 	mov	r2, #0
 	bl	DrawString
+
+	bl	GenerateNextRow
 
 	//ldr	r0, =1000000
 	//bl	Wait
@@ -72,7 +84,15 @@ mainLoop:
 	ldr 	r0, =100000 
 	bl 	Wait
 
-	bl	GenerateNextRow
+	//bl	GenerateNextRow
+
+	// ldr 	r2, =playerPosX
+	// ldr 	r3, =playerPosY
+	// ldr 	r0, [r2]
+	// add	r0, #1
+	// ldr 	r1, [r3]
+	// sub	r1, #1
+	// bl	SetChanged
 
 	ldr 	r2, =playerPosX
 	ldr 	r3, =playerPosY
@@ -105,23 +125,47 @@ mainLoop:
 
 	mov 	r4, r0
 
+	bl	GenerateNextRow
+
 	ldr	r1, =0xFFFF
 	cmp	r0, r1
 	beq	noChange
+break:
 	ldr 	r2, =playerPosX
 	ldr 	r3, =playerPosY
 	ldr 	r0, [r2]
 	ldr 	r1, [r3]
+	//cmp	r1, #0
+	//beq	setChangedInNextRow
 	sub	r1, #1
 	bl	SetChanged
 	ldr 	r0, [r2]
 	ldr 	r1, [r3]
-	//add	r1, #1
 	bl	SetChanged
 	ldr 	r0, [r2]
 	ldr 	r1, [r3]
-	add	r1, #1
-	bl	SetChanged
+	sub	r1, #1
+	bl	ClearCar
+	ldr 	r0, [r2]
+	ldr 	r1, [r3]
+	bl	ClearCar
+
+
+	// setChangedInNextRow:
+	// ldr 	r1, [r3]
+	// cmp	r1, #0
+	// ldreq 	r1, [r2]
+	// ldreq	r5, =nextRow
+	// ldreqb	r0, [r5, r1]
+
+	// //mov	r2, #0b10
+	// orreq	r0, #0b10
+	// streqb	r0, [r5, r1]
+
+	// ldr 	r0, [r2]
+	// ldr 	r1, [r3]
+	// add	r1, #1
+	// bl	SetChanged
 	noChange:
 	mov	r0, r4
 
@@ -151,8 +195,6 @@ mainLoop:
 	ldreq 	r2, [r1]
 	subeq 	r2, #1
 	streq 	r2, [r1] 
-
-break:
 
 	ldr	r0, =car
 	ldr	r1, =playerPosX
@@ -297,6 +339,7 @@ RenderMap:
 	sub 	r1, y, #1
 	bl	GetTileVehicle
 // DrawPreciseAroundVehicle(tileImgAddrs, vehicleAddrs, startTX, startTY, vehicleTileOffset, vehiclePixelEnd)
+afterGetTileVehicle:
 	push 	{x} 
 	mov 	r4, r1
 	mov 	r1, r0
