@@ -12,6 +12,8 @@ main:
 	bl	EnableJTAG
 	bl 	EnableL1Cache
 
+	bl 	PrintFuel
+
 	bl	InitFrameBuffer
 	bl  	InitializeSNES
 
@@ -415,15 +417,37 @@ EnableL1Cache:
 
 	pop 	{pc}
 
+PrintFuel:
+	push 	{r4, lr}
+	ldr 	r4, =playerFuel
+
+	cmp 	r4, #100
+	blt 	doubleDigitFuel
+	// print 100
+
+
+	doubleDigitFuel:
+	cmp 	r4, #10
+	// print double digit fuel
+	blt 	singleDigitFuel
+
+
+	singleDigitFuel:
+
+	pop 	{r4, pc}
+
+
 DrawString:
-	push	{r4-r7, lr}
+	push	{r4-r8, lr}
 	string	.req	r4
 	startX	.req	r5
 	startY	.req	r6
 	charCtr	.req	r7
+	//colour	.req 	r8
 	mov	string, r0
 	mov	startX, r1
 	mov	startY, r2
+	//mov 	colour, r3
 	mov	charCtr, #0
 	charLoop:
 	ldrb	r0, [string, charCtr]
@@ -432,6 +456,7 @@ DrawString:
 
 	add	r1, startX, charCtr, lsl #3
 	mov	r2, startY
+	//mov 	r3, colour
 	bl	DrawChar
 
 	add	charCtr, #1
