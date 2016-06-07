@@ -20,7 +20,7 @@ main:
 
 	bl	InitialRenderMap
 	
-	bl drawMenu
+	bl 	drawMenu
 
 
 	ldr	r0, =testString

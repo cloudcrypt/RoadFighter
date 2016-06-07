@@ -1,11 +1,6 @@
-// .section    .init
-// .globl     _menu
-
-// _menu:
-//     b       drawMenu
-    
-.section .text
-
+// returns r0 - 
+// 0 = start
+// 1 = quit
 .globl 	drawMenu
 drawMenu:
 	push {r4, lr}
@@ -24,38 +19,52 @@ drawMenu:
 
 	awaitSelection:
 
-		bl 		Read_SNES
+		bl 		UpdateSNESInput
 
 		// check if A was pressed
-		mvn 	r2, #0x100
+		ldr		r2, =0xfeff
 		teq 	r0, r2 // #0b100000000	
 		beq 	optionSelected
 
 		// check if up was pressed
-		mvn 	r2, #0x10 // #0b10000
+		ldr		r2, =0xffef// #0b10000
 		teq		r0, r2 
-		bne 	awaitSelection
+		bne 	checkDownButton
 		cmp 	r4, #0
+		moveq 	r4, #1
+		movne	r4, #0
 		ldreq 	r0, =menuQuit
 		ldrne 	r0, =menuStart
 		bl 		menuSelection
+		ldr 	r0, =330000 // delay to make selection easier
+		bl 		Wait
 		b 		awaitSelection
 
+		
+
+		checkDownButton:
 		//check if down was pressed
-		mvn 	r2, #0x20
-		tst 	r0, r2 // #0b100000
+		ldr		r2, =0xff5f
+		teq 	r0, r2 // #0b100000
 		bne 	awaitSelection
 		cmp 	r4, #0
+		moveq 	r4, #1
+		movne	r4, #0
 		ldreq 	r0, =menuQuit
 		ldrne 	r0, =menuStart
-		bl 		menuSelection		
+		bl 		menuSelection	
+		ldr 	r0, =330000 // delay to make selection easier
+		bl 		Wait
 		b 		awaitSelection
 
+		
+
 	optionSelected:
+	mov 	r0, r4
 	pop 	{r4, pc}
 
 menuSelection:
-	push {lr}
+	push {r4, lr}
 
 	ldr r1, =362
 	ldr r2, =400
@@ -64,7 +73,7 @@ menuSelection:
 	push {r0, r1, r2, r3, r4}
 	bl DrawImage
 
-	pop {pc}
+	pop {r4, pc}
 
 
 .section .data
