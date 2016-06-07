@@ -34,9 +34,10 @@ main:
 	ldr 	r0, [r2]
 	ldr 	r1, [r3]
 	bl 	SetCar
-	/*ldr 	r0, [r2]
+	ldr 	r0, [r2]
 	ldr 	r1, [r3]
-	bl 	SetCar*/
+	add 	r1, #1
+	bl 	SetCar
 
 /*	ldr 	r0, =grass
 	ldr 	r1, =car1
@@ -138,17 +139,18 @@ mainLoop:
 	ldr 	r1, [r3]
 	sub 	r1, #1
 	bl 	SetCar
-	/*ldr 	r0, [r2]
+	ldr 	r0, [r2]
 	ldr 	r1, [r3]
-	bl 	SetCar*/
+	bl 	SetCar
 break:
 	ldr	r0, =car
 	ldr	r1, =playerPosX
 	ldr 	r2, =playerPosY
 	ldr	r1, [r1]
 	ldr 	r2, [r2]
+	add 	r2, #1
 	mov	r3, #32
-	mov	r4, #32
+	mov	r4, #57
 	push	{r0, r1, r2, r3, r4}
 	bl	DrawTileImage
 
@@ -335,12 +337,13 @@ GetTileVehicle:
 	bne 	aiCar
 	ldr 	r3, =playerPosY
 	ldr 	r3, [r3]
+	sub 	r1, #1
 	cmp 	r1, r3
 	moveq 	r0, #0
 	moveq 	y, #0
 	moveq 	originalY, #0
 	beq 	interpretByte
-	add 	r1, #1
+	sub 	r1, #1
 	cmp 	r1, r3
 	moveq 	y, #0
 	moveq 	originalY, #1
@@ -365,6 +368,10 @@ GetTileVehicle:
 	ldr 	r0, [r2]
 	add 	r0, #4
 	sub 	r1, originalY, y	//This is the tile offset
+
+	.unreq 	x
+	.unreq 	y
+	.unreq 	originalY
 	
 	pop 	{r4-r10, pc}
 

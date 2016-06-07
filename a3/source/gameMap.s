@@ -217,13 +217,10 @@ ShiftMap:
 	mov	byteCtr, #0
 	byteLoop:
 	lsl	r1, byteCtr, #3
-	mov	r0, #0xFF
+	mov	r0, #0xF8
 	lsl	r0, r1
 	and	r2, currentRow, r0
-	and	r3, higherRow, r0
-
-	lsr	r2, #3
-	lsr r3, #3	
+	and	r3, higherRow, r0	
 
 	cmp	r2, r3
 	beq	noChange
