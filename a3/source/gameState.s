@@ -9,7 +9,7 @@ playerPosX:		.int 	16
 playerPosY: 	.int	12
 mapShiftWait:	.int	20
 mapShiftCtr:	.int	0
-playerFuel: 	.int 	100
+playerFuel: 	.int  	100
 playerLives: 	.int 	3
 
 winFlag: 	.byte 	0

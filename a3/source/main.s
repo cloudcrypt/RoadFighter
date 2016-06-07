@@ -12,8 +12,6 @@ main:
 	bl	EnableJTAG
 	bl 	EnableL1Cache
 
-	bl 	PrintFuel
-
 	bl	InitFrameBuffer
 	bl  	InitializeSNES
 
@@ -21,10 +19,25 @@ main:
 
 	bl	InitialRenderMap
 
+
+	
+
+
 	ldr	r0, =testString
 	mov	r1, #0
 	mov	r2, #0
+	ldr 	r3, =0xFFFF
 	bl	DrawString
+
+	draw100:
+	bl 	PrintFuel
+	ldr 	r0, =playerFuel
+	ldr 	r1, [r0]
+	sub 	r1, #1
+	str 	r1, [r0]
+	ldr 	r0, =1000000
+	bl 	Wait
+	b 	draw100	
 
 	//ldr	r0, =1000000
 	//bl	Wait
@@ -347,15 +360,40 @@ DrawImage:
 	.unreq	dimY
 	pop	{r4, r5, r6, r7, r8, r9, pc}
 
+
+
 ClearScreen:
-	push	{r4, r5, lr}
+	push 	{lr}
+	mov 	r0, #0
+	mov 	r1, #0
+	mov 	r2, #1024
+	mov 	r3, #768
+	bl 	ClearArea
+	pop 	{pc}
+
+// r0 - pos x
+// r1 - pos y
+// r2 - width
+// r3 - height
+ClearArea:
+	push	{r4-r9, lr}
 
 	x		.req	r4
 	y		.req	r5
-	mov	y, #0
+	endX 		.req 	r6
+	endY 		.req 	r7
+	startX 		.req 	r8
+	startY 		.req 	r9
+	
+	mov 	startX, r0
+	mov 	startY, r1
+	add 	endX, r0, r2
+	add 	endY, r1, r3
+
+	mov	y, startY
 
 	yLoop3:
-	mov	x, #0
+	mov	x, startX
 
 	xLoop3:
 
@@ -365,17 +403,21 @@ ClearScreen:
 	bl	DrawPixel
 
 	add	x, #1
-	cmp	x, #1024
+	cmp	x, endX
 	bne	xLoop3
 
 	add	y, #1
-	cmp	y, #768
+	cmp	y, endY
 	bne	yLoop3
 
 	clearScreenEnd:
 	.unreq	x
 	.unreq	y
-	pop	{r4, r5, pc}
+	.unreq	endX
+	.unreq 	endY
+	.unreq 	startX
+	.unreq 	startY
+	pop	{r4-r9, pc}
 
 
 
@@ -387,7 +429,7 @@ ClearScreen:
  *  r2 - color
  */
 DrawPixel:
-	push	{r4}
+	push	{r4, lr}
 
 	offset	.req	r4
 
@@ -402,8 +444,8 @@ DrawPixel:
 	strh	r2, [r0, offset]
 
 	.unreq	offset
-	pop	{r4}
-	bx	lr
+
+	pop	{r4, pc}
 
 EnableL1Cache:
 	push 	{lr}
@@ -418,23 +460,79 @@ EnableL1Cache:
 	pop 	{pc}
 
 PrintFuel:
-	push 	{r4, lr}
+	push 	{r4-r5, lr}
+
+
 	ldr 	r4, =playerFuel
+	ldr 	r4, [r4]
+	ldr 	r0, =fuelAmount
 
 	cmp 	r4, #100
 	blt 	doubleDigitFuel
+	ldr 	r5, =0x15A0 // green
 	// print 100
+	mov 	r1, #49
+	strb 	r1, [r0]
+	mov 	r1, #48
+	strb 	r1, [r0, #1]
+	strb 	r1, [r0, #2]
+	mov 	r1, #0
+	strb 	r1, [r0, #3]
+	b 	displayFuel
 
-
+	// print double digit fuel
 	doubleDigitFuel:
 	cmp 	r4, #10
-	// print double digit fuel
 	blt 	singleDigitFuel
 
+	mov 	r1, #0
+	numTens:
+	add 	r1, #1
+	sub 	r4, #10
+	cmp 	r4, #10
+	bge 	numTens
+
+	cmp	r1, #7
+	ldrge 	r5, =0x9700// green 
+	bge 	loadFuelToMem
+	cmp 	r1, #5
+	ldrge 	r5, =0xffa1 // green yellow
+	bge 	loadFuelToMem
+	ldr 	r5, =0xfe00 // yellow
+
+	loadFuelToMem:
+	add 	r1, #48
+	strb 	r1, [r0]
+	add 	r4, #48
+	strb 	r4, [r0, #1]
+	mov 	r1, #0
+	strb 	r1, [r0, #2]
+
+	b 	displayFuel
 
 	singleDigitFuel:
+	add 	r4, #48
+	strb 	r4, [r0]
+	mov 	r1, #0
+	strb 	r1, [r0, #1]
+	ldr 	r5, =0xf900 // red
 
-	pop 	{r4, pc}
+	displayFuel:
+
+	mov 	r0, #80
+	mov 	r1, #0
+	mov 	r2, #100
+	mov 	r3, #32
+	bl 	ClearArea
+
+
+	ldr 	r0, =fuelAmount
+	mov 	r3, r5 	// set colour
+	mov 	r1, #40 // x 
+	mov 	r2, #0 // y
+	bl 	DrawString
+
+	pop 	{r4-r5, pc}
 
 
 DrawString:
@@ -443,11 +541,11 @@ DrawString:
 	startX	.req	r5
 	startY	.req	r6
 	charCtr	.req	r7
-	//colour	.req 	r8
+	colour	.req 	r8
 	mov	string, r0
 	mov	startX, r1
 	mov	startY, r2
-	//mov 	colour, r3
+	mov 	colour, r3
 	mov	charCtr, #0
 	charLoop:
 	ldrb	r0, [string, charCtr]
@@ -456,7 +554,7 @@ DrawString:
 
 	add	r1, startX, charCtr, lsl #3
 	mov	r2, startY
-	//mov 	r3, colour
+	mov 	r3, colour
 	bl	DrawChar
 
 	add	charCtr, #1
@@ -468,7 +566,7 @@ DrawString:
 	.unreq	startX
 	.unreq	startY
 	.unreq	charCtr
-	pop	{r4-r7, pc}
+	pop	{r4-r8, pc}
 
 DrawChar:
 	push	{r4-r10, lr}
@@ -500,24 +598,30 @@ DrawChar:
 	lsl	r0, #1
 	add	r1, startY, byteCtr
 	lsl	r1, #1
-	ldr	r2, =0xFFFF
+	mov	r2, r3
+	push 	{r3}
 	bl	DrawPixel
+	pop 	{r3}
 
 	add	r0, startX, bitCtr
 	lsl	r0, #1
 	add	r0, #1
 	add	r1, startY, byteCtr
 	lsl	r1, #1
-	ldr	r2, =0xFFFF
+	mov	r2, r3
+	push 	{r3}
 	bl	DrawPixel
+	pop 	{r3}
 
 	add	r0, startX, bitCtr
 	lsl	r0, #1
 	add	r1, startY, byteCtr
 	lsl	r1, #1
 	add	r1, #1
-	ldr	r2, =0xFFFF
+	mov	r2, r3
+	push 	{r3}
 	bl	DrawPixel
+	pop 	{r3}
 
 	add	r0, startX, bitCtr
 	lsl	r0, #1
@@ -525,8 +629,10 @@ DrawChar:
 	add	r1, startY, byteCtr
 	lsl	r1, #1
 	add	r1, #1
-	ldr	r2, =0xFFFF
+	mov	r2, r3
+	push 	{r3}
 	bl	DrawPixel
+	pop 	{r3}
 
 	ignoreBit:
 	add	bitCtr, #1
@@ -551,5 +657,12 @@ DrawChar:
 .align 4
 font:	.incbin	"font.bin"
 testString:
-	.asciz	"Fuel: 100       Lives: 3"
+	.asciz	"Fuel:"
+.align 1
+clearFuel:
+	.asciz "   "
+fuelAmount:
+	.int 	3	
+	.asciz 	""
 
+	

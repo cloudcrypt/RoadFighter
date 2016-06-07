@@ -11,7 +11,7 @@ drawMenu:
 	mov 	r3, #780
 	mov 	r4, #388
 	push 	{r0, r1, r2, r3, r4}
-	bl 		DrawImage	
+	//bl 		DrawImage	
 	
 	mov 	r4, #0 // 0 denotes start, 1 denotes quit
 	ldr 	r0, =menuStart
@@ -70,8 +70,8 @@ menuSelection:
 	ldr r2, =400
 	mov r3, #255
 	mov r4, #82
-	push {r0, r1, r2, r3, r4}
-	bl DrawImage
+	//push {r0, r1, r2, r3, r4}
+	//bl DrawImage
 
 	pop {r4, pc}
 
@@ -79,8 +79,11 @@ menuSelection:
 .section .data
 .align 2
 
+menuStart:
 menuQuit: 
-.ascii "CyCyCyCyCyCyCyCyCyCyCyCyCyCycycyCyCyCyCyCyCyCyCyCyCycyCyCyCyCy"
+titleImage:
+/*
+.ascii "CyCyCyCyCyCyCyCyCyCyCyCyCyCycycyCyCyCyCyCyCyCyCyCyCycyCyCyCyCy" 
 .ascii "CyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCycyCyCyCyCyCyCyCy"
 .ascii "CyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCy"
 .ascii "Cy\311\2224\3054\3054\3054\3054\3054\3054\3054\3054\3054\305"
@@ -31874,3 +31877,5 @@ titleImage: // 640 x 96
 .ascii "\2461\2461\2461\2461\2461\2461\2461\2461\2461\2461\2461\2461"
 .ascii "\2461\2461\2461\2461\2461\2461\2461\2461\2461\2461\2461\2461"
 .ascii "\2461\2461\2461\2461\2461\2461"
+
+*/
