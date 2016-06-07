@@ -29,16 +29,6 @@ main:
 
 	bl	InitializeMap
 
-	ldr 	r2, =playerPosX
-	ldr 	r3, =playerPosY
-	ldr 	r0, [r2]
-	ldr 	r1, [r3]
-	bl 	SetCar
-	ldr 	r0, [r2]
-	ldr 	r1, [r3]
-	add 	r1, #1
-	bl 	SetCar
-
 /*	ldr 	r0, =grass
 	ldr 	r1, =car1
 	add 	r1, #4	
@@ -84,16 +74,6 @@ mainLoop:
 
 	bl	GenerateNextRow
 
-	bl	ShiftMap
-
-	bl	RenderMap
-
-	//b	mainLoop
-
-	bl 	UpdateSNESInput
-
-	mov 	r4, r0
-
 	ldr 	r2, =playerPosX
 	ldr 	r3, =playerPosY
 	ldr 	r0, [r2]
@@ -103,6 +83,26 @@ mainLoop:
 	ldr 	r1, [r3]
 	add 	r1, #1
 	bl 	ClearCar
+
+	bl	ShiftMap
+
+	ldr 	r2, =playerPosX
+	ldr 	r3, =playerPosY
+	ldr 	r0, [r2]
+	ldr 	r1, [r3]
+	bl 	SetCar
+	ldr 	r0, [r2]
+	ldr 	r1, [r3]
+	add 	r1, #1
+	bl 	SetCar
+
+	bl	RenderMap
+
+	//b	mainLoop
+
+	bl 	UpdateSNESInput
+
+	mov 	r4, r0
 
 	mov 	r0, r4
 
@@ -133,16 +133,8 @@ mainLoop:
 	subeq 	r2, #1
 	streq 	r2, [r1] 
 
-	ldr 	r2, =playerPosX
-	ldr 	r3, =playerPosY
-	ldr 	r0, [r2]
-	ldr 	r1, [r3]
-	sub 	r1, #1
-	bl 	SetCar
-	ldr 	r0, [r2]
-	ldr 	r1, [r3]
-	bl 	SetCar
 break:
+
 	ldr	r0, =car
 	ldr	r1, =playerPosX
 	ldr 	r2, =playerPosY
@@ -283,7 +275,7 @@ RenderMap:
 	ldr 	r8, [r3, r1, lsl #2]
 
 	mov 	r0, x
-	mov 	r1, y
+	sub 	r1, y, #1
 	bl	GetTileVehicle
 // DrawPreciseAroundVehicle(tileImgAddrs, vehicleAddrs, startTX, startTY, vehicleTileOffset, vehiclePixelEnd)
 	push 	{x} 
@@ -337,7 +329,7 @@ GetTileVehicle:
 	bne 	aiCar
 	ldr 	r3, =playerPosY
 	ldr 	r3, [r3]
-	sub 	r1, #1
+	//sub 	r1, #1
 	cmp 	r1, r3
 	moveq 	r0, #0
 	moveq 	y, #0
@@ -345,6 +337,7 @@ GetTileVehicle:
 	beq 	interpretByte
 	sub 	r1, #1
 	cmp 	r1, r3
+	moveq 	r0, #0
 	moveq 	y, #0
 	moveq 	originalY, #1
 	beq 	interpretByte
