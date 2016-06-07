@@ -33,11 +33,10 @@ main:
 	ldr 	r3, =playerPosY
 	ldr 	r0, [r2]
 	ldr 	r1, [r3]
-	sub 	r1, #1
 	bl 	SetCar
-	ldr 	r0, [r2]
+	/*ldr 	r0, [r2]
 	ldr 	r1, [r3]
-	bl 	SetCar
+	bl 	SetCar*/
 
 /*	ldr 	r0, =grass
 	ldr 	r1, =car1
@@ -99,10 +98,10 @@ mainLoop:
 	ldr 	r0, [r2]
 	ldr 	r1, [r3]
 	bl 	ClearCar
-	/*ldr 	r0, [r2]
+	ldr 	r0, [r2]
 	ldr 	r1, [r3]
 	add 	r1, #1
-	bl 	ClearCar*/
+	bl 	ClearCar
 
 	mov 	r0, r4
 
@@ -297,6 +296,9 @@ RenderMap:
 
 	pop 	{x}
 
+	mov	r0, x
+	sub	r1, y, #1
+	bl	ClearChanged
 
 	ignoreTile1:
 	add	x, #1
