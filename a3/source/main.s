@@ -81,8 +81,8 @@ testLoop:
 inputloop:
 mainLoop:
 
-	ldr 	r0, =100000 
-	bl 	Wait
+	//ldr 	r0, =100000 
+	//bl 	Wait
 
 	//bl	GenerateNextRow
 
@@ -118,6 +118,7 @@ mainLoop:
 
 
 	bl	RenderMap
+	bl 	RenderVirtualFrameBuffer
 
 	//b	mainLoop
 
@@ -326,7 +327,7 @@ RenderMap:
 
 	mov	r0, x
 	sub	r1, y, #1
-	bl	ClearChanged
+	//bl	ClearChanged
 	b 	ignoreTile1
 
 	vehicleTile:
@@ -445,8 +446,9 @@ DrawPreciseImageMod:
 	yOffset		.req 	r9
 
 	mov 	imgAddrs1, r0
-	ldr 	frameBuffer, =FrameBufferPointer 	//Get pointer
-	ldr 	frameBuffer, [frameBuffer]		//load pointer
+	//ldr 	frameBuffer, =FrameBufferPointer 	//Get pointer
+	//ldr 	frameBuffer, [frameBuffer]		//load pointer
+	ldr 	frameBuffer, =VirtualFrameBuffer
 	lsl 	xOffset,  r1, #6 
 	lsl 	yOffset, r2, #6
 
@@ -673,9 +675,14 @@ DrawPixel:
 	lsl	offset, #1
 
 	// store the colour (half word) at framebuffer pointer + offset
-	ldr	r0, =FrameBufferPointer
+	/*ldr	r0, =FrameBufferPointer
 	ldr	r0, [r0]
+	strh	r2, [r0, offset]*/
+
+	ldr	r0, =VirtualFrameBuffer
 	strh	r2, [r0, offset]
+
+	
 
 	.unreq	offset
 	pop	{r4}
@@ -800,9 +807,74 @@ DrawChar:
 	pop	{r4-r10, pc}
 
 
+RenderVirtualFrameBuffer:
+	push 	{r4,r5,r6,r7,r8,lr}
+
+	x 	.req 	r4
+	y 	.req 	r5
+	tile 	.req 	r6 
+	pixelCounter 	.req 	r7
+	yCounter 	.req 	r8
+
+	ldr	r0, =FrameBufferPointer
+	ldr	r0, [r0]
+	ldr 	r1, =VirtualFrameBuffer
+	ldr 	tile, =grid
+
+	mov 	pixelCounter, #0
+	mov 	y, #0
+
+	frameYLoop:
+
+	mov 	x, #0
+	sub 	tile, #32
+
+	frameXLoop:
+
+	ldrb 	r3, [tile]
+	ldr 	r2, =0b10
+	tst 	r2, r3
+	beq 	ignoreRedraw
+
+	ldrh 	r2, [r1]
+	strh 	r2, [r0]
+	
+	ignoreRedraw:
+
+	add 	r0, #2
+	add 	r1, #2
+	
+	add 	pixelCounter, #1
+	cmp 	pixelCounter, #32
+	addeq 	tile, #1
+	moveq 	pixelCounter, #0
+
+	add 	x, #1
+	cmp 	x, #1024
+	bne 	frameXLoop
+
+	add 	yCounter, #1
+	cmp 	yCounter, #32
+	addeq	tile, #32
+	moveq 	yCounter, #0
+
+	add 	y, #1
+	cmp 	y, #768
+	bne 	frameYLoop
+
+
+	pop 	{r4,r5,r6,r7,r8,pc}
+
 .section .data
 .align 4
 font:	.incbin	"font.bin"
 testString:
 	.asciz	"Fuel: 100       Lives: 3"
+
+.align 4
+VirtualFrameBuffer:
+	.rept	1572864
+	.byte	0
+	.endr
+	.align
 
