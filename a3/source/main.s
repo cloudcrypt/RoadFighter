@@ -52,7 +52,7 @@ main:
 //Can use for testing
 testLoop: 
 	
-	//bl 	ShiftCarGrid
+	//
 	b	testLoop*/
 
 	ldr 	r2, =playerPosX
@@ -74,6 +74,12 @@ testLoop:
 	bl	DrawString
 
 	bl	GenerateNextRow
+
+	/*mov 	r0, #0b0100
+	mov 	r1, #4
+	mov 	r2, #2
+	bl 	SetCarCell*/ 	
+	bl 	GenerateNewCars
 
 	//ldr	r0, =1000000
 	//bl	Wait
@@ -105,6 +111,7 @@ mainLoop:
 	bl 	ClearCar
 
 	bl	ShiftMap
+	bl 	ShiftCarGrid
 
 	ldr 	r2, =playerPosX
 	ldr 	r3, =playerPosY
@@ -116,7 +123,7 @@ mainLoop:
 	add 	r1, #1
 	bl 	SetCar
 
-
+break2:
 	bl	RenderMap
 
 	//b	mainLoop
@@ -125,8 +132,10 @@ mainLoop:
 
 	mov 	r4, r0
 
-	bl	GenerateNextRow
 
+	bl	GenerateNextRow
+	//bl 	GenerateNewCars
+	
 	ldr	r1, =0xFFFF
 	cmp	r0, r1
 	beq	noChange
@@ -566,6 +575,7 @@ DrawPreciseAroundVehicle:
 	.unreq 	vehImgAddrs
 	pop 	{r4-r10, pc}
 // DrawTileImage(imgAddrs, startTX, startTY, dimX, dimY)
+.global DrawTileImage
 DrawTileImage:
 	pop	{r0, r1, r2, r3, r4}
 	push	{lr}

@@ -101,11 +101,40 @@ ShiftCarGrid:
 
 	// check vel for this shift cycle
 	cmp	vel, #0
-	moveq 	r0, car
-	moveq	r1, lane
-	moveq 	r2, row
-	bleq 	SetCarCell
-	beq	ignoreLane2
+	bne 	hasVelocity
+
+	//Reset car cell.
+	mov 	r0, car
+	mov	r1, lane
+	mov 	r2, row
+	bl 	SetCarCell
+
+	//Now get the length to update grid
+	lsr	r0, car, #4
+	ldr	r1, =cars
+	ldr	r0, [r1, r0, lsl #2]
+	ldr	len, [r0]
+
+	//Ensure car cell we are going to clear is empty
+	mov 	r0, lane
+	add 	r1, row, len
+	bl 	GetCarCell
+	cmp 	r0, #0
+	bne 	updateCarPosition 	
+
+	mov 	r0, lane
+	add 	r1, row, len	
+	mov 	r2, #1
+	bl 	RemoveCarInGrid
+
+	updateCarPosition:
+	mov 	r0, lane
+	add 	r1, row	
+	mov 	r2, len
+	bl 	AddCarInGrid
+
+	b 	ignoreLane2
+	hasVelocity:
 
 	// clear car from grid
 	mov	r0, #0
@@ -123,6 +152,13 @@ ShiftCarGrid:
 	ldr	r1, =cars
 	ldr	r0, [r1, r0, lsl #2]
 	ldr	len, [r0]
+
+	push 	{r0-r2}
+	mov 	r0, lane
+	mov 	r1, row	
+	mov 	r2, len
+	bl 	RemoveCarInGrid
+	pop 	{r0-r2}
 
 	// validate car's entire shift path for entire length of car
 	mov	velCtr, #1
@@ -153,6 +189,25 @@ ShiftCarGrid:
 	mov	r1, lane
 	add	r2, row, vel
 	bl	SetCarCell
+
+	push 	{r0-r4}
+	ldr	r0, =car
+	add	r1, lane, #5
+	sub 	r2, row, #3
+	add 	r2, vel
+	mov	r3, #32
+	mov	r4, #57
+	push	{r0, r1, r2, r3, r4}
+	bl	DrawTileImage
+	pop 	{r0-r4}
+
+	push 	{r0-r2}
+	mov 	r0, lane
+	add 	r1, row, vel	
+	mov 	r2, len
+	bl 	AddCarInGrid
+	pop 	{r0-r2}
+
 	b	ignoreLane2
 
 	accidentHandler:
@@ -191,7 +246,79 @@ ShiftCarGrid:
 	.unreq	lenCtr
 	pop	{r4-r10, pc}
 
+//Takes a tile position and length, and removes the car values from the car grid
+RemoveCarInGrid:
+	
+	push 	{lr}
 
+	x	.req 	r0
+	y 	.req 	r1
+	len 	.req 	r2
+
+	add 	x, #5
+	sub 	y, #4
+
+	updateLoop:
+
+	//If we are outside the grid, do not modify the grid
+	cmp 	y, #0 		
+	blt 	checkLoop
+
+	push 	{r0-r3}
+	bl 	ClearCar
+	pop 	{r0-r3}
+	push 	{r0-r3}
+	bl 	SetChanged
+	pop 	{r0-r3}
+
+	checkLoop:
+	add 	y, #1
+	sub 	len, #1
+	cmp 	len, #0
+	bne 	updateLoop
+
+	.unreq 	x
+	.unreq 	y
+	.unreq 	len
+
+	pop 	{pc}
+
+//Takes a tile position and length, and adds the car values to the tile grid
+AddCarInGrid:
+
+	push 	{lr}
+
+	x	.req 	r0
+	y 	.req 	r1
+	len 	.req 	r2
+
+	add 	x, #5
+	sub 	y, #4
+
+	updateLoop1:
+
+	//If we are outside the grid, do not modify the grid
+	cmp 	y, #0 		
+	blt 	checkLoop1
+
+	push 	{r0-r3}
+	bl 	SetCar
+	pop 	{r0-r3}
+	push 	{r0-r3}
+	bl 	SetChanged
+	pop 	{r0-r3}
+
+	checkLoop1:
+	add 	y, #1
+	sub 	len, #1
+	cmp 	len, #0
+	bne 	updateLoop1
+
+	.unreq 	x
+	.unreq 	y
+	.unreq 	len
+
+	pop 	{pc}
 
 .global	SetCollisions
 UpdateCollisions:
