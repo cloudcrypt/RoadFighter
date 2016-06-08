@@ -11,18 +11,6 @@ main:
 	
 	bl	EnableJTAG
 	bl 	EnableL1Cache
-	
-
-	/*mov 	r3, #0b01 
-	mov 	r1, #0
-	mov 	r2, #8
-	bl 	SetCarCell
-
-	mov 	r0, #0b1110 
-	mov 	r1, #0
-	mov 	r2, #2
-	bl 	SetCarCell*/
-	
 
 	bl	InitFrameBuffer
 	bl  	InitializeSNES
@@ -78,8 +66,8 @@ testLoop:
 	/*mov 	r0, #0b0100
 	mov 	r1, #4
 	mov 	r2, #2
-	bl 	SetCarCell*/ 	
-	bl 	GenerateNewCars
+	bl 	SetCarCell	*/
+	//bl 	GenerateNewCars
 
 	//ldr	r0, =1000000
 	//bl	Wait
@@ -134,7 +122,7 @@ break2:
 
 
 	bl	GenerateNextRow
-	//bl 	GenerateNewCars
+	bl 	GenerateNewCars
 	
 	ldr	r1, =0xFFFF
 	cmp	r0, r1

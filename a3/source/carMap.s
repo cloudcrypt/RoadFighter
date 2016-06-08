@@ -20,8 +20,11 @@ GenerateNewCars:
 	beq	ignoreLane
 
 	bl	RandomNumber
-	cmp	r0, #5
+	cmp	r0, #2
 	bge	ignoreLane
+	/*bl	RandomNumber
+	cmp	r0, #1
+	bge	ignoreLane*/
 
 	mov	car, #0
 	cmp	laneCtr, #10
@@ -41,7 +44,7 @@ GenerateNewCars:
 	mov	r0, #0
 	mov	car, r0, lsl #4
 	// generate rand velocity
-	orr	car, #0b1	
+	orr	car, #0b0101	
 
 
 	placeCar:
@@ -263,6 +266,8 @@ RemoveCarInGrid:
 	//If we are outside the grid, do not modify the grid
 	cmp 	y, #0 		
 	blt 	checkLoop
+	cmp 	y, #31
+	popge 	{pc}
 
 	push 	{r0-r3}
 	bl 	ClearCar
@@ -300,6 +305,8 @@ AddCarInGrid:
 	//If we are outside the grid, do not modify the grid
 	cmp 	y, #0 		
 	blt 	checkLoop1
+	cmp 	y, #31
+	popge 	{pc}
 
 	push 	{r0-r3}
 	bl 	SetCar
@@ -391,5 +398,10 @@ CheckLane:
 carGrid:	
 	.rept	594
 	.byte	0
+	.endr
+	.align
+safetyBuffer:
+	.rept	66
+	.byte 	0
 	.endr
 	.align
