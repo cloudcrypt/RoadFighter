@@ -325,50 +325,54 @@ RenderMap:
 	tst 	r1, r2
 	bne 	vehicleTile
 
-	// mov	r0, x
-	// mov	r1, y
-	// bl	RenderNormalTile
-
-	lsr	r1, #3
-	ldr 	r3, =tiles
-	ldr 	r0, [r3, r1, lsl #2]
-
-	mov	r1, x
-	mov	r2, y
-	bl	DrawPreciseImageMod
-
 	mov	r0, x
-	sub	r1, y, #1
-	bl	ClearChanged
+	mov	r1, y
+	bl	RenderNormalTile
+
+	// lsr	r1, #3
+	// ldr 	r3, =tiles
+	// ldr 	r0, [r3, r1, lsl #2]
+
+	// mov	r1, x
+	// mov	r2, y
+	// bl	DrawPreciseImageMod
+
+	// mov	r0, x
+	// sub	r1, y, #1
+	// bl	ClearChanged
 
 	b 	ignoreTile1
 
 	vehicleTile:
 
-	lsr	r1, #3
-	ldr 	r3, =tiles
-	ldr 	r8, [r3, r1, lsl #2]
-
-	mov 	r0, x
-	sub 	r1, y, #1
-	bl	GetTileVehicle
-	// DrawPreciseAroundVehicle(tileImgAddrs, vehicleAddrs, startTX, startTY, vehicleTileOffset, vehiclePixelEnd)
-	afterGetTileVehicle:
-	push 	{x} 
-	mov 	r4, r1
-	mov 	r1, r0
-	mov 	r2, x
-	mov 	r3, y
-	mov 	r0, r8
-	mov 	r5, #57
-	push 	{r0-r5}
-	bl 	DrawPreciseAroundVehicle
-
-	pop 	{x}
-
 	mov	r0, x
-	sub	r1, y, #1
-	bl	ClearChanged
+	mov	r1, y
+	bl	RenderVehicleTile
+
+	// lsr	r1, #3
+	// ldr 	r3, =tiles
+	// ldr 	r8, [r3, r1, lsl #2]
+
+	// mov 	r0, x
+	// sub 	r1, y, #1
+	// bl	GetTileVehicle
+	// // DrawPreciseAroundVehicle(tileImgAddrs, vehicleAddrs, startTX, startTY, vehicleTileOffset, vehiclePixelEnd)
+	// afterGetTileVehicle:
+	// push 	{x} 
+	// mov 	r4, r1
+	// mov 	r1, r0
+	// mov 	r2, x
+	// mov 	r3, y
+	// mov 	r0, r8
+	// mov 	r5, #57
+	// push 	{r0-r5}
+	// bl 	DrawPreciseAroundVehicle
+
+	// pop 	{x}
+
+	// mov	r0, x
+	// sub	r1, y, #1
+	// bl	ClearChanged
 
 	ignoreTile1:
 	add	x, #1
@@ -403,6 +407,49 @@ RenderNormalTile:
 	mov	r1, x
 	mov	r2, y
 	bl	DrawPreciseImageMod
+
+	mov	r0, x
+	sub	r1, y, #1
+	bl	ClearChanged
+
+	.unreq	x
+	.unreq	y
+	.unreq	addrs
+	pop	{r4-r8, pc}
+
+RenderVehicleTile:
+	push	{r4-r8, lr}
+	x	.req	r5
+	y	.req	r6
+	addrs	.req	r7
+	ldr	addrs, =grid
+	mov	x, r0
+	mov	y, r1
+
+	sub	r0, y, #1
+	add	r0, x, r0, lsl #5
+	ldrb	r1, [addrs, r0]
+
+	lsr	r1, #3
+	ldr 	r3, =tiles
+	ldr 	r8, [r3, r1, lsl #2]
+	
+	mov 	r0, x
+	sub 	r1, y, #1
+	bl	GetTileVehicle
+	// DrawPreciseAroundVehicle(tileImgAddrs, vehicleAddrs, startTX, startTY, vehicleTileOffset, vehiclePixelEnd)
+	afterGetTileVehicle:
+	push 	{x} 
+	mov 	r4, r1
+	mov 	r1, r0
+	mov 	r2, x
+	mov 	r3, y
+	mov 	r0, r8
+	mov 	r5, #57
+	push 	{r0-r5}
+	bl 	DrawPreciseAroundVehicle
+
+	pop 	{x}
 
 	mov	r0, x
 	sub	r1, y, #1
