@@ -29,15 +29,15 @@ main:
 	ldr 	r3, =0xFFFF
 	bl	DrawString
 
-	draw100:
-	bl 	PrintFuel
-	ldr 	r0, =playerFuel
-	ldr 	r1, [r0]
-	sub 	r1, #1
-	str 	r1, [r0]
-	ldr 	r0, =1000000
-	bl 	Wait
-	b 	draw100	
+	// draw100:
+	// bl 	PrintFuel
+	// ldr 	r0, =playerFuel
+	// ldr 	r1, [r0]
+	// sub 	r1, #1
+	// str 	r1, [r0]
+	// ldr 	r0, =333000
+	// bl 	Wait
+	// b 	draw100	
 
 	//ldr	r0, =1000000
 	//bl	Wait
@@ -52,17 +52,20 @@ mainLoop:
 	// mov	r2, #10
 	// bl	RandomNumber
 
-	ldr 	r0, =100000 
-	bl 	Wait
+	// ldr 	r0, =100000 
+	// bl 	Wait
 
-	bl	GenerateNextRow
+	bl 	RandomNumber
+	cmp 	r0, #16
+	blge  	GenerateFinishLine
+	bllt	GenerateNextRow
 
 	bl	ShiftMap
 
 	bl	RenderMap
 
-	//ldr	r0, =2000000
-	//bl	Wait
+	// ldr	r0, =100000
+	// bl	Wait
 
 	//b	mainLoop
 
@@ -515,7 +518,7 @@ PrintFuel:
 	strb 	r4, [r0]
 	mov 	r1, #0
 	strb 	r1, [r0, #1]
-	ldr 	r5, =0xf900 // red
+	ldr 	r5, =0xf800 // red
 
 	displayFuel:
 
