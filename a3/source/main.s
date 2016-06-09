@@ -87,8 +87,8 @@ testLoop:
 inputloop:
 mainLoop:
 
-	// ldr 	r0, =250000 
-	// bl 	Wait
+	ldr 	r0, =100000 
+	bl 	Wait
 
 	//bl	GenerateNextRow
 
@@ -307,74 +307,19 @@ RenderMap:
 	ldr	addrs, =grid
 	mov	y, #1
 
+	ldr 	r0, =100000 
+	bl 	Wait
+
 	yLoop2:
 
 	mov	x, #0
 
 	xLoop2:
-	//ldr 	r0, =100000 
-	//bl 	Wait
-
-	ldrb	r1, [addrs], #1
-
-	mov	r2, #0b10
-	tst	r1, r2
-	beq	ignoreTile1
-
-	mov 	r2, #0b1
-	tst 	r1, r2
-	bne 	vehicleTile
 
 	mov	r0, x
 	mov	r1, y
-	bl	RenderNormalTile
+	bl	RenderMapTile
 
-	// lsr	r1, #3
-	// ldr 	r3, =tiles
-	// ldr 	r0, [r3, r1, lsl #2]
-
-	// mov	r1, x
-	// mov	r2, y
-	// bl	DrawPreciseImageMod
-
-	// mov	r0, x
-	// sub	r1, y, #1
-	// bl	ClearChanged
-
-	b 	ignoreTile1
-
-	vehicleTile:
-
-	mov	r0, x
-	mov	r1, y
-	bl	RenderVehicleTile
-
-	// lsr	r1, #3
-	// ldr 	r3, =tiles
-	// ldr 	r8, [r3, r1, lsl #2]
-
-	// mov 	r0, x
-	// sub 	r1, y, #1
-	// bl	GetTileVehicle
-	// // DrawPreciseAroundVehicle(tileImgAddrs, vehicleAddrs, startTX, startTY, vehicleTileOffset, vehiclePixelEnd)
-	// afterGetTileVehicle:
-	// push 	{x} 
-	// mov 	r4, r1
-	// mov 	r1, r0
-	// mov 	r2, x
-	// mov 	r3, y
-	// mov 	r0, r8
-	// mov 	r5, #57
-	// push 	{r0-r5}
-	// bl 	DrawPreciseAroundVehicle
-
-	// pop 	{x}
-
-	// mov	r0, x
-	// sub	r1, y, #1
-	// bl	ClearChanged
-
-	ignoreTile1:
 	add	x, #1
 	cmp	x, #32
 	bne	xLoop2
@@ -388,7 +333,8 @@ RenderMap:
 	.unreq	addrs
 	pop	{r4-r8, pc}
 
-RenderNormalTile:
+.global	RenderMapTile
+RenderMapTile:
 	push	{r4-r8, lr}
 	x	.req	r5
 	y	.req	r6
@@ -400,6 +346,47 @@ RenderNormalTile:
 	sub	r0, y, #1
 	add	r0, x, r0, lsl #5
 	ldrb	r1, [addrs, r0]
+
+	mov	r2, #0b10
+	tst	r1, r2
+	beq	ignoreTile1
+
+	mov 	r2, #0b1
+	tst 	r1, r2
+	bne 	vehicleTile
+
+	mov	r0, x
+	mov	r2, r1
+	mov	r1, y
+	bl	RenderNormalTile
+
+	b 	clearTile
+
+	vehicleTile:
+
+	mov	r0, x
+	mov	r2, r1
+	mov	r1, y
+	bl	RenderVehicleTile
+
+	clearTile:
+	mov	r0, x
+	sub	r1, y, #1
+	bl	ClearChanged
+
+	ignoreTile1:
+	.unreq	x
+	.unreq	y
+	.unreq	addrs
+	pop	{r4-r8, pc}
+
+RenderNormalTile:
+	push	{r4-r5, lr}
+	x	.req	r4
+	y	.req	r5
+	mov	x, r0
+	mov	y, r1
+	mov	r1, r2
 
 	lsr	r1, #3
 	ldr 	r3, =tiles
@@ -408,57 +395,42 @@ RenderNormalTile:
 	mov	r2, y
 	bl	DrawPreciseImageMod
 
-	mov	r0, x
-	sub	r1, y, #1
-	bl	ClearChanged
-
 	.unreq	x
 	.unreq	y
-	.unreq	addrs
-	pop	{r4-r8, pc}
+	pop	{r4-r5, pc}
 
 RenderVehicleTile:
-	push	{r4-r8, lr}
+	push	{r4-r7, lr}
 	x	.req	r5
 	y	.req	r6
-	addrs	.req	r7
-	ldr	addrs, =grid
 	mov	x, r0
 	mov	y, r1
-
-	sub	r0, y, #1
-	add	r0, x, r0, lsl #5
-	ldrb	r1, [addrs, r0]
+	mov	r1, r2
 
 	lsr	r1, #3
 	ldr 	r3, =tiles
-	ldr 	r8, [r3, r1, lsl #2]
+	ldr 	r7, [r3, r1, lsl #2]
 	
 	mov 	r0, x
 	sub 	r1, y, #1
 	bl	GetTileVehicle
-	// DrawPreciseAroundVehicle(tileImgAddrs, vehicleAddrs, startTX, startTY, vehicleTileOffset, vehiclePixelEnd)
+	// DrawPreciseAroundVehicle
+	// (tileImgAddrs, vehicleAddrs, startTX, startTY, vehicleTileOffset, vehiclePixelEnd)
 	afterGetTileVehicle:
 	push 	{x} 
 	mov 	r4, r1
 	mov 	r1, r0
 	mov 	r2, x
 	mov 	r3, y
-	mov 	r0, r8
+	mov 	r0, r7
 	mov 	r5, #57
 	push 	{r0-r5}
 	bl 	DrawPreciseAroundVehicle
-
 	pop 	{x}
-
-	mov	r0, x
-	sub	r1, y, #1
-	bl	ClearChanged
 
 	.unreq	x
 	.unreq	y
-	.unreq	addrs
-	pop	{r4-r8, pc}
+	pop	{r4-r7, pc}
 
 
 //Call this if a grid element contains a car. This will find the car, and return required
