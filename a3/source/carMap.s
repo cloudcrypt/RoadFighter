@@ -44,7 +44,7 @@ GenerateNewCars:
 	mov	r0, #0
 	mov	car, r0, lsl #4
 	// generate rand velocity
-	orr	car, #0b0101	
+	orr	car, #0b0100	
 
 
 	placeCar:
@@ -79,6 +79,7 @@ ShiftCarGrid:
 	velCtr	.req	r8
 	len	.req	r9
 	lenCtr	.req	r10
+	redrwCtr	.req	r11
 	mov 	row, #26
 
 	rowLoop:
@@ -103,41 +104,35 @@ ShiftCarGrid:
 	orr 	car, r0
 	orr	car, r1
 
-	// check vel for this shift cycle
-	// cmp	vel, #0
-	// bne 	hasVelocity
+	//check vel for this shift cycle
+	cmp	vel, #0
+	bne 	hasVelocity
 
-	// //Reset car cell.
-	// mov 	r0, car
+	//Reset car cell.
+	lsr	r0, car, #4
+	ldr	r1, =cars
+	ldr	r0, [r1, r0, lsl #2]
+	ldr	len, [r0]
+
+	mov 	r0, car
+	mov	r1, lane
+	mov 	r2, row
+	mov	r3, len
+	bl 	SetCarCell
+
+	add	r0, lane, #5
+	sub	r1, row, #2
+	bl 	ClearCar
+
+
+	// mov 	r0, #0
 	// mov	r1, lane
 	// mov 	r2, row
+	// add	r2, #1
+	// mov	r3, len
 	// bl 	SetCarCell
 
-	// //Now get the length to update grid
-	// lsr	r0, car, #4
-	// ldr	r1, =cars
-	// ldr	r0, [r1, r0, lsl #2]
-	// ldr	len, [r0]
-
-	// //Ensure car cell we are going to clear is empty
-	// mov 	r0, lane
-	// add 	r1, row, len
-	// bl 	GetCarCell
-	// cmp 	r0, #0
-	// bne 	updateCarPosition 	
-
-	// mov 	r0, lane
-	// add 	r1, row, len	
-	// mov 	r2, #1
-	// bl 	RemoveCarInGrid
-
-	// updateCarPosition:
-	// mov 	r0, lane
-	// add 	r1, row	
-	// mov 	r2, len
-	// bl 	AddCarInGrid
-
-	// b 	ignoreLane2
+	b 	ignoreLane2
 	hasVelocity:
 
 	// get car len
@@ -152,6 +147,19 @@ ShiftCarGrid:
 	mov	r2, row
 	mov	r3, len
 	bl	SetCarCell
+
+	mov	redrwCtr, #0
+	redrawLoop:
+	mov	r2, #3
+	sub	r2, redrwCtr
+	add	r0, lane, #5
+	sub	r1, row, r2
+	cmp	r1, #0
+	blgt	RenderMapTile
+
+	add	redrwCtr, #1
+	cmp	redrwCtr, len
+	blt	redrawLoop
 	
 	// check if car is leaving rendered area of grid
 	add	r0, row, vel
