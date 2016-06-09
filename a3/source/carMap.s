@@ -223,7 +223,19 @@ ShiftCarGrid:
 	mov	r0, car
 	mov	r1, lane
 	mov	r3, len
+	push	{r2}
 	bl	SetCarCell
+	pop	{r2}
+
+	push 	{r0-r4}
+	ldr	r0, =car
+	add	r1, lane, #5
+	sub 	r2, #3
+	mov	r3, #32
+	mov	r4, #57
+	push	{r0, r1, r2, r3, r4}
+	bl	DrawTileImage
+	pop 	{r0-r4}
 
 	ignoreLane2:
 	add	lane, #1
