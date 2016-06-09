@@ -69,14 +69,14 @@ testLoop:
 	bl 	SetCarCell	*/
 	//bl 	GenerateNewCars
 
-	// mov 	r0, #0b0101
-	// mov 	r1, #6
-	// mov 	r2, #8
+	// mov 	r0, #0b0001
+	// mov 	r1, #16
+	// mov 	r2, #4
 	// mov	r3, #2
 	// bl 	SetCarCell
 
-	// mov 	r0, #0b1010
-	// mov 	r1, #6
+	// mov 	r0, #0b0001
+	// mov 	r1, #16
 	// mov 	r2, #2
 	// mov	r3, #2
 	// bl 	SetCarCell
@@ -87,8 +87,8 @@ testLoop:
 inputloop:
 mainLoop:
 
-	//ldr 	r0, =100000 
-	//bl 	Wait
+	ldr 	r0, =100000
+	bl 	Wait
 
 	//bl	GenerateNextRow
 

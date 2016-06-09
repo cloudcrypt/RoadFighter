@@ -118,9 +118,10 @@ ShiftCarGrid:
 	mov 	r2, row
 	mov	r3, len
 	bl 	SetCarCell
-
+novel:
 	//check if there is a car 
-	add	r0, lane, #5
+	//add	r0, lane, #5
+	mov	r0, lane
 	add	r1, row, len
 	bl	GetCarCell
 	cmp	r0, #0
@@ -128,6 +129,7 @@ ShiftCarGrid:
 	subeq	r1, row, #4
 	addeq	r1, len
 	bleq	ClearCar
+
 	b 	ignoreLane2
 
 	hasVelocity:
