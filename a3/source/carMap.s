@@ -39,7 +39,6 @@ GenerateNewCars:
 	b	placeCar
 
 	rightSide:
-
 	// pick a car
 	mov	r0, #0
 	mov	car, r0, lsl #4
@@ -129,10 +128,9 @@ ShiftCarGrid:
 	subeq	r1, row, #4
 	addeq	r1, len
 	bleq	ClearCar
-
 	b 	ignoreLane2
-	hasVelocity:
 
+	hasVelocity:
 	// get car len
 	lsr	r0, car, #4
 	ldr	r1, =cars
@@ -211,20 +209,11 @@ ShiftCarGrid:
 	accidentHandler:
 	// victimCar in r0, victimCar row in r1
 	mov	r2, r1
-	// get victimCar velocity
+	// set car velocity to victimCar velocity
 	and	r0, #0b1111
-
-	// set victimCar velocity to 0101 (1/1)
-	//bic	r0, #0b1111
-	//orr	r0, #0b0101
-	//mov	r1, lane
-	//push	{r2}		// save victimCar row
-	//bl	SetCarCell
-	//pop	{r2}
-
-	// get row above victimCar and shift car to row - car len
 	bic 	car, #0b1111
 	orr 	car, r0
+	// get row above victimCar and shift car to row - car len
 	sub	r2, len
 	mov	r0, car
 	mov	r1, lane
