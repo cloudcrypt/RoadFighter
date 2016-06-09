@@ -87,8 +87,8 @@ testLoop:
 inputloop:
 mainLoop:
 
-	ldr 	r0, =100000 
-	bl 	Wait
+	//ldr 	r0, =100000 
+	//bl 	Wait
 
 	//bl	GenerateNextRow
 
@@ -308,7 +308,7 @@ RenderMap:
 	mov	y, #1
 
 	ldr 	r0, =100000 
-	bl 	Wait
+	//bl 	Wait
 
 	yLoop2:
 

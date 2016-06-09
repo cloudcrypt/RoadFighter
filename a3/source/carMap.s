@@ -120,17 +120,15 @@ ShiftCarGrid:
 	mov	r3, len
 	bl 	SetCarCell
 
+	//check if there is a car 
 	add	r0, lane, #5
-	sub	r1, row, #2
-	bl 	ClearCar
-
-
-	// mov 	r0, #0
-	// mov	r1, lane
-	// mov 	r2, row
-	// add	r2, #1
-	// mov	r3, len
-	// bl 	SetCarCell
+	add	r1, row, len
+	bl	GetCarCell
+	cmp	r0, #0
+	addeq	r0, lane, #5
+	subeq	r1, row, #4
+	addeq	r1, len
+	bleq	ClearCar
 
 	b 	ignoreLane2
 	hasVelocity:
