@@ -53,6 +53,7 @@ GenerateNewCars:
 	ldr	r0, [r1, r0, lsl #2]
 	ldr	r0, [r0]
 
+	mov	r3, r0
 	rsb	r2, r0, #4
 	mov	r1, laneCtr
 	mov	r0, car
@@ -103,52 +104,41 @@ ShiftCarGrid:
 	orr	car, r1
 
 	// check vel for this shift cycle
-	cmp	vel, #0
-	bne 	hasVelocity
+	// cmp	vel, #0
+	// bne 	hasVelocity
 
-	//Reset car cell.
-	mov 	r0, car
-	mov	r1, lane
-	mov 	r2, row
-	bl 	SetCarCell
+	// //Reset car cell.
+	// mov 	r0, car
+	// mov	r1, lane
+	// mov 	r2, row
+	// bl 	SetCarCell
 
-	//Now get the length to update grid
-	lsr	r0, car, #4
-	ldr	r1, =cars
-	ldr	r0, [r1, r0, lsl #2]
-	ldr	len, [r0]
+	// //Now get the length to update grid
+	// lsr	r0, car, #4
+	// ldr	r1, =cars
+	// ldr	r0, [r1, r0, lsl #2]
+	// ldr	len, [r0]
 
-	//Ensure car cell we are going to clear is empty
-	mov 	r0, lane
-	add 	r1, row, len
-	bl 	GetCarCell
-	cmp 	r0, #0
-	bne 	updateCarPosition 	
+	// //Ensure car cell we are going to clear is empty
+	// mov 	r0, lane
+	// add 	r1, row, len
+	// bl 	GetCarCell
+	// cmp 	r0, #0
+	// bne 	updateCarPosition 	
 
-	mov 	r0, lane
-	add 	r1, row, len	
-	mov 	r2, #1
-	bl 	RemoveCarInGrid
+	// mov 	r0, lane
+	// add 	r1, row, len	
+	// mov 	r2, #1
+	// bl 	RemoveCarInGrid
 
-	updateCarPosition:
-	mov 	r0, lane
-	add 	r1, row	
-	mov 	r2, len
-	bl 	AddCarInGrid
+	// updateCarPosition:
+	// mov 	r0, lane
+	// add 	r1, row	
+	// mov 	r2, len
+	// bl 	AddCarInGrid
 
-	b 	ignoreLane2
+	// b 	ignoreLane2
 	hasVelocity:
-
-	// clear car from grid
-	mov	r0, #0
-	mov	r1, lane
-	mov	r2, row
-	bl	SetCarCell
-	
-	// check if car is leaving rendered area of grid
-	add	r0, row, vel
-	cmp	r0, #26
-	bgt	ignoreLane2
 
 	// get car len
 	lsr	r0, car, #4
@@ -156,12 +146,17 @@ ShiftCarGrid:
 	ldr	r0, [r1, r0, lsl #2]
 	ldr	len, [r0]
 
-	push 	{r0-r2}
-	mov 	r0, lane
-	mov 	r1, row	
-	mov 	r2, len
-	bl 	RemoveCarInGrid
-	pop 	{r0-r2}
+	// clear car from grid
+	mov	r0, #0
+	mov	r1, lane
+	mov	r2, row
+	mov	r3, len
+	bl	SetCarCell
+	
+	// check if car is leaving rendered area of grid
+	add	r0, row, vel
+	cmp	r0, #26
+	bgt	ignoreLane2
 
 	// validate car's entire shift path for entire length of car
 	mov	velCtr, #1
@@ -191,6 +186,7 @@ ShiftCarGrid:
 	mov	r0, car
 	mov	r1, lane
 	add	r2, row, vel
+	mov	r3, len
 	bl	SetCarCell
 
 	push 	{r0-r4}
@@ -204,32 +200,29 @@ ShiftCarGrid:
 	bl	DrawTileImage
 	pop 	{r0-r4}
 
-	push 	{r0-r2}
-	mov 	r0, lane
-	add 	r1, row, vel	
-	mov 	r2, len
-	bl 	AddCarInGrid
-	pop 	{r0-r2}
-
 	b	ignoreLane2
 
 	accidentHandler:
 	// victimCar in r0, victimCar row in r1
 	mov	r2, r1
+	// get victimCar velocity
+	and	r0, #0b1111
+
 	// set victimCar velocity to 0101 (1/1)
-	bic	r0, #0b1111
-	orr	r0, #0b0101
-	mov	r1, lane
-	push	{r2}		// save victimCar row
-	bl	SetCarCell
-	pop	{r2}
+	//bic	r0, #0b1111
+	//orr	r0, #0b0101
+	//mov	r1, lane
+	//push	{r2}		// save victimCar row
+	//bl	SetCarCell
+	//pop	{r2}
 
 	// get row above victimCar and shift car to row - car len
 	bic 	car, #0b1111
-	orr 	car, #0b0101
+	orr 	car, r0
 	sub	r2, len
 	mov	r0, car
 	mov	r1, lane
+	mov	r3, len
 	bl	SetCarCell
 
 	ignoreLane2:
@@ -333,22 +326,43 @@ UpdateCollisions:
 // GetCarCell(gridX, gridY) = r0
 .global	GetCarCell
 GetCarCell:
+	cmp 	r1, #26
+	movgt 	r0, #0
+	bgt 	getCarCellEnd
 	add	r0, r1, lsl #4
 	add	r0, r1, lsl #2
 	add	r0, r1, lsl #1
 	ldr	r1, =carGrid
 	ldrb	r0, [r1, r0]
+	getCarCellEnd:
 	bx	lr
 
-// SetCarCell(car, gridX, gridY)
+// SetCarCell(car, gridX, gridY, len)
 .global	SetCarCell
 SetCarCell:
+	push	{r4, lr}
+	len	.req	r4
+	cmp	r2, #26
+	bgt	setCarCellEnd
+	mov	len, r3
+
+	cmp	r0, #0
+	push	{r0-r2}
+	mov	r0, r1
+	mov	r1, r2
+	mov	r2, len
+	bleq	RemoveCarInGrid
+	blne	AddCarInGrid
+	pop	{r0-r2}
+
 	add	r1, r2, lsl #4
 	add	r1, r2, lsl #2
 	add	r1, r2, lsl #1
 	ldr	r2, =carGrid
 	strb	r0, [r2, r1]
-	bx	lr
+	setCarCellEnd:
+	.unreq	len
+	pop	{r4, pc}
 
 // CheckLane(gridX)
 .global	CheckLane
@@ -400,8 +414,8 @@ carGrid:
 	.byte	0
 	.endr
 	.align
-safetyBuffer:
-	.rept	66
-	.byte 	0
-	.endr
-	.align
+// safetyBuffer:
+// 	.rept	66
+// 	.byte 	0
+// 	.endr
+// 	.align
