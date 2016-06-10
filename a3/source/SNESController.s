@@ -114,6 +114,7 @@ wait_loop:						//loop until current time is greater than wait time
 
 //Read sns gets all of the buttons snes controller
 //Returns 16 bits in lower part of r0 representing button presses
+.globl Read_SNES
 Read_SNES:				
 
 	push 	{r4-r5,lr}
