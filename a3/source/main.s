@@ -661,7 +661,7 @@ DrawTileImage:
 	bl	DrawImage
 	pop	{pc}
 
-
+.global	DrawImage
 // DrawImage(imgAddrs, startX, startY, dimX, dimY)
 DrawImage:
 	pop	{r0, r1, r2, r3, r4}
@@ -1009,11 +1009,11 @@ DrawChar:
 .align 4
 testString:
 	.asciz	"Fuel:"
-.align 1
-clearFuel:
-	.asciz "   "
 fuelAmount:
 	.int 	3	
 	.asciz 	""
+
+font:	.incbin	"font.bin"
+
 
 	

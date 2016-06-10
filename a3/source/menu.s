@@ -53,11 +53,7 @@ drawMenu:
 		ldreq 	r0, =menuQuit
 		ldrne 	r0, =menuStart
 		bl 		menuSelection	
-<<<<<<< HEAD
 		ldr 	r0, =330000 // delay to make selection easier
-=======
-		ldr 	r0, =330000
->>>>>>> fuel
 		bl 		Wait
 		b 		awaitSelection
 
@@ -74,13 +70,8 @@ menuSelection:
 	ldr r2, =400
 	mov r3, #255
 	mov r4, #82
-<<<<<<< HEAD
 	push {r0, r1, r2, r3, r4}
 	bl DrawImage
-=======
-	//push {r0, r1, r2, r3, r4}
-	//bl DrawImage
->>>>>>> fuel
 
 	pop {r4, pc}
 
@@ -88,16 +79,12 @@ menuSelection:
 .section .data
 .align 2
 
-<<<<<<< HEAD
-menuQuit: 
-.ascii "CyCyCyCyCyCyCyCyCyCyCyCyCyCycycyCyCyCyCyCyCyCyCyCyCycyCyCyCyCy"
-=======
+
 menuStart:
 menuQuit: 
 titleImage:
 /*
 .ascii "CyCyCyCyCyCyCyCyCyCyCyCyCyCycycyCyCyCyCyCyCyCyCyCyCycyCyCyCyCy" 
->>>>>>> fuel
 .ascii "CyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCycyCyCyCyCyCyCyCy"
 .ascii "CyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCyCy"
 .ascii "Cy\311\2224\3054\3054\3054\3054\3054\3054\3054\3054\3054\305"
@@ -31890,10 +31877,5 @@ titleImage: // 640 x 96
 .ascii "\2461\2461\2461\2461\2461\2461\2461\2461\2461\2461\2461\2461"
 .ascii "\2461\2461\2461\2461\2461\2461\2461\2461\2461\2461\2461\2461"
 .ascii "\2461\2461\2461\2461\2461\2461\2461\2461\2461\2461\2461\2461"
-<<<<<<< HEAD
 .ascii "\2461\2461\2461\2461\2461\2461"
-=======
-.ascii "\2461\2461\2461\2461\2461\2461"
-
 */
->>>>>>> fuel
