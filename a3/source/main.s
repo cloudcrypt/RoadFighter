@@ -206,6 +206,7 @@ break:
 	streq 	r2, [r1] 
 
 	ldr	r0, =car
+	//add	r0, #8
 	ldr	r1, =playerPosX
 	ldr 	r2, =playerPosY
 	ldr	r1, [r1]
@@ -423,7 +424,7 @@ RenderVehicleTile:
 	mov 	r2, x
 	mov 	r3, y
 	mov 	r0, r7
-	mov 	r5, #57
+	ldr	r5, [r0, #-4]
 	push 	{r0-r5}
 	bl 	DrawPreciseAroundVehicle
 	pop 	{x}
@@ -593,7 +594,7 @@ DrawPreciseAroundVehicle:
 	beq 	noVehicle
 
 	ldrh 	r0, [vehImgAddrs]
-	cmp 	r0, #0
+	cmp 	r0, #-1
 	bne 	yesVehicle 		
 
 	noVehicle:
@@ -602,6 +603,7 @@ DrawPreciseAroundVehicle:
 	add 	r0, x, xOffset
 	add 	r1, y, yOffset	
 	ldrh 	r2, [tileImgAddrs]
+	//cmp	r2, #0
 	bl 	DrawPixel
 	pop 	{r3}
 

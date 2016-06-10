@@ -31,7 +31,7 @@ GenerateNewCars:
 	bgt	rightSide
 
 	// pick a car, any car!
-	mov	r0, #0
+	mov	r0, #3
 	mov	car, r0, lsl #4
 	// generate rand velocity
 	orr	car, #0b1010
@@ -40,7 +40,7 @@ GenerateNewCars:
 
 	rightSide:
 	// pick a car
-	mov	r0, #0
+	mov	r0, #8
 	mov	car, r0, lsl #4
 	// generate rand velocity
 	orr	car, #0b0100	
