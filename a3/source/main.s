@@ -594,7 +594,7 @@ DrawPreciseAroundVehicle:
 	beq 	noVehicle
 
 	ldrh 	r0, [vehImgAddrs]
-	cmp 	r0, #-1
+	cmp 	r0, #0
 	bne 	yesVehicle 		
 
 	noVehicle:
