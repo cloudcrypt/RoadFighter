@@ -210,22 +210,22 @@ ldrbreak:
 	// bl	DrawTileImage
 	// pop 	{r4}
 
-	push 	{r4}
-	ldr	r0, =car
-	add	r1, lane, #5
-	sub 	r2, row, #3
-	add 	r2, vel
-	mov	r3, #32
-	mov	r4, #57
-	push	{r0, r1, r2, r3, r4}
-	bl	DrawTileImage
-	pop 	{r4}
-
-	// mov	r0, car
+	// push 	{r4}
+	// ldr	r0, =car1
 	// add	r1, lane, #5
-	// sub	r2, row, #3
-	// add	r2, vel
-	// bl	RenderCar
+	// sub 	r2, row, #3
+	// add 	r2, vel
+	// mov	r3, #32
+	// mov	r4, #57
+	// push	{r0, r1, r2, r3, r4}
+	// bl	DrawTileImage
+	// pop 	{r4}
+
+	mov	r0, car
+	add	r1, lane, #5
+	sub	r2, row, #3
+	add	r2, vel
+	bl	RenderCar
 
 	b	ignoreLane2
 
@@ -245,20 +245,20 @@ ldrbreak:
 	bl	SetCarCell
 	pop	{r2}
 
-	push 	{r0-r4}
-	ldr	r0, =car
-	add	r1, lane, #5
-	sub 	r2, #3
-	mov	r3, #32
-	mov	r4, #57
-	push	{r0, r1, r2, r3, r4}
-	bl	DrawTileImage
-	pop 	{r0-r4}
-
-	// mov	r0, car
+	// push 	{r0-r4}
+	// ldr	r0, =car1
 	// add	r1, lane, #5
-	// sub	r2, #3
-	// bl	RenderCar
+	// sub 	r2, #3
+	// mov	r3, #32
+	// mov	r4, #57
+	// push	{r0, r1, r2, r3, r4}
+	// bl	DrawTileImage
+	// pop 	{r0-r4}
+
+	mov	r0, car
+	add	r1, lane, #5
+	sub	r2, #3
+	bl	RenderCar
 
 	ignoreLane2:
 	add	lane, #1
@@ -278,6 +278,7 @@ ldrbreak:
 	pop	{r4-r10, pc}
 
 // RenderCar(car, startTileX, startTileY)
+.global RenderCar
 RenderCar:
 	push	{r4-r7, lr}
 	x	.req	r5
@@ -476,8 +477,3 @@ carGrid:
 	.byte	0
 	.endr
 	.align
-// safetyBuffer:
-// 	.rept	66
-// 	.byte 	0
-// 	.endr
-// 	.align

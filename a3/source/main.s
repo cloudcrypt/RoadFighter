@@ -484,7 +484,7 @@ GetTileVehicle:
 	ldr 	r2, =cars
 	add 	r2, r0, lsl #2
 	ldr 	r0, [r2]
-	add 	r0, #4
+	add 	r0, #8
 	sub 	r1, originalY, y	//This is the tile offset
 
 	.unreq 	x
