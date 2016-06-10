@@ -195,7 +195,22 @@ novel:
 	mov	r3, len
 	bl	SetCarCell
 
-	push 	{r0-r4}
+ldrbreak:
+	// push 	{r4}
+	// lsr	r0, car, #4
+	// ldr	r1, =cars
+	// ldr	r0, [r1, r0, lsl #2]
+	// add	r0, #8
+	// add	r1, lane, #5
+	// sub 	r2, row, #3
+	// add 	r2, vel
+	// mov	r3, #32
+	// ldr	r4, [r0, #-4]
+	// push	{r0, r1, r2, r3, r4}
+	// bl	DrawTileImage
+	// pop 	{r4}
+
+	push 	{r4}
 	ldr	r0, =car
 	add	r1, lane, #5
 	sub 	r2, row, #3
@@ -204,7 +219,13 @@ novel:
 	mov	r4, #57
 	push	{r0, r1, r2, r3, r4}
 	bl	DrawTileImage
-	pop 	{r0-r4}
+	pop 	{r4}
+
+	// mov	r0, car
+	// add	r1, lane, #5
+	// sub	r2, row, #3
+	// add	r2, vel
+	// bl	RenderCar
 
 	b	ignoreLane2
 
@@ -234,6 +255,11 @@ novel:
 	bl	DrawTileImage
 	pop 	{r0-r4}
 
+	// mov	r0, car
+	// add	r1, lane, #5
+	// sub	r2, #3
+	// bl	RenderCar
+
 	ignoreLane2:
 	add	lane, #1
 	cmp	lane, #22
@@ -250,6 +276,33 @@ novel:
 	.unreq	len
 	.unreq	lenCtr
 	pop	{r4-r10, pc}
+
+// RenderCar(car, startTileX, startTileY)
+RenderCar:
+	push	{r4-r7, lr}
+	x	.req	r5
+	y	.req	r6
+	struct	.req	r7
+	mov	x, r1
+	mov	y, r2
+
+	lsr	r0, #4
+	ldr	struct, =cars
+	ldr	struct, [struct, r0, lsl #2]
+
+	add	r0, struct, #8
+	mov	r1, x
+	mov 	r2, y
+	mov	r3, #32
+	ldr	r4, [struct, #4]
+	push	{r0, r1, r2, r3, r4}
+	bl	DrawTileImage
+
+	.unreq	x
+	.unreq	y
+	.unreq	struct
+	pop	{r4-r7, pc}
+
 
 //Takes a tile position and length, and removes the car values from the car grid
 RemoveCarInGrid:
