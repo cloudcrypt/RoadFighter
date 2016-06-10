@@ -7,5 +7,14 @@ Tile Types:
  5: White Dash Top
  6: Road Edge Left
  7: Road Edge Right
- 8: Grass with Bush
+ 8: Grass with Bush1
+ 9: Grass with Bush2
+10: Grass with Bush3
+11: Grass with Bush4
+12: Grass with Bush5
+13: Grass with Bush6
+14: Grass with Bush7
+15: Grass with Bush8
+16: Finish
+
 

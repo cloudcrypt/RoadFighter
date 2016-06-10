@@ -34,9 +34,8 @@ InitializeMap:
 
 	cmp	tileType, #0
 	bne	notGrass
-	mov	r0, #8
-	mov	r1, #1
-	bl	RandomizeTileType
+	mov	r0, #1
+	bl	GetRandomBush
 	mov	tileType, r0
 
 	notGrass:
@@ -105,6 +104,87 @@ InitializeMap:
 	.unreq	tileType
 	pop	{r4-r10, pc}
 
+.global	GenerateFinishLine
+GenerateFinishLine:
+	push	{r4-r9, lr}
+	x		.req	r4
+	y		.req	r5
+	addrs		.req	r6
+	leftEdge 	.req	r7
+	rightEdge 	.req	r8
+	tileType	.req	r9
+	ldr	addrs, =nextRow
+	ldr	r0, =leftEdgeSize
+	ldr	leftEdge, [r0]
+	ldr	r0, =rightEdgeSize
+	ldr	rightEdge, [r0]
+	rsb	rightEdge, #32
+	mov	x, #0
+
+	finishLineRowLoop2:
+	mov	tileType, #16
+
+	cmp	x, rightEdge
+	movlt	tileType, #16
+
+	cmp	x, leftEdge
+	movlt	tileType, #16
+	moveq	tileType, #16
+
+	cmp	tileType, #0
+	bne	finishLineNotGrass2
+	mov	r0, #1
+	bl	GetRandomBush
+	mov	tileType, r0
+
+	finishLineNotGrass2:
+	cmp	x, #15
+	moveq	tileType, #16
+
+	cmp	x, #16
+	moveq	tileType, #16
+
+	sub 	r2, rightEdge, #1
+	cmp 	x, r2
+	moveq	tileType, #16
+
+	cmp	x, #9
+	cmpne	x, #21
+	bne	finishLinePrepareTile2	
+
+	ldrb	r2, [addrs]
+	lsr	r2, #3
+	cmp 	r2, #0
+	bne	finishLineNotFirstGeneration
+
+	cmp 	x, #9
+	moveq	tileType, #16
+	cmp 	x, #21
+	moveq 	tileType, #16
+	b 	finishLinePrepareTile2
+
+	finishLineNotFirstGeneration:
+	cmp	r2, #5
+	moveq	tileType, #16
+	movne	tileType, #16	
+
+	finishLinePrepareTile2:
+	lsl	tileType, #3
+
+	strb	tileType, [addrs], #1
+
+	add	x, #1
+	cmp	x, #32
+	bne	finishLineRowLoop2
+
+	.unreq	x
+	.unreq	y
+	.unreq	addrs
+	.unreq	leftEdge
+	.unreq	rightEdge
+	.unreq	tileType
+	pop	{r4-r9, pc}
+
 .global	GenerateNextRow
 GenerateNextRow:
 	push	{r4-r9, lr}
@@ -134,9 +214,8 @@ GenerateNextRow:
 
 	cmp	tileType, #0
 	bne	notGrass2
-	mov	r0, #8
-	mov	r1, #1
-	bl	RandomizeTileType
+	mov	r0, #1
+	bl	GetRandomBush
 	mov	tileType, r0
 
 	notGrass2:
@@ -258,22 +337,55 @@ ShiftMap:
 	.unreq	higherRow
 	pop	{r4-r10, pc}
 
-.global	RandomizeTile
-// RandomizeTile(value, chance)
-// RandomizeTile(r0, r1)
-// return(r0)
-RandomizeTileType:
-	push	{r4-r5, lr}
-	mov	r4, r0
-	mov	r5, r1
+// .global	RandomizeTile
+// // RandomizeTile(value, chance)
+// // RandomizeTile(r0, r1)
+// // return(r0)
+// RandomizeTileType:
+// 	push	{r4-r5, lr}
+// 	mov	r4, r0
+// 	mov	r5, r1
 
-	bl	RandomNumber
+// 	bl	RandomNumber
 
-	cmp	r0, r5
-	movge	r0, #0
-	movlt	r0, r4	
+// 	cmp	r0, r5
+// 	movge	r0, #0
+// 	movlt	r0, r4	
 
-	pop	{r4-r5, pc}
+// 	pop	{r4-r5, pc}
+
+
+// input: r0 - chance
+// return: r0 - tile offset or 0 if no bush
+.global GetRandomBush
+GetRandomBush:
+	chance 	.req 	r4
+
+	push 	{r4, lr}
+	mov 	chance, r0
+
+	bl 	RandomNumber
+	cmp 	r0, chance
+	movge 	r0, #0
+	bge 	EndGetRandomBush
+
+	bl  	RandomNumber
+	
+	BushSelect:
+	cmp 	r0, #8
+	blt 	ReturnBush
+	sub 	r0, #8
+	b 	BushSelect
+	
+	ReturnBush:
+	add 	r0, #8
+
+	EndGetRandomBush:
+
+	.unreq 	chance
+
+	pop	{r4, pc}
+
 
 .global SetChanged
 // setChanged(gridX, gridY)
