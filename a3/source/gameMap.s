@@ -215,6 +215,15 @@ GenerateNextRow:
 	cmp	x, rightEdge
 	movlt	tileType, #1
 
+	bge 	skipFuel
+	//////////////////// FUEL RANDOM /////////////////////////////
+	// add random  fuel
+	bl 	RandomNumber
+	cmp 	r0, #1
+	movlt 	tileType, #17
+
+////////////////// end of fuel random //////////////////////
+	skipFuel:
 	cmp	x, leftEdge
 	movlt	tileType, #0
 	moveq	tileType, #6

@@ -156,6 +156,8 @@ InitialRenderMap:
 	//push	{r0, r1, r2, r3, r4}
 	bl	DrawPreciseImageMod
 
+	 bl 	PrintFuel
+
 	mov	r0, x
 	sub	r1, y, #1
 	bl	ClearChanged
