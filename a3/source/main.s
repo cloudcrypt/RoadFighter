@@ -104,165 +104,20 @@ testLoop:
 	//bl	Wait
 
 inputloop:
-mainLoop:
 
 	ldr 	r0, =100000
 	bl 	Wait
 
-	//bl	GenerateNextRow
-
-	// ldr 	r2, =playerPosX
-	// ldr 	r3, =playerPosY
-	// ldr 	r0, [r2]
-	// add	r0, #1
-	// ldr 	r1, [r3]
-	// sub	r1, #1
-	// bl	SetChanged
-
-	ldr 	r2, =playerPosX
-	ldr 	r3, =playerPosY
-	ldr 	r0, [r2]
-	ldr 	r1, [r3]
-	bl 	ClearCar
-	ldr 	r0, [r2]
-	ldr 	r1, [r3]
-	add 	r1, #1
-	bl 	ClearCar
-
 	bl	ShiftMap
 	bl 	ShiftCarGrid
 
-	ldr 	r2, =playerPosX
-	ldr 	r3, =playerPosY
-	ldr 	r0, [r2]
-	ldr 	r1, [r3]
-	bl 	SetCar
-	ldr 	r0, [r2]
-	ldr 	r1, [r3]
-	add 	r1, #1
-	bl 	SetCar
-
-break2:
+	bl 	UpdatePlayerCar
 	bl	RenderMap
-
-	//b	mainLoop
-
-	bl 	UpdateSNESInput
-
-	mov 	r4, r0
-
 
 	bl	GenerateNextRow
 	bl 	GenerateNewCars
 	
-	ldr	r1, =0xFFFF
-	cmp	r0, r1
-	beq	noChange
-break:
-	ldr 	r2, =playerPosX
-	ldr 	r3, =playerPosY
-	ldr 	r0, [r2]
-	ldr 	r1, [r3]
-	//cmp	r1, #0
-	//beq	setChangedInNextRow
-	sub	r1, #1
-	bl	SetChanged
-	ldr 	r0, [r2]
-	ldr 	r1, [r3]
-	bl	SetChanged
-	ldr 	r0, [r2]
-	ldr 	r1, [r3]
-	sub	r1, #1
-	bl	ClearCar
-	ldr 	r0, [r2]
-	ldr 	r1, [r3]
-	bl	ClearCar
-
-
-	// setChangedInNextRow:
-	// ldr 	r1, [r3]
-	// cmp	r1, #0
-	// ldreq 	r1, [r2]
-	// ldreq	r5, =nextRow
-	// ldreqb	r0, [r5, r1]
-
-	// //mov	r2, #0b10
-	// orreq	r0, #0b10
-	// streqb	r0, [r5, r1]
-
-	// ldr 	r0, [r2]
-	// ldr 	r1, [r3]
-	// add	r1, #1
-	// bl	SetChanged
-	noChange:
-	mov	r0, r4
-
-	tst	r0, #1
-	ldreq 	r1, =playerPosY
-	ldreq 	r2, [r1]
-	addeq 	r2, #1
-	streq 	r2, [r1]  
-
-	ldr 	r1, =0x100
-	tst	r0, r1
-	ldreq 	r1, =playerPosY
-	ldreq 	r2, [r1]
-	subeq 	r2, #1
-	streq 	r2, [r1] 
-
-	ldr 	r1, =0x80
-	tst	r0, r1
-	ldreq 	r1, =playerPosX
-	ldreq 	r2, [r1]
-	addeq 	r2, #1
-	streq 	r2, [r1] 
-
-	ldr 	r1, =0x40
-	tst	r0, r1
-	ldreq 	r1, =playerPosX
-	ldreq 	r2, [r1]
-	subeq 	r2, #1
-	streq 	r2, [r1] 
-
-	ldr	r0, =car
-	//add	r0, #8
-	ldr	r1, =playerPosX
-	ldr 	r2, =playerPosY
-	ldr	r1, [r1]
-	ldr 	r2, [r2]
-	add 	r2, #1
-	mov	r3, #32
-	mov	r4, #57
-	push	{r0, r1, r2, r3, r4}
-	bl	DrawTileImage
-
 	b 	inputloop
-
-
-	// x	.req	r4
-	// y	.req	r5
-	// imgAddrs	.req	r6
-	// ldr	imgAddrs, =img
-	// mov	y, #100
-
-	// yLoop:
-	// mov	x, #100
-
-	// xLoop:
-
-	// mov	r0, x
-	// mov	r1, y
-	// ldrh	r2, [imgAddrs], #2
-	// bl	DrawPixel
-
-	// add	x, #1
-	// cmp	x, #800
-	// bne	xLoop
-
-	// add	y, #1
-	// cmp	y, #700
-	// bne	yLoop
-
 
     
 haltLoop$:
@@ -636,7 +491,8 @@ DrawPreciseAroundVehicle:
 	cmp 	x, #32
 	bne 	xLoop4
 
-	sub 	vehicleRows, #1
+	cmp 	vehicleRows, #0
+	subne 	vehicleRows, #1
 	add 	y, #1
 	cmp 	y, #32
 	bne 	yLoop4	
