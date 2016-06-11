@@ -19,7 +19,7 @@ GenerateNewCars:
 	cmp	r0, #1
 	beq	ignoreLane
 
-	//bl	RandomNumber
+	bl	RandomNumber
 	//cmp	r0, #2
 	//bge	ignoreLane
 
@@ -27,7 +27,7 @@ GenerateNewCars:
 	cmp	r0, #1
 	bge	ignoreLane*/
 
-	bl	RandomNumber
+	//bl	RandomNumber
 
 	mov	car, #0
 	cmp	laneCtr, #10
@@ -41,6 +41,7 @@ GenerateNewCars:
 	mov	r0, #1
 	bl	GetRandCar
 	mov	car, r0
+	//mov	car, #0b00001010
 
 	// // pick a car, any car!
 	// mov	r0, #3
@@ -50,19 +51,21 @@ GenerateNewCars:
 	b	placeCar
 
 	rightSide:
-	// // pick a car
-	// mov	r0, #8
-	// mov	car, r0, lsl #4
-	// // generate rand velocity
-	// orr	car, #0b0100
 	ldr	r1, =rightCarProb
 	ldr	r1, [r1]
 	cmp	r0, r1
 	bge	ignoreLane
 
+	// // pick a car
+	// mov	r0, #8
+	// mov	car, r0, lsl #4
+	// // generate rand velocity
+	// orr	car, #0b0100
+
 	mov	r0, #0
 	bl	GetRandCar
 	mov	car, r0	
+	//mov	car, #0b00000001
 
 
 	placeCar:
@@ -574,9 +577,9 @@ GetRandVelocity:
 	movlt	r0, #0b0101
 	blt	getRandVelocityEnd
 
-	cmp	r1, #32
-	movlt	r0, #0b0110
-	blt	getRandVelocityEnd
+	//cmp	r1, #32
+	mov	r0, #0b0110
+	b	getRandVelocityEnd
 
 	getDownVel:
 
@@ -588,8 +591,8 @@ GetRandVelocity:
 	movlt	r0, #0b1010
 	blt	getRandVelocityEnd
 
-	cmp	r1, #32
-	movlt	r0, #0b1011
+	//cmp	r1, #32
+	mov	r0, #0b1011
 
 	getRandVelocityEnd:
 	.unreq	dir
