@@ -507,8 +507,13 @@ leftEdgeSize:
 .global	rightEdgeSize
 rightEdgeSize:
 	.int	5
+
 .global	grid
 grid:	.rept	736
+	.byte	0
+	.endr
+	.align
+bsbuf1:	.rept	128
 	.byte	0
 	.endr
 	.align

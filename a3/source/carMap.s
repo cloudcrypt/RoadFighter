@@ -152,6 +152,8 @@ novel:
 	sub	r2, redrwCtr
 	add	r0, lane, #5
 	sub	r1, row, r2
+	cmp 	r1, #23
+	bgt 	underGrid
 	cmp	r1, #0
 	blgt	RenderMapTile
 
@@ -159,6 +161,7 @@ novel:
 	cmp	redrwCtr, len
 	blt	redrawLoop
 	
+	underGrid:
 	// check if car is leaving rendered area of grid
 	add	r0, row, vel
 	cmp	r0, #26
