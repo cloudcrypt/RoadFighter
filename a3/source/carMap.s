@@ -325,7 +325,7 @@ RemoveCarInGrid:
 	//If we are outside the grid, do not modify the grid
 	cmp 	y, #0 		
 	blt 	checkLoop
-	cmp 	y, #31
+	cmp 	y, #23
 	popge 	{pc}
 
 	push 	{r0-r3}
@@ -364,7 +364,7 @@ AddCarInGrid:
 	//If we are outside the grid, do not modify the grid
 	cmp 	y, #0 		
 	blt 	checkLoop1
-	cmp 	y, #31
+	cmp 	y, #23
 	popge 	{pc}
 
 	push 	{r0-r3}
