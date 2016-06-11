@@ -113,13 +113,14 @@ inputloop:
 
 	bl 	UpdatePlayerCar
 	bl	RenderMap
+	bl 	CheckForCollision
 
 	bl	GenerateNextRow
 	bl 	GenerateNewCars
 	
 	b 	inputloop
 
-    
+.global 	haltLoop$
 haltLoop$:
 	b	haltLoop$
 

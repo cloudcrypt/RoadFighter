@@ -118,17 +118,22 @@ ShiftCarGrid:
 	mov 	r2, row
 	mov	r3, len
 	bl 	SetCarCell
-novel:
+
 	//check if there is a car 
 	//add	r0, lane, #5
 	mov	r0, lane
 	add	r1, row, len
 	bl	GetCarCell
 	cmp	r0, #0
-	addeq	r0, lane, #5
-	subeq	r1, row, #4
-	addeq	r1, len
-	bleq	ClearCar
+	bne 	ignoreLane2
+
+	add	r0, lane, #5
+	sub	r1, row, #4
+	add	r1, len
+	push	{r0,r1}
+	bl	ClearCar
+	pop 	{r0,r1}
+	bl 	ClearCollideable
 
 	b 	ignoreLane2
 
@@ -334,6 +339,9 @@ RemoveCarInGrid:
 	push 	{r0-r3}
 	bl 	SetChanged
 	pop 	{r0-r3}
+	push 	{r0-r3}
+	bl 	ClearCollideable
+	pop 	{r0-r3}
 
 	checkLoop:
 	add 	y, #1
@@ -373,6 +381,9 @@ AddCarInGrid:
 	push 	{r0-r3}
 	bl 	SetChanged
 	pop 	{r0-r3}
+	push 	{r0-r3}
+	bl 	SetCollideable
+	pop 	{r0-r3}
 
 	checkLoop1:
 	add 	y, #1
@@ -385,9 +396,6 @@ AddCarInGrid:
 	.unreq 	len
 
 	pop 	{pc}
-
-.global	SetCollisions
-UpdateCollisions:
 
 // GetCarCell(gridX, gridY) = r0
 .global	GetCarCell

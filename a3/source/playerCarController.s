@@ -122,3 +122,31 @@ InterpretInput:
 	noChange:
 
 	pop 	{pc}
+
+.global CheckForCollision
+CheckForCollision:
+
+	push 	{lr}
+
+	ldr	r0, =playerPosX
+	ldr 	r1, =playerPosY
+	ldr	r0, [r0]
+	ldr 	r1, [r1]
+
+	// offset = (y * 32) + x
+	add	r2, r0, r1, lsl #5
+	add 	r1, #1
+	add 	r3, r0, r1, lsl #5
+
+	ldr	r1, =grid
+	ldrb	r0, [r1, r2]
+	ldrb 	r1, [r1, r3] 
+
+	mov 	r2, #0b100
+	tst	r2, r0
+	bne 	haltLoop$
+
+	tst	r2, r1
+	bne 	haltLoop$
+
+	pop 	{pc}

@@ -73,8 +73,15 @@ InitializeMap:
 	lsl	tileType, #3
 	cmp	r0, #0
 	orreq	tileType, #0b100
+	//If bush set to collide
 	cmp	r0, #8
-	orreq	tileType, #0b100
+	blt 	noBush
+	cmp 	r0, #15
+	bgt 	noBush
+
+	orr	tileType, #0b100
+
+	noBush:
 
 	strb	tileType, [addrs], #1
 
@@ -326,8 +333,6 @@ ShiftMap:
 	cmp	row, #-1
 	bne	rowLoop
 
-
-
 	.unreq	addrs
 	.unreq	row
 	.unreq	col
@@ -480,20 +485,50 @@ ClearCar:
 // SetCollideable(gridX, gridY)
 .global	SetCollideable
 SetCollideable:
-	push	{lr}
 
+	push	{r4, r5, lr}
+	cmp	r1, #0
+	blt	setCollideableEnd
+	cmp 	r1, #23
+	bgt 	setCollideableEnd
 
-	pop		{pc}
+	// offset = (y * 32) + x
+	add	r4, r0, r1, lsl #5
+
+	ldr	r5, =grid
+	ldrb	r0, [r5, r4]
+
+	mov	r1, #0b100
+	orr	r0, r1
+
+	strb	r0, [r5, r4]
+
+	setCollideableEnd:
+	pop	{r4, r5, pc}
 
 // ClearCollideable(gridX, gridY)
 .global	ClearCollideable
 ClearCollideable:
-	push	{lr}
 
+	push	{r4, r5, lr}
+	cmp	r1, #0
+	blt	clearCollideableEnd
+	cmp 	r1, #23
+	bgt 	clearCollideableEnd
 
-	pop		{pc}
+	// offset = (y * 32) + x
+	add	r4, r0, r1, lsl #5
 
-	
+	ldr	r5, =grid
+	ldrb	r0, [r5, r4]
+
+	mov	r1, #0b100
+	bic	r0, r1
+
+	strb	r0, [r5, r4]
+
+	clearCollideableEnd:
+	pop	{r4, r5, pc}
 
 
 .section .data
