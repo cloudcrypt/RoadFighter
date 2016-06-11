@@ -19,31 +19,50 @@ GenerateNewCars:
 	cmp	r0, #1
 	beq	ignoreLane
 
-	bl	RandomNumber
-	cmp	r0, #2
-	bge	ignoreLane
+	//bl	RandomNumber
+	//cmp	r0, #2
+	//bge	ignoreLane
+
 	/*bl	RandomNumber
 	cmp	r0, #1
 	bge	ignoreLane*/
+
+	bl	RandomNumber
 
 	mov	car, #0
 	cmp	laneCtr, #10
 	bgt	rightSide
 
-	// pick a car, any car!
-	mov	r0, #3
-	mov	car, r0, lsl #4
-	// generate rand velocity
-	orr	car, #0b1010
+	ldr	r1, =leftCarProb
+	ldr	r1, [r1]
+	cmp	r0, r1
+	bge	ignoreLane
 
+	mov	r0, #1
+	bl	GetRandCar
+	mov	car, r0
+
+	// // pick a car, any car!
+	// mov	r0, #3
+	// mov	car, r0, lsl #4
+	// // generate rand velocity
+	// orr	car, #0b1010
 	b	placeCar
 
 	rightSide:
-	// pick a car
-	mov	r0, #8
-	mov	car, r0, lsl #4
-	// generate rand velocity
-	orr	car, #0b0100	
+	// // pick a car
+	// mov	r0, #8
+	// mov	car, r0, lsl #4
+	// // generate rand velocity
+	// orr	car, #0b0100
+	ldr	r1, =rightCarProb
+	ldr	r1, [r1]
+	cmp	r0, r1
+	bge	ignoreLane
+
+	mov	r0, #0
+	bl	GetRandCar
+	mov	car, r0	
 
 
 	placeCar:
@@ -470,6 +489,112 @@ CheckLane:
 	mov	r0, r2
 	.unreq	x
 	pop	{r4, pc}
+
+// GetRandCar(dir (0 == normal, 1 == down)) = carByte
+// GetRandCar(r0) = r0
+GetRandCar:
+	push	{r4-r6, lr}
+	dir	.req	r4
+	car	.req	r5
+	rand	.req	r6
+	mov	dir, r0
+	mov	car, #0
+
+	bl	RandomNumber
+	mov	rand, r0
+
+	ldr	r1, =oneProb
+	ldr	r1, [r1]
+	cmp	rand, r1
+	movlt	car, #12
+	blt	getRandCarEnd
+
+	ldr	r1, =fourProb
+	ldr	r1, [r1]
+	cmp	rand, r1
+	movlt	car, #14
+	blt	getRandCarEnd
+
+	ldr	r1, =threeProb
+	ldr	r1, [r1]
+	cmp	rand, r1
+	bge	twoCar
+
+	bl	RandomNumber
+	cmp	r0, #16
+	movlt	car, #8
+	blt	getRandCarEnd
+	//cmp	r0, #32
+	mov	car, #10
+	b	getRandCarEnd
+
+	twoCar:
+	// ldr	r1, =twoProb
+	// ldr	r1, [r1]
+	// cmp	rand, r1
+	bl	RandomNumber
+	cmp	r0, #11
+	movlt	car, #2
+	blt	getRandCarEnd
+	cmp	r0, #21
+	movlt	car, #4
+	blt	getRandCarEnd
+	//cmp	r0, #32
+	mov	car, #6
+
+	getRandCarEnd:
+	cmp	dir, #1
+	addeq	car, #1
+	lsl	car, #4
+	mov	r0, dir
+	bl	GetRandVelocity
+	orr	r0, car, r0
+	.unreq	dir
+	.unreq	car
+	.unreq	rand
+	pop	{r4-r6, pc}
+
+// GetRandVelocity(dir (0 == normal, 1 == down)) = altVel[3:2]vel[1:0]
+// GetRandVelocity(r0) = r0
+GetRandVelocity:
+	push	{r4, lr}
+	dir	.req	r4
+	mov	dir, r0
+	bl	RandomNumber
+	mov	r1, r0
+	mov	r0, #0
+	cmp	dir, #1
+	beq	getDownVel
+
+	cmp	r1, #11
+	movlt	r0, #0b0100
+	blt	getRandVelocityEnd
+
+	cmp	r1, #21
+	movlt	r0, #0b0101
+	blt	getRandVelocityEnd
+
+	cmp	r1, #32
+	movlt	r0, #0b0110
+	blt	getRandVelocityEnd
+
+	getDownVel:
+
+	cmp	r1, #11
+	movlt	r0, #0b1001
+	blt	getRandVelocityEnd
+
+	cmp	r1, #21
+	movlt	r0, #0b1010
+	blt	getRandVelocityEnd
+
+	cmp	r1, #32
+	movlt	r0, #0b1011
+
+	getRandVelocityEnd:
+	.unreq	dir
+	pop	{r4, pc}
+
 
 
 .section .data
