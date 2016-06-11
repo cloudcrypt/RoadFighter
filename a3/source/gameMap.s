@@ -207,7 +207,48 @@ GenerateNextRow:
 
 	cmp	x, rightEdge
 	movlt	tileType, #1
+	bge 	skipFuel
+//////////////////// FUEL RANDOM /////////////////////////////
+	// add random  fuel
+	ldr 	r0, =playerFuel
+	ldr 	r0, [r0]
+	cmp 	r0, #20
+	blt 	lotsOfFuel
+	cmp 	r0, #50
+	blt 	mediumFuel
+	cmp 	r0, #75
+	blt 	lowFuel
 
+	bl 	RandomNumber
+	cmp 	r0, #1
+	bllt 	RandomNumber
+	cmplt 	r0, #0
+	movlt 	tileType, #17
+	b skipFuel
+
+	lowFuel:
+	bl 	RandomNumber
+	cmp 	r0, #1
+	bllt 	RandomNumber
+	cmplt 	r0, #4
+	movlt 	tileType, #17
+	b skipFuel
+
+	mediumFuel:
+	bl RandomNumber
+	cmp 	r0, #1
+	bl RandomNumber
+	cmp 	r0, #1
+	movlt 	tileType, #17
+	b 	skipFuel
+
+	lotsOfFuel:
+	bl 	RandomNumber
+	cmp 	r0, #1
+	movlt 	tileType, #17
+
+////////////////// end of fuel random //////////////////////
+	skipFuel:
 	cmp	x, leftEdge
 	movlt	tileType, #0
 	moveq	tileType, #6

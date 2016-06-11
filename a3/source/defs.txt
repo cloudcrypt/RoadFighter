@@ -16,5 +16,6 @@ Tile Types:
 14: Grass with Bush7
 15: Grass with Bush8
 16: Finish
+17: Fuel
 
 

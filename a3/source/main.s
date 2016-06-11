@@ -8,13 +8,21 @@ _start:
 
 main:
 	mov     sp, #0x8000
+
+
 	
 	bl	EnableJTAG
 	bl 	EnableL1Cache
+	bl 	EnableFPU
 
-	bl	InitFrameBuffer
-	bl  	InitializeSNES
 
+	bl  InitFrameBuffer
+	bl  InitializeSNES
+
+	ldr 	r0, =0xffffff
+
+	// breakV:
+	// bl 	GraphicsTest
 
 	bl	InitializeMap
 
@@ -71,6 +79,10 @@ testLoop:
 
 	bl	GenerateNextRow
 
+
+
+	// b 	draw100	
+
 	/*mov 	r0, #0b0100
 	mov 	r1, #4
 	mov 	r2, #2
@@ -106,8 +118,8 @@ testLoop:
 inputloop:
 mainLoop:
 
-	ldr 	r0, =100000
-	bl 	Wait
+//	ldr 	r0, =100000
+//	bl 	Wait
 
 	//bl	GenerateNextRow
 
@@ -141,6 +153,19 @@ mainLoop:
 	ldr 	r1, [r3]
 	add 	r1, #1
 	bl 	SetCar
+
+		 bl 	PrintFuel
+
+	 ldr 	r12, =0x3F003004		//Clock addr
+	 ldr 	r12, [r12]			//get current tim
+	 ldr 	r11, =333000
+	 add 	r11, r12, r11
+	 cmp 	r11, r12
+	 ldrge 	r0, =playerFuel
+	 ldrge 	r1, [r0]
+	 subge 	r1, #1
+	 strge 	r1, [r0]
+
 
 break2:
 	bl	RenderMap

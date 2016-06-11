@@ -6,6 +6,7 @@
  *	r0 - 0 on failure, framebuffer pointer on success
  */
 InitFrameBuffer:
+	push {lr}
 	// load the address of the mailbox interface
 	mbox	.req	r2
 	ldr		mbox,	=0x3F00B880
