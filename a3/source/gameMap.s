@@ -206,8 +206,8 @@ GenerateNextRow:
 	//If bush set to collide
 	cmp	r0, #0
 	beq	setCollide
-	cmp	r0, #16
-	beq	setCollide
+	//cmp	r0, #16 finish, dont collide
+	//beq	setCollide
 	//cmp 	r0, #17 fuel, dont collide
 	//beq 	setCollide
 	cmp	r0, #8

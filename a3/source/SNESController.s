@@ -148,6 +148,20 @@ read_loop:
 
 	pop 	{r4-r5,pc}
 
+.globl	WaitForInput
+// WaitForInput()
+WaitForInput:
+	push	{lr}
+
+	waitForInputLoop:
+
+	bl	UpdateSNESInput
+	ldr	r1, =0xFFFF
+	cmp	r0, r1
+	beq	waitForInputLoop
+
+	pop	{pc}
+
 .section .data
 .global SNESInput
 .align 	4

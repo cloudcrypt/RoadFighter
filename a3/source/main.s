@@ -92,9 +92,25 @@ mainLoop:
 	bl 	GenerateNewCars
 	
 	bl	UpdateGameState
-	//bl	VerifyGameState
+	bl	VerifyGameState
+	cmp	r0, #0
+	bne	handleEndGame
 	
 	b 	mainLoop
+
+
+	handleEndGame:
+
+	cmp	r0, #1
+	// lose game screen here
+
+	cmp	r0, #2
+	// win game screen here
+
+	bl	WaitForInput
+
+	b	RestartGame
+
 
 .global 	haltLoop$
 haltLoop$:

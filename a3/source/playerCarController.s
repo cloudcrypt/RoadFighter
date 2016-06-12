@@ -165,8 +165,15 @@ CheckForCollision:
 
 	otherCheck:
 
+	//Is this finish line, top of car
+	lsr	r0, #3
+	cmp	r0, #16
+	ldreq	r1, =winFlag
+	moveq	r2, #1
+	streqb	r2, [r1]
+	beq	checkForCollisionEnd
+
 	//Is this fuel, top of car
-	lsr 	r0, #3
 	cmp 	r0, #17
 	bne 	nextCheck
 
@@ -246,9 +253,13 @@ HandlePlayerCollision:
 	ldr 	r1, [r0]
 	sub 	r1, #1
 	str 	r1, [r0]
+	mov	r4, r1
 
 	bl 	PrintFuel
 	bl	PrintLives
+
+	cmp	r4, #0
+	ble	handlePlayerCollisionEnd
 
 	// check if collided with grass:
 	cmp	playerX, #26
@@ -348,9 +359,7 @@ HandlePlayerCollision:
 	cmp	flashCtr, #10
 	bne	flashCar
 
-	//b	resumeAfterCollision
-
-	//b	haltLoop$
+	handlePlayerCollisionEnd:
 	.unreq	defaultX
 	.unreq	defaultY
 	.unreq	flashCtr

@@ -72,6 +72,23 @@ UpdateGameState:
 	.unreq	tickAmt
 	pop	{r4, pc}
 
+.global	VerifyGameState
+// VerifyGameState() = 0, 1, or 2
+VerifyGameState:
+	ldr	r0, =loseFlag
+	ldrb	r0, [r0]
+	cmp	r0, #1
+	beq	verifyGameStateEnd
+
+	ldr	r0, =winFlag
+	ldrb	r0, [r0]
+	cmp	r0, #1
+	moveq	r0, #2
+
+	verifyGameStateEnd:
+	bx	lr
+
+
 .global ResetGameState
 ResetGameState:
 
