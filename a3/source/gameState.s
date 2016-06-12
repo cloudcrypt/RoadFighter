@@ -1,7 +1,7 @@
 .section .text
-.global	IncrementTickCounter
-// IncrementTickCounter()
-IncrementTickCounter:
+.global	UpdateGameState
+// UpdateGameState()
+UpdateGameState:
 	push	{lr}
 	ldr	r0, =tickCounter
 	ldr	r1, [r0]

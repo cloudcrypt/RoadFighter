@@ -80,7 +80,7 @@ mainLoop:
 	add 	r4, #1
 	////////////////////////////////
 	
-	bl	IncrementTickCounter
+	bl	UpdateGameState
 	
 	b 	mainLoop
 
