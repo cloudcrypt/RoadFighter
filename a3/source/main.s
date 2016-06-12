@@ -715,20 +715,19 @@ PrintLives:
 	posX 	.req 	r6
 	push 	{r4-r6, lr}
 
-
 	ldr 	r0, =playerLives
 	ldr 	lives, [r0]
 	mov 	posX, #512
 
 	mov 	r0, #512
 	mov 	r1, #0
-	mov 	r2, #100
+	mov 	r2, #96
 	mov 	r3, #32
 	bl 	ClearArea
 
 	1:
 	cmp 	lives, #0
-	beq 	1f
+	ble 	1f
 	ldr 	r0, =tiles
 	add 	r0, #72
 	ldr	r0, [r0] // img addr
@@ -743,6 +742,47 @@ PrintLives:
 
 
 	1:
+	// animate life going away > probably could loop it
+	ldr 	r0, =playerLives
+	ldr 	r0, [r0]
+	cmp 	r0, #3
+	beq 	endPrintLives	
+
+	ldr 	r0, =tiles
+	add 	r0, #76
+	ldr 	r0, [r0]
+	mov 	r1, posX // x
+	mov 	r2, #32  // width
+	mov 	r3, #32  // height
+	bl 	DrawHeaderImage
+
+	ldr 	r0, =100000
+	bl 	Wait
+
+	mov 	r0, posX
+	mov 	r1, #0
+	mov 	r2, #32
+	mov 	r3, #32
+	bl 	ClearArea
+
+	ldr 	r0, =tiles
+	add 	r0, #80
+	ldr 	r0, [r0]
+	mov 	r1, posX // x
+	mov 	r2, #32  // width
+	mov 	r3, #32  // height
+	bl 	DrawHeaderImage
+
+	ldr 	r0, =100000
+	bl 	Wait
+
+	mov 	r0, posX
+	mov 	r1, #0
+	mov 	r2, #32
+	mov 	r3, #32
+	bl 	ClearArea
+
+	endPrintLives:
 	.unreq 	lives
 	.unreq  posX
 

@@ -248,7 +248,7 @@ HandlePlayerCollision:
 	str 	r1, [r0]
 
 	bl 	PrintFuel
-	bl 	PrintLives
+	bl	PrintLives
 
 	// check if collided with grass:
 	cmp	playerX, #26

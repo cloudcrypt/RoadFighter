@@ -73,9 +73,12 @@ ResetGameState:
 	mov 	r0, #0
 	ldr 	r1, =winFlag
 	ldr 	r2, =loseFlag
+	ldr 	r3, =finishModeFlag
 	str 	r0, [r1]
-	str 	r1, [r2]
+	str 	r0, [r2]
+	str 	r0, [r3]
 
+	//Reset player and lives
 	ldr 	r0, =playerFuel
 	mov 	r1, #100
 	str 	r1, [r0]
@@ -84,8 +87,30 @@ ResetGameState:
 	mov 	r1, #3
 	str 	r1, [r0]
 
+	//Reset tick count, and fuel decrement variables
 	ldr 	r0, =tickCounter
 	mov 	r1, #0
+	str 	r1, [r0]
+
+	ldr 	r0, =fuelTickAmt
+	mov 	r1, #20
+	str 	r1, [r0]
+
+	ldr 	r0, =fuelTickCtr
+	mov 	r1, #0
+	str 	r1, [r0]
+
+	//Reset finish threshold value, as well as car generation probabilities
+	ldr 	r0, =finishThreshold
+	mov 	r1, #50
+	str 	r1, [r0]
+
+	ldr 	r0, =leftCarProb
+	mov 	r1, #2
+	str 	r1, [r0]
+
+	ldr 	r0, =rightCarProb
+	mov 	r1, #1
 	str 	r1, [r0]
 
 	bx 	lr
@@ -103,21 +128,21 @@ ResetGameState:
 .global	finishModeFlag
 .global fuelTickAmt
 .global fuelTickCtr
-playerDefaultX:	.int	18 //
-playerDefaultY:	.int	18 //
-playerPosX:	.int 	18 //
-playerPosY: 	.int	18 //
-fuelTickAmt:	.int	20
-fuelTickCtr:	.int	0
-playerFuel: 	.int  	100	//
-playerLives: 	.int 	3	//
-tickCounter:	.int	0	//
-finishThreshold:.int	50	//
-finishModeFlag:	.byte	0	//
+playerDefaultX:	.int	18 
+playerDefaultY:	.int	18
+playerPosX:	.int 	18 
+playerPosY: 	.int	18 
+fuelTickAmt:	.int	20	
+fuelTickCtr:	.int	0	
+playerFuel: 	.int  	100	
+playerLives: 	.int 	3	
+tickCounter:	.int	0	
+finishThreshold:.int	50	
+finishModeFlag:	.byte	0	
 
 
-winFlag: 	.byte 	0 //
-loseFlag: 	.byte 	0 //
+winFlag: 	.byte 	0 
+loseFlag: 	.byte 	0 
 
 .global	leftCarProb
 .global	rightCarProb
@@ -128,10 +153,10 @@ loseFlag: 	.byte 	0 //
 .align	4
 leftCarProb:	.int	2
 rightCarProb:	.int	1
-oneProb:		.int	7	
-fourProb:		.int	8
-threeProb:		.int	15
-twoProb:		.int	64
+oneProb:	.int	7	
+fourProb:	.int	8
+threeProb:	.int	15
+twoProb:	.int	64
 
 .global	leftEdgeSize
 .global	rightEdgeSize
