@@ -276,8 +276,8 @@ RenderVehicleTile:
 	mov 	r1, r0
 	mov 	r2, x
 	mov 	r3, y
-	mov 	r0, r7
 	ldr	r5, [r0, #-4]
+	mov 	r0, r7
 	push 	{r0-r5}
 	bl 	DrawPreciseAroundVehicle
 	pop 	{x}

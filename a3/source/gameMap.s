@@ -588,10 +588,12 @@ grid:	.rept	736
 	.byte	0
 	.endr
 	.align
+
 bsbuf1:	.rept	128
 	.byte	0
 	.endr
 	.align
+	
 .global	nextRow
 nextRow:
 	.rept	32

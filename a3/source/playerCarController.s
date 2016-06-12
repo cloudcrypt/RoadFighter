@@ -38,7 +38,7 @@ break2:
 	mov	r4, #57
 	push	{r0, r1, r2, r3, r4}
 	bl	DrawTileImage
-break:
+
 	ldr 	r2, =playerPosX
 	ldr 	r3, =playerPosY
 	ldr 	r0, [r2]
@@ -70,7 +70,6 @@ break:
 	ldr 	r3, =playerPosY
 	ldr 	r5, [r2]
 	ldr 	r6, [r3]
-
 
 	mov 	r0, r5
 	mov 	r1, r6
