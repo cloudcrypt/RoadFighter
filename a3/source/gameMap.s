@@ -194,20 +194,33 @@ GenerateFinishLine:
 
 .global	GenerateNextRow
 GenerateNextRow:
-	push	{r4-r9, lr}
+	push	{r4-r10, lr}
 	x		.req	r4
 	y		.req	r5
 	addrs		.req	r6
 	leftEdge 	.req	r7
 	rightEdge 	.req	r8
 	tileType	.req	r9
+	finishMode	.req	r10
 	ldr	addrs, =nextRow
 	ldr	r0, =leftEdgeSize
 	ldr	leftEdge, [r0]
 	ldr	r0, =rightEdgeSize
 	ldr	rightEdge, [r0]
 	rsb	rightEdge, #32
+	mov	finishMode, #0
 	mov	x, #0
+
+	ldr	r0, =tickCounter
+	ldr	r0, [r0]
+	ldr	r1, =finishThreshold
+	ldr	r1, [r1]
+	cmp	r0, r1
+	blt	rowLoop2
+
+	bl	RandomNumber
+	cmp	r0, #1
+	movlt	finishMode, #1
 
 	rowLoop2:
 	mov	tileType, #0
@@ -222,7 +235,7 @@ GenerateNextRow:
 	cmp 	r0, #1
 	movlt 	tileType, #17
 
-////////////////// end of fuel random //////////////////////
+	////////////////// end of fuel random //////////////////////
 	skipFuel:
 	cmp	x, leftEdge
 	movlt	tileType, #0
@@ -233,8 +246,12 @@ GenerateNextRow:
 	mov	r0, #1
 	bl	GetRandomBush
 	mov	tileType, r0
+	b	prepareTile2
 
 	notGrass2:
+	cmp	finishMode, #1
+	moveq	tileType, #16
+
 	cmp	x, #15
 	moveq	tileType, #2
 
@@ -295,7 +312,8 @@ GenerateNextRow:
 	.unreq	leftEdge
 	.unreq	rightEdge
 	.unreq	tileType
-	pop	{r4-r9, pc}
+	.unreq	finishMode
+	pop	{r4-r10, pc}
 
 .global	ShiftMap
 ShiftMap:
@@ -577,10 +595,6 @@ rightEdgeSize:
 
 .global	grid
 grid:	.rept	736
-	.byte	0
-	.endr
-	.align
-bsbuf1:	.rept	128
 	.byte	0
 	.endr
 	.align

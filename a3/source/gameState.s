@@ -16,6 +16,8 @@ IncrementTickCounter:
 .global playerFuel
 .global playerLives
 .global	refreshCounter
+.global	tickCounter
+.global	finishThreshold
 playerDefaultX:	.int	18
 playerDefaultY:	.int	18
 playerPosX:		.int 	18
