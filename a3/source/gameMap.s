@@ -111,87 +111,6 @@ InitializeMap:
 	.unreq	tileType
 	pop	{r4-r10, pc}
 
-.global	GenerateFinishLine
-GenerateFinishLine:
-	push	{r4-r9, lr}
-	x		.req	r4
-	y		.req	r5
-	addrs		.req	r6
-	leftEdge 	.req	r7
-	rightEdge 	.req	r8
-	tileType	.req	r9
-	ldr	addrs, =nextRow
-	ldr	r0, =leftEdgeSize
-	ldr	leftEdge, [r0]
-	ldr	r0, =rightEdgeSize
-	ldr	rightEdge, [r0]
-	rsb	rightEdge, #32
-	mov	x, #0
-
-	finishLineRowLoop2:
-	mov	tileType, #16
-
-	cmp	x, rightEdge
-	movlt	tileType, #16
-
-	cmp	x, leftEdge
-	movlt	tileType, #16
-	moveq	tileType, #16
-
-	cmp	tileType, #0
-	bne	finishLineNotGrass2
-	mov	r0, #1
-	bl	GetRandomBush
-	mov	tileType, r0
-
-	finishLineNotGrass2:
-	cmp	x, #15
-	moveq	tileType, #16
-
-	cmp	x, #16
-	moveq	tileType, #16
-
-	sub 	r2, rightEdge, #1
-	cmp 	x, r2
-	moveq	tileType, #16
-
-	cmp	x, #9
-	cmpne	x, #21
-	bne	finishLinePrepareTile2	
-
-	ldrb	r2, [addrs]
-	lsr	r2, #3
-	cmp 	r2, #0
-	bne	finishLineNotFirstGeneration
-
-	cmp 	x, #9
-	moveq	tileType, #16
-	cmp 	x, #21
-	moveq 	tileType, #16
-	b 	finishLinePrepareTile2
-
-	finishLineNotFirstGeneration:
-	cmp	r2, #5
-	moveq	tileType, #16
-	movne	tileType, #16	
-
-	finishLinePrepareTile2:
-	lsl	tileType, #3
-
-	strb	tileType, [addrs], #1
-
-	add	x, #1
-	cmp	x, #32
-	bne	finishLineRowLoop2
-
-	.unreq	x
-	.unreq	y
-	.unreq	addrs
-	.unreq	leftEdge
-	.unreq	rightEdge
-	.unreq	tileType
-	pop	{r4-r9, pc}
-
 .global	GenerateNextRow
 GenerateNextRow:
 	push	{r4-r10, lr}
@@ -208,19 +127,14 @@ GenerateNextRow:
 	ldr	r0, =rightEdgeSize
 	ldr	rightEdge, [r0]
 	rsb	rightEdge, #32
-	mov	finishMode, #0
 	mov	x, #0
 
-	ldr	r0, =tickCounter
-	ldr	r0, [r0]
-	ldr	r1, =finishThreshold
-	ldr	r1, [r1]
-	cmp	r0, r1
-	blt	rowLoop2
-
-	bl	RandomNumber
-	cmp	r0, #1
-	movlt	finishMode, #1
+	ldr	r0, =finishModeFlag
+	ldrb	r1, [r0]
+	mov	finishMode, r1
+	cmp	r1, #1
+	moveq	r1, #2
+	streqb	r1, [r0]
 
 	rowLoop2:
 	mov	tileType, #0
@@ -231,6 +145,8 @@ GenerateNextRow:
 	bge 	skipFuel
 	//////////////////// FUEL RANDOM /////////////////////////////
 	// add random  fuel
+	cmp	finishMode, #2
+	beq	skipFuel
 	bl 	RandomNumber
 	cmp 	r0, #1
 	movlt 	tileType, #17
@@ -251,6 +167,7 @@ GenerateNextRow:
 	notGrass2:
 	cmp	finishMode, #1
 	moveq	tileType, #16
+	beq	prepareTile2
 
 	cmp	x, #15
 	moveq	tileType, #2
@@ -288,6 +205,8 @@ GenerateNextRow:
 
 	//If bush set to collide
 	cmp	r0, #0
+	beq	setCollide
+	cmp	r0, #16
 	beq	setCollide
 	//cmp 	r0, #17 fuel, dont collide
 	//beq 	setCollide
