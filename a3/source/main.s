@@ -108,6 +108,8 @@ testLoop:
 
 	//ldr	r0, =1000000
 	//bl	Wait
+	mov 	r4, #0
+
 .global	inputLoop
 inputLoop:
 
@@ -124,6 +126,25 @@ inputLoop:
 	resumeAfterCollision:
 	bl	GenerateNextRow
 	bl 	GenerateNewCars
+
+
+
+
+	cmp 	r4, #2
+	blt 	noUpdateToScore
+	ldr 	r5, =playerFuel
+	ldr 	r4, [r5]
+	sub 	r4, #1
+	cmp 	r4, #0
+	moveq 	r4, #100
+	str 	r4, [r5]
+	bl 	PrintFuel
+	
+	mov 	r4, #-1
+
+	
+	noUpdateToScore:
+	add 	r4, #1
 	
 	b 	inputLoop
 
