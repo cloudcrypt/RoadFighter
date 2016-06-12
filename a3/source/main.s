@@ -18,33 +18,6 @@ main:
 
 	bl	InitializeMap
 
-
-/*	ldr 	r0, =grass
-	ldr 	r1, =car1
-	add 	r1, #4	
-	mov 	r2, #16
-	mov 	r3, #11
-	mov 	r4, #0
-	mov 	r5, #57
-	push 	{r0-r5}
-	bl 	DrawPreciseAroundVehicle
-
-	ldr 	r0, =grass
-	ldr 	r1, =car1
-	add 	r1, #4	
-	mov 	r2, #16
-	mov 	r3, #12
-	mov 	r4, #1
-	mov 	r5, #57
-	push 	{r0-r5}
-	bl 	DrawPreciseAroundVehicle
-
-//Can use for testing
-testLoop: 
-	
-	//
-	b	testLoop*/
-
 	ldr 	r2, =playerPosX
 	ldr 	r3, =playerPosY
 	ldr 	r0, [r2]
@@ -55,12 +28,7 @@ testLoop:
 	add 	r1, #1
 	bl 	SetCar
 
-	//bl	InitialRenderMap
 	bl 	RenderMap
-
-
-	
-
 
 	ldr	r0, =testString
 	mov	r1, #0
@@ -77,47 +45,10 @@ testLoop:
 
 	bl	GenerateNextRow
 
-	/*mov 	r0, #0b0100
-	mov 	r1, #4
-	mov 	r2, #2
-	bl 	SetCarCell	*/
-	//bl 	GenerateNewCars
-
-	// mov 	r0, #0b0001
-	// mov 	r1, #16
-	// mov 	r2, #4
-	// mov	r3, #2
-	// bl 	SetCarCell
-
-	/*ldr 	r0, =0b11100101
-	mov 	r1, #14
-	mov 	r2, #2
-	mov		r3, #2
-	bl 		SetCarCell
-
-	ldr 	r0, =0b11100100
-	mov 	r1, #14
-	mov 	r2, #12
-	mov		r3, #2
-	bl 		SetCarCell*/
-
-	// draw100:
-	// bl 	PrintFuel
-	// ldr 	r0, =playerFuel
-	// ldr 	r1, [r0]
-	// sub 	r1, #1
-	// str 	r1, [r0]
-	// ldr 	r0, =333000
-	// bl 	Wait
-	// b 	draw100	
-
-
-	//ldr	r0, =1000000
-	//bl	Wait
 	mov 	r4, #0
 
-.global	inputLoop
-inputLoop:
+.global	mainLoop
+mainLoop:
 
 	/*ldr 	r0, =100000
 	bl 	Wait*/
@@ -131,11 +62,6 @@ inputLoop:
 
 	bl	GenerateNextRow
 	bl 	GenerateNewCars
-
-
-
-
-
 
 	// some fuel counter thing:
 	cmp 	r4, #2
@@ -157,64 +83,11 @@ inputLoop:
 	
 	bl	IncrementTickCounter
 	
-	b 	inputLoop
+	b 	mainLoop
 
 .global 	haltLoop$
 haltLoop$:
 	b	haltLoop$
-
-
-InitialRenderMap:
-	push	{r4-r7, lr}
-	x	.req	r5
-	y	.req	r6
-	addrs	.req	r7
-	ldr	addrs, =grid
-	mov	y, #1
-
-	yLoop1:
-
-	mov	x, #0
-
-	xLoop1:
-
-	ldrb	r1, [addrs], #1
-
-	mov	r2, #0b10
-	tst	r1, r2
-	beq	ignoreTile
-
-	lsr	r1, #3
-
-	ldr 	r0, =tiles
-	ldr 	r0, [r0, r1, lsl #2]
-
-	mov	r1, x
-	mov	r2, y
-	//mov	r3, #32
-	//mov	r4, #32
-	//push	{r0, r1, r2, r3, r4}
-	bl	DrawPreciseImageMod
-
-	bl 	PrintFuel
-
-	mov	r0, x
-	sub	r1, y, #1
-	bl	ClearChanged
-
-	ignoreTile:
-	add	x, #1
-	cmp	x, #32
-	bne	xLoop1
-
-	add	y, #1
-	cmp	y, #24
-	bne	yLoop1
-	
-	.unreq	x
-	.unreq	y
-	.unreq	addrs
-	pop	{r4-r7, pc}
 
 
 .global	RenderMap
@@ -227,7 +100,7 @@ RenderMap:
 	ldr	addrs, =grid
 	mov	y, #1
 
-	ldr 	r0, =100000 
+	//ldr 	r0, =100000 
 	//bl 	Wait
 
 	yLoop2:
