@@ -22,15 +22,15 @@ loseFlag: 	.byte 	0
 .global	threeProb
 .global	twoProb
 .align	4
-leftCarProb:	.int	2
+leftCarProb:	.int	4
 .align	4
-rightCarProb:	.int	1
+rightCarProb:	.int	2
 .align	4
-oneProb:		.int	5	
+oneProb:		.int	7	
 .align	4
-fourProb:		.int	10	
+fourProb:		.int	8
 .align	4
-threeProb:		.int	20
+threeProb:		.int	15
 .align	4
-twoProb:		.int	32
+twoProb:		.int	64
 .align	4

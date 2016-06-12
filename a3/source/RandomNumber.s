@@ -7,6 +7,10 @@
 .globl RandomNumber
 RandomNumber:
 	push 	{lr}
+
+	mov 	r0, #4
+	bl 	Wait
+
 	ldr 	r0, =0x3F003004
 	ldr 	r0, [r0]
 

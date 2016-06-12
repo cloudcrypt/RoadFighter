@@ -83,11 +83,17 @@ testLoop:
 	// mov	r3, #2
 	// bl 	SetCarCell
 
-	// mov 	r0, #0b0001
-	// mov 	r1, #16
-	// mov 	r2, #2
-	// mov	r3, #2
-	// bl 	SetCarCell
+	/*ldr 	r0, =0b11100101
+	mov 	r1, #14
+	mov 	r2, #2
+	mov		r3, #2
+	bl 		SetCarCell
+
+	ldr 	r0, =0b11100100
+	mov 	r1, #14
+	mov 	r2, #12
+	mov		r3, #2
+	bl 		SetCarCell*/
 
 	// draw100:
 	// bl 	PrintFuel
@@ -105,8 +111,8 @@ testLoop:
 
 inputloop:
 
-	/*ldr 	r0, =100000
-	bl 	Wait*/
+	ldr 	r0, =10000
+	bl 	Wait
 
 	bl	ShiftMap
 	bl 	ShiftCarGrid

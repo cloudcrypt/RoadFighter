@@ -93,17 +93,25 @@ InterpretInput:
 	beq	noChange
 
 	tst	r0, #1
-	ldreq 	r1, =playerPosY
-	ldreq 	r2, [r1]
-	addeq 	r2, #1
-	streq 	r2, [r1]  
+	bne skip1
+	ldr 	r1, =playerPosY
+	ldr 	r2, [r1]
+	cmp 	r2, #20
+	addlt 	r2, #1
+	strlt 	r2, [r1]  
+
+	skip1:
 
 	ldr 	r1, =0x100
 	tst	r0, r1
-	ldreq 	r1, =playerPosY
-	ldreq 	r2, [r1]
-	subeq 	r2, #1
-	streq 	r2, [r1] 
+	bne skip2
+	ldr 	r1, =playerPosY
+	ldr 	r2, [r1]
+	cmp 	r2, #0
+	subgt 	r2, #1
+	strgt 	r2, [r1] 
+
+	skip2:
 
 	ldr 	r1, =0x80
 	tst	r0, r1
