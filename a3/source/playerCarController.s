@@ -285,9 +285,9 @@ HandlePlayerCollision:
 	cmp	flashCtr, #10
 	bne	flashCar
 
-	b	resumeAfterCollision
+	//b	resumeAfterCollision
 
-	b	haltLoop$
+	//b	haltLoop$
 	.unreq	defaultX
 	.unreq	defaultY
 	.unreq	flashCtr
