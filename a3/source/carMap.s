@@ -310,7 +310,7 @@ RemoveCarInGrid:
 	popge 	{pc}
 
 	//Do not set the next tile to clear if there is another car there
-	cmp 	len, #1
+	/*cmp 	len, #1
 	bne 	skipLen
 	push 	{r0-r3}
 	sub 	x, #5
@@ -318,7 +318,7 @@ RemoveCarInGrid:
 	bl 	GetCarCell 	
 	cmp 	r0, #0
 	pop 	{r0-r3}
-	beq 	finishUpdating
+	beq 	finishUpdating*/
 
 	skipLen:
 

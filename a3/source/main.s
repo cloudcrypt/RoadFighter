@@ -111,7 +111,7 @@ testLoop:
 
 inputloop:
 
-	ldr 	r0, =10000
+	ldr 	r0, =100000
 	bl 	Wait
 
 	bl	ShiftMap
