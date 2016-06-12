@@ -70,16 +70,15 @@ mainLoop:
 	ldr 	r4, [r5]
 	sub 	r4, #1
 	cmp 	r4, #0
-	strls 	r4, [r5]
+	strge 	r4, [r5]
 
-	str 	r4, [r5]
 	bl 	PrintFuel
 
 	mov 	r4, #-1
 
 	noUpdateToScore:
 	add 	r4, #1
-
+	////////////////////////////////
 	
 	bl	IncrementTickCounter
 	
