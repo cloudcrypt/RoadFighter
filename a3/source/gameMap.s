@@ -407,6 +407,8 @@ SetChanged:
 	push	{r4, r5, lr}
 	cmp	r1, #0
 	blt	setChangedInNextRow
+	cmp 	r1, #23
+	bgt 	setChangedEnd
 	// offset = (y * 32) + x
 	add	r4, r0, r1, lsl #5
 
@@ -436,6 +438,8 @@ ClearChanged:
 	push	{r4, r5, lr}
 	cmp	r1, #0
 	blt	clearChangedEnd
+	cmp 	r1, #23
+	bgt 	clearChangedEnd
 	// offset = (y * 32) + x
 	add	r4, r0, r1, lsl #5
 
@@ -456,6 +460,8 @@ SetCar:
 	push	{r4, r5, lr}
 	cmp	r1, #0
 	blt	setCarEnd
+	cmp 	r1, #23
+	bgt 	setCarEnd
 	// offset = (y * 32) + x
 	add	r4, r0, r1, lsl #5
 
@@ -477,6 +483,8 @@ ClearCar:
 	push	{r4, r5, lr}
 	cmp	r1, #0
 	blt	clearCarEnd
+	cmp 	r1, #23
+	bgt 	clearCarEnd
 	// offset = (y * 32) + x
 	add	r4, r0, r1, lsl #5
 

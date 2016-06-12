@@ -144,9 +144,131 @@ CheckForCollision:
 
 	mov 	r2, #0b100
 	tst	r2, r0
-	bne 	haltLoop$
+	movne	r0, #0
+	bne 	HandlePlayerCollision
 
 	tst	r2, r1
-	bne 	haltLoop$
+	movne	r0, #1
+	bne 	HandlePlayerCollision
 
 	pop 	{pc}
+
+// HandlePlayerCollision(victimDir)
+// HandlePlayerCollision(r0)
+HandlePlayerCollision:
+	push	{r4-r11, lr}
+	defaultX	.req	r5
+	defaultY	.req	r6
+	flashCtr	.req	r7
+	playerX		.req	r8
+	playerY		.req	r9
+	len		.req	r10
+	ctr		.req	r11
+	//mov	victimDir, r0
+	ldr	r1, =playerDefaultX
+	ldr	defaultX, [r1]
+	ldr	r1, =playerDefaultY
+	ldr	defaultY, [r1]
+
+	ldr	r0, =playerPosX
+	ldr	playerX, [r0]
+	str	defaultX, [r0]
+	ldr	r0, =playerPosY
+	ldr	playerY, [r0]
+	str	defaultY, [r0]
+
+	ldr	r0, =1000000
+	bl	Wait
+
+	//cmp	victimDir, #0
+	//bne	searchDown
+
+	mov	ctr, #-1
+	searchLoop:
+
+	sub	r0, playerX, #5
+	add	r1, playerY, #4		// add 4 and add 1 (to compensate for top row)
+	sub	r1, ctr
+	bl	GetCarCell
+	cmp	r0, #0
+	bne	carFound
+
+	add	ctr, #1
+	cmp	ctr, #4
+	bne	searchLoop
+	searchDown:
+	carFound:
+	// save victimCar Y coord into r3 (in grid coords):
+	sub	r3, playerY, ctr
+	// get car length:
+	lsr	r0, #4
+	ldr	r1, =cars
+	ldr	r0, [r1, r0, lsl #2]
+lenb:
+	ldr	len, [r0]
+
+	// clear victim car and player car:
+	mov	r0, #0
+	sub	r1, playerX, #5
+	add	r2, r3, #4
+	add	r3, len, #1
+	bl	SetCarCell
+
+	mov	r0, playerX
+	mov	r1, playerY
+	bl	SetChanged
+	mov	r0, playerX
+	mov	r1, playerY
+	bl	ClearCar
+
+	// execute changes:
+	bl	RenderMap
+
+	mov	flashCtr, #0
+	flashCar:
+	mov	r0, defaultX
+	mov	r1, defaultY
+	bl	SetChanged
+	mov	r0, defaultX
+	add	r1, defaultY, #1
+	bl	SetChanged
+	mov	r0, defaultX
+	add	r1, defaultY, #2
+	bl	SetChanged
+
+	mov	r0, defaultX
+	add	r1, defaultY, #1
+	bl	RenderMapTile
+	mov	r0, defaultX
+	add	r1, defaultY, #2
+	bl	RenderMapTile
+
+	ldr	r0, =250000
+	bl	Wait
+
+	ldr	r0, =car
+	mov	r1, defaultX
+	add 	r2, defaultY, #1
+	mov	r3, #32
+	mov	r4, #57
+	push	{r0, r1, r2, r3, r4}
+	bl	DrawTileImage
+
+	ldr	r0, =250000
+	bl	Wait
+
+	add	flashCtr, #1
+	cmp	flashCtr, #5
+	bne	flashCar
+
+	b	inputLoop
+
+	b	haltLoop$
+	.unreq	defaultX
+	.unreq	defaultY
+	.unreq	flashCtr
+	.unreq	playerX
+	.unreq	playerY
+	.unreq	len
+	.unreq	ctr
+	pop	{r4-r11, pc}

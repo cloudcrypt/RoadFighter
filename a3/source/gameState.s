@@ -3,10 +3,14 @@
 .section .data
 .global playerPosX
 .global playerPosY
+.global	playerDefaultX
+.global	playerDefaultY
 .global playerFuel
 .global playerLives
-playerPosX:		.int 	16
-playerPosY: 	.int	12
+playerDefaultX:	.int	18
+playerDefaultY:	.int	18
+playerPosX:		.int 	18
+playerPosY: 	.int	18
 mapShiftWait:	.int	20
 mapShiftCtr:	.int	0
 playerFuel: 	.int  	100
