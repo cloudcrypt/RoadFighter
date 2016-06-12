@@ -119,13 +119,14 @@ mainLoop:
 	handleEndGame:
 
 	cmp	r0, #1
-	// lose game screen here
+	bleq	displayLose
 
 	cmp	r0, #2
-	// win game screen here
+	bleq	displayWin
 
 	bl	WaitForInput
 
+	mov	r5, #1
 	b	RestartGame
 
 
@@ -695,7 +696,7 @@ PrintFuel:
 displayWin:
 	push 	{r4, lr}
 	// actual win
-	/*
+	
 	ldr 	r0, =win 
 	mov 	r1, #160
 	mov 	r2, #160
@@ -703,7 +704,7 @@ displayWin:
 	mov 	r4, #384
 	push 	{r0-r4}
 	bl 	DrawImage
-	*/
+	
 	ldr	r0, =winString
 	mov	r1, #900
 	mov	r2, #0
@@ -716,7 +717,7 @@ displayWin:
 displayLose:
 	push 	{r4, lr}
 	// actual print lose
-	/*
+	
 	ldr 	r0, =gameOver 
 	mov 	r1, #160
 	mov 	r2, #160
@@ -724,7 +725,7 @@ displayLose:
 	mov 	r4, #384
 	push 	{r0-r4}
 	bl 	DrawImage
-	*/
+	
 	ldr	r0, =loseString
 	mov	r1, #900
 	mov	r2, #0
