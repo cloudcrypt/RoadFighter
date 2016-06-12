@@ -24,7 +24,8 @@ break2:
 	add 	r1, #1
 	bl 	SetChanged
 
-	bl 	UpdateSNESInput
+	ldr	r0, =SNESInput
+	ldr	r0, [r0]
 	bl 	InterpretInput
 
 	ldr	r0, =car
