@@ -55,7 +55,7 @@ UpdateGameState:
 	.unreq	tickAmt
 	pop	{r4, pc}
 
-.global ResetGame
+.global ResetGameState
 ResetGameState:
 
 	//Reset player position
@@ -74,9 +74,9 @@ ResetGameState:
 	ldr 	r1, =winFlag
 	ldr 	r2, =loseFlag
 	ldr 	r3, =finishModeFlag
-	str 	r0, [r1]
-	str 	r0, [r2]
-	str 	r0, [r3]
+	strb 	r0, [r1]
+	strb 	r0, [r2]
+	strb 	r0, [r3]
 
 	//Reset player and lives
 	ldr 	r0, =playerFuel
@@ -93,7 +93,7 @@ ResetGameState:
 	str 	r1, [r0]
 
 	ldr 	r0, =fuelTickAmt
-	mov 	r1, #20
+	mov 	r1, #2
 	str 	r1, [r0]
 
 	ldr 	r0, =fuelTickCtr
@@ -132,7 +132,7 @@ playerDefaultX:	.int	18
 playerDefaultY:	.int	18
 playerPosX:	.int 	18 
 playerPosY: 	.int	18 
-fuelTickAmt:	.int	20	
+fuelTickAmt:	.int	2	
 fuelTickCtr:	.int	0	
 playerFuel: 	.int  	100	
 playerLives: 	.int 	3	
@@ -151,8 +151,8 @@ loseFlag: 	.byte 	0
 .global	threeProb
 .global	twoProb
 .align	4
-leftCarProb:	.int	8
-rightCarProb:	.int	4
+leftCarProb:	.int	2
+rightCarProb:	.int	1
 oneProb:	.int	7	
 fourProb:	.int	8
 threeProb:	.int	15
