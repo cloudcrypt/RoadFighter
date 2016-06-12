@@ -572,16 +572,6 @@ ClearCollideable:
 
 
 .section .data
-.global fuel
-fuel:	.int	100
-.global	lives
-lives:	.int	3
-.global	leftEdgeSize
-leftEdgeSize:
-	.int	5
-.global	rightEdgeSize
-rightEdgeSize:
-	.int	5
 
 .global	grid
 grid:	.rept	736
@@ -593,7 +583,7 @@ bsbuf1:	.rept	128
 	.byte	0
 	.endr
 	.align
-	
+
 .global	nextRow
 nextRow:
 	.rept	32
