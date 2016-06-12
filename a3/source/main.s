@@ -144,20 +144,11 @@ inputLoop:
 	ldr 	r4, [r5]
 	sub 	r4, #1
 	cmp 	r4, #0
-	bne 	1f
-	mov 	r4, #100
+	strls 	r4, [r5]
 
-	ldr 	r0, =playerLives
-	ldr 	r1, [r0]
-	sub 	r1, #1
-	cmp 	r1, #0
-	movlt 	r1, #3
-	str 	r1, [r0]
-	bl 	PrintLives
-	1:
 	str 	r4, [r5]
 	bl 	PrintFuel
-	
+
 	mov 	r4, #-1
 
 	noUpdateToScore:
@@ -769,6 +760,7 @@ EnableL1Cache:
 
 	pop 	{pc}
 
+.global PrintFuel
 PrintFuel:
 	push 	{r4-r5, lr}
 
@@ -844,6 +836,7 @@ PrintFuel:
 
 	pop 	{r4-r5, pc}
 
+.global PrintLives
 PrintLives:
 	lives 	.req 	r5
 	posX 	.req 	r6

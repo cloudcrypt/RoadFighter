@@ -219,7 +219,7 @@ HandlePlayerCollision:
 	playerY		.req	r9
 	len		.req	r10
 	ctr		.req	r11
-	//mov	victimDir, r0
+
 	ldr	r1, =playerDefaultX
 	ldr	defaultX, [r1]
 	ldr	r1, =playerDefaultY
@@ -234,6 +234,21 @@ HandlePlayerCollision:
 
 	ldr	r0, =1000000
 	bl	Wait
+
+	ldr 	r0, =playerFuel
+	ldr 	r1, [r0]
+	sub 	r1, #20
+	cmp 	r1, #0
+	movlt 	r1, #0
+	str 	r1, [r0]
+
+	ldr 	r0, =playerLives
+	ldr 	r1, [r0]
+	sub 	r1, #1
+	str 	r1, [r0]
+
+	bl 	PrintFuel
+	bl 	PrintLives
 
 	// check if collided with grass:
 	cmp	playerX, #26
