@@ -2,15 +2,31 @@
 .global	UpdateGameState
 // UpdateGameState()
 UpdateGameState:
-	push	{lr}
+	push	{r4, lr}
+	tickAmt	.req	r4
 	ldr	r0, =tickCounter
-	ldr	r1, [r0]
-	add	r1, #1
-	str	r1, [r0]
+	ldr	tickAmt, [r0]
+	add	tickAmt, #1
+	str	tickAmt, [r0]
+
+	// Update playerFuel
+	ldr	r0, =fuelTickCtr
+	ldr	r1, =fuelTickAmt
+	ldr	r2, [r0]
+	ldr	r3, [r1]
+	cmp	r2, r3
+	moveq	r2, #0
+	addne	r2, #1
+	str	r2, [r0]
+	ldreq	r0, =playerFuel
+	ldreq	r1, [r0]
+	subeq	r1, #1
+	streq	r1, [r0]
+	bleq	PrintFuel
 
 	ldr	r0, =finishThreshold
 	ldr	r0, [r0]
-	cmp	r1, r0
+	cmp	tickAmt, r0
 	blt	incrementTickCounterEnd
 
 	bl	RandomNumber
@@ -36,7 +52,8 @@ UpdateGameState:
 	str	r1, [r0]
 
 	incrementTickCounterEnd:
-	pop	{pc}
+	.unreq	tickAmt
+	pop	{r4, pc}
 
 .global ResetGame
 ResetGameState:

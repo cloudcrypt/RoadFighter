@@ -42,6 +42,7 @@ main:
 	ldr 	r3, =0xFFFF
 	bl 	DrawString
 	bl 	PrintLives
+	bl	PrintFuel
 
 	bl	GenerateNextRow
 
@@ -64,20 +65,20 @@ mainLoop:
 	bl 	GenerateNewCars
 
 	// some fuel counter thing:
-	cmp 	r4, #2
-	blt 	noUpdateToScore
-	ldr 	r5, =playerFuel
-	ldr 	r4, [r5]
-	sub 	r4, #1
-	cmp 	r4, #0
-	strge 	r4, [r5]
+	// cmp 	r4, #2
+	// blt 	noUpdateToScore
+	// ldr 	r5, =playerFuel
+	// ldr 	r4, [r5]
+	// sub 	r4, #1
+	// cmp 	r4, #0
+	// strge 	r4, [r5]
 
-	bl 	PrintFuel
+	// bl 	PrintFuel
 
-	mov 	r4, #-1
+	// mov 	r4, #-1
 
-	noUpdateToScore:
-	add 	r4, #1
+	// noUpdateToScore:
+	// add 	r4, #1
 	////////////////////////////////
 	
 	bl	UpdateGameState
