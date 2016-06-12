@@ -24,7 +24,6 @@ break2:
 	add 	r1, #1
 	bl 	SetChanged
 
-
 	bl 	UpdateSNESInput
 	bl 	InterpretInput
 

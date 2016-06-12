@@ -13,12 +13,25 @@ main:
 	bl	EnableJTAG
 	bl 	EnableL1Cache
 
+	//bl 	EnableTurbo
+	//bl 	CheckTurbo
+
+	//bl 	CheckArmClock
+	//bl 	SetArmClock
+	//bl 	CheckArmClock
+	//bl 	CheckCoreClock
+	//b 	haltLoop$
+
 	bl	InitFrameBuffer
 	bl  	InitializeSNES
 
 	mov 	r5, #1
-restart:
+
+RestartGame:
+
 	bl	InitializeMap
+	bl 	ResetGameState
+	bl 	ClearCarGrid
 
 	ldr 	r2, =playerPosX
 	ldr 	r3, =playerPosY
@@ -44,6 +57,7 @@ restart:
 	ldr 	r3, =0xFFFF
 	bl 	DrawString
 	bl 	PrintLives
+	bl	PrintFuel
 
 	bl	GenerateNextRow
 
@@ -56,7 +70,7 @@ restart:
 	cmp 	r12, #1
 	beq 	haltLoop$	
 	mov 	r5, #0
-	b 	restart
+	b 	RestartGame
 	
 
 
@@ -72,30 +86,28 @@ mainLoop:
 	bl 	ShiftCarGrid
 
 	bl 	UpdatePlayerCar
+
+	//This is the Select button. Should go to main menu.
+	ldr 	r0, =SNESInput
+	ldr 	r0, [r0]
+	mov 	r1, #0b100
+	tst 	r0, r1
+	moveq 	r5, #1
+	beq 	RestartGame
+
+	//This is the start button. Should restart game.
+	mov 	r1, #0b1000
+	tst 	r0, r1
+	beq 	RestartGame
+
+
 	bl	RenderMap
 	bl 	CheckForCollision
 
 	bl	GenerateNextRow
 	bl 	GenerateNewCars
-
-	// some fuel counter thing:
-	cmp 	r4, #2
-	blt 	noUpdateToScore
-	ldr 	r5, =playerFuel
-	ldr 	r4, [r5]
-	sub 	r4, #1
-	cmp 	r4, #0
-	strge 	r4, [r5]
-
-	bl 	PrintFuel
-
-	mov 	r4, #-1
-
-	noUpdateToScore:
-	add 	r4, #1
-	////////////////////////////////
 	
-	bl	IncrementTickCounter
+	bl	UpdateGameState
 	
 	b 	mainLoop
 

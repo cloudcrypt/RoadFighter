@@ -1,36 +1,4 @@
 .section .text
-// .global ClearCarGrid
-// ClearCarGrid:
-// 	push	{r4-r5, lr}
-// 	row	.req	r4
-// 	lane	.req	r5
-// 	mov 	row, #26
-
-// 	mov 	lane, #0
-// 	laneLoop3:
-// 	// mov	r0, lane
-// 	// mov	r1, row
-// 	// bl	GetCarCell
-// 	// cmp	r0, #0
-// 	// beq	ignoreLane3
-
-// 	mov	r0, #0
-// 	mov	r1, lane
-// 	mov	r2, #0
-// 	mov	r3, #27
-// 	bl	SetCarCell
-
-// 	//ignoreLane3:
-// 	add	lane, #1
-// 	cmp	lane, #22
-// 	bne	laneLoop3
-
-// 	sub	row, #1
-// 	cmp	row, #-1
-// 	bne	rowLoop2
-// 	.unreq	row
-// 	.unreq	lane
-// 	pop	{r4-r5, pc}
 
 .global	GenerateNewCars
 GenerateNewCars:
@@ -93,6 +61,30 @@ GenerateNewCars:
 	.unreq	laneCtr
 	.unreq	car
 	pop	{r4-r5, pc}
+
+//Clears the entire car grid of all cars, can be used for reseting
+.global ClearCarGrid
+ClearCarGrid:
+	
+	push 	{r4,r5,lr}
+	inc 	.req 	r4
+	addrs 	.req 	r5
+
+	ldr 	addrs, =carGrid
+	mov 	inc, #0
+	mov 	r0, #0
+	ldr 	r1, =594
+	
+	clearLoop:
+	strb 	r0, [addrs], #1
+	
+	add  	inc, #1
+	cmp 	inc, r1
+	bne 	clearLoop
+
+	.unreq 	inc
+	.unreq	addrs
+	pop 	{r4,r5,pc}	
 
 // start shifting from bottom up
 .global	ShiftCarGrid

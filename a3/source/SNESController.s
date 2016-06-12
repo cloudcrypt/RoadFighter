@@ -148,5 +148,6 @@ read_loop:
 	pop 	{r4-r5,pc}
 
 .section .data
-
+.global SNESInput
+.align 	4
 SNESInput: 	.word 	0

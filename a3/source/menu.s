@@ -78,5 +78,5 @@ menuSelection:
 
 
 .section .data
-.align 2
+.align 4
 
