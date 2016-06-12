@@ -145,6 +145,9 @@ inputLoop:
 	
 	noUpdateToScore:
 	add 	r4, #1
+
+
+	bl	IncrementTickCounter
 	
 	b 	inputLoop
 
