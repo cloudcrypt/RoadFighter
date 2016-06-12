@@ -108,8 +108,8 @@ testLoop:
 
 	//ldr	r0, =1000000
 	//bl	Wait
-
-inputloop:
+.global	inputLoop
+inputLoop:
 
 	ldr 	r0, =100000
 	bl 	Wait
@@ -124,7 +124,7 @@ inputloop:
 	bl	GenerateNextRow
 	bl 	GenerateNewCars
 	
-	b 	inputloop
+	b 	inputLoop
 
 .global 	haltLoop$
 haltLoop$:
@@ -182,6 +182,7 @@ InitialRenderMap:
 	.unreq	addrs
 	pop	{r4-r7, pc}
 
+.global	RenderMap
 RenderMap:
 	
 	push	{r4-r8, lr}
