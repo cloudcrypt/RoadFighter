@@ -113,8 +113,8 @@ testLoop:
 .global	inputLoop
 inputLoop:
 
-	//ldr 	r0, =100000
-	//bl 	Wait
+	/*ldr 	r0, =100000
+	bl 	Wait*/
 
 	bl	ShiftMap
 	bl 	ShiftCarGrid
@@ -122,9 +122,10 @@ inputLoop:
 	bl 	UpdatePlayerCar
 	bl	RenderMap
 	bl 	CheckForCollision
-
+	
 	bl	GenerateNextRow
 	bl 	GenerateNewCars
+
 
 	// some fuel counter thing:
 	cmp 	r4, #2
@@ -132,9 +133,8 @@ inputLoop:
 	ldr 	r5, =playerFuel
 	ldr 	r4, [r5]
 	sub 	r4, #1
-	cmp 	r4, #0
-	moveq 	r4, #100
-	str 	r4, [r5]
+	cmp 	r4, #-1
+	strne 	r4, [r5]
 	bl 	PrintFuel
 	
 	mov 	r4, #-1
@@ -142,7 +142,7 @@ inputLoop:
 	noUpdateToScore:
 	add 	r4, #1
 	////////////////////////////////
-
+	
 	bl	IncrementTickCounter
 	
 	b 	inputLoop

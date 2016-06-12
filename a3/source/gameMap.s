@@ -288,17 +288,19 @@ GenerateNextRow:
 
 	//If bush set to collide
 	cmp	r0, #0
-	beq	bush
+	beq	setCollide
+	//cmp 	r0, #17 fuel, dont collide
+	//beq 	setCollide
 	cmp	r0, #8
-	blt 	noBush2
+	blt 	skipCollide
 	cmp 	r0, #15
-	bgt 	noBush2
+	bgt 	skipCollide
 
-	bush:
+	setCollide:
 
 	orr	tileType, #0b100
 
-	noBush2:
+	skipCollide:
 
 	strb	tileType, [addrs], #1
 
@@ -571,6 +573,12 @@ ClearCollideable:
 
 	ldr	r5, =grid
 	ldrb	r0, [r5, r4]
+
+	//Check for special cases, such as fuel and finish line.
+	//These should still be collideable
+	//lsr 	r2, r0, #3
+	//cmp 	r2, #17		//fuel code
+	//beq 	clearCollideableEnd
 
 	mov	r1, #0b100
 	bic	r0, r1
