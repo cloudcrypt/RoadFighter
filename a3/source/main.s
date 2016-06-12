@@ -120,7 +120,8 @@ inputLoop:
 	bl 	UpdatePlayerCar
 	bl	RenderMap
 	bl 	CheckForCollision
-
+	.global	resumeAfterCollision
+	resumeAfterCollision:
 	bl	GenerateNextRow
 	bl 	GenerateNewCars
 	

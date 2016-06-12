@@ -234,42 +234,57 @@ lenb:
 
 	mov	flashCtr, #0
 	flashCar:
-	mov	r0, defaultX
-	mov	r1, defaultY
+	ldr	r0, =playerPosX
+	ldr	playerX, [r0]
+	ldr	r0, =playerPosY
+	ldr	playerY, [r0]
+
+	mov	r0, playerX
+	mov	r1, playerY
 	bl	SetChanged
-	mov	r0, defaultX
-	add	r1, defaultY, #1
-	bl	SetChanged
-	mov	r0, defaultX
-	add	r1, defaultY, #2
+	mov	r0, playerX
+	add	r1, playerY, #1
 	bl	SetChanged
 
-	mov	r0, defaultX
-	add	r1, defaultY, #1
+	mov	r0, playerX
+	add	r1, playerY, #1
 	bl	RenderMapTile
-	mov	r0, defaultX
-	add	r1, defaultY, #2
+	mov	r0, playerX
+	add	r1, playerY, #2
 	bl	RenderMapTile
 
-	ldr	r0, =250000
+	bl 	UpdateSNESInput
+	bl 	InterpretInput
+
+	ldr	r0, =150000
 	bl	Wait
 
+	// ldr	r0, =car
+	// mov	r1, defaultX
+	// add 	r2, defaultY, #1
+	// mov	r3, #32
+	// mov	r4, #57
+	// push	{r0, r1, r2, r3, r4}
+	// bl	DrawTileImage
 	ldr	r0, =car
-	mov	r1, defaultX
-	add 	r2, defaultY, #1
+	ldr	r1, =playerPosX
+	ldr 	r2, =playerPosY
+	ldr	r1, [r1]
+	ldr 	r2, [r2]
+	add 	r2, #1
 	mov	r3, #32
 	mov	r4, #57
 	push	{r0, r1, r2, r3, r4}
 	bl	DrawTileImage
 
-	ldr	r0, =250000
+	ldr	r0, =150000
 	bl	Wait
 
 	add	flashCtr, #1
-	cmp	flashCtr, #5
+	cmp	flashCtr, #10
 	bne	flashCar
 
-	b	inputLoop
+	b	resumeAfterCollision
 
 	b	haltLoop$
 	.unreq	defaultX
