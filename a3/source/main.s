@@ -6,6 +6,7 @@ _start:
     
 .section .text
 
+	
 main:
 	mov     sp, #0x8000
 	
@@ -24,6 +25,7 @@ main:
 	bl	InitFrameBuffer
 	bl  	InitializeSNES
 
+	mov 	r5, #1
 
 RestartGame:
 
@@ -59,7 +61,20 @@ RestartGame:
 
 	bl	GenerateNextRow
 
-	mov 	r4, #0
+ 	cmp 	r5, #1
+ 	bne 	mainLoop
+ 	bleq 	displayMenu
+	mov 	r12, r0
+	cmp 	r12, #1
+	bleq 	ClearScreen
+	cmp 	r12, #1
+	beq 	haltLoop$	
+	mov 	r5, #0
+	b 	RestartGame
+	
+
+
+	
 
 .global	mainLoop
 mainLoop:
@@ -78,12 +93,14 @@ mainLoop:
 	ldr 	r0, [r0]
 	mov 	r1, #0b100
 	tst 	r0, r1
-	beq 	haltLoop$
+	moveq 	r5, #1
+	beq 	RestartGame
 
 	//This is the start button. Should restart game.
 	mov 	r1, #0b1000
 	tst 	r0, r1
 	beq 	RestartGame
+
 
 	bl	RenderMap
 	bl 	CheckForCollision
@@ -562,73 +579,12 @@ DrawImage:
 	pop	{r4, r5, r6, r7, r8, r9, pc}
 
 
-ClearScreen:
-	push 	{lr}
-	mov 	r0, #0
-	mov 	r1, #0
-	mov 	r2, #1024
-	mov 	r3, #768
-	bl 	ClearArea
-	pop 	{pc}
-
-// r0 - pos x
-// r1 - pos y
-// r2 - width
-// r3 - height
-.global ClearArea
-ClearArea:
-	push	{r4-r9, lr}
-
-	x		.req	r4
-	y		.req	r5
-	endX 		.req 	r6
-	endY 		.req 	r7
-	startX 		.req 	r8
-	startY 		.req 	r9
-	
-	mov 	startX, r0
-	mov 	startY, r1
-	add 	endX, r0, r2
-	add 	endY, r1, r3
-
-	mov	y, startY
-
-	yLoop3:
-	mov	x, startX
-
-	xLoop3:
-
-	mov	r0, x
-	mov	r1, y
-	mov	r2, #0
-	bl	DrawPixel
-
-	add	x, #1
-	cmp	x, endX
-	bne	xLoop3
-
-	add	y, #1
-	cmp	y, endY
-	bne	yLoop3
-
-	clearScreenEnd:
-	.unreq	x
-	.unreq	y
-	.unreq	endX
-	.unreq 	endY
-	.unreq 	startX
-	.unreq 	startY
-	pop	{r4-r9, pc}
-
-
-
-
-
 /* Draw Pixel
  *  r0 - x
  *  r1 - y
  *  r2 - color
  */
+ .global DrawPixel
 DrawPixel:
 	push	{r4, lr}
 
@@ -735,6 +691,48 @@ PrintFuel:
 	bl 	DrawString
 
 	pop 	{r4-r5, pc}
+.global displayWin
+displayWin:
+	push 	{r4, lr}
+	// actual win
+	/*
+	ldr 	r0, =win 
+	mov 	r1, #160
+	mov 	r2, #160
+	mov 	r3, #704
+	mov 	r4, #384
+	push 	{r0-r4}
+	bl 	DrawImage
+	*/
+	ldr	r0, =winString
+	mov	r1, #900
+	mov	r2, #0
+	ldr 	r3, =0xFFFF
+	bl	DrawString
+
+	pop 	{r4, pc}
+
+.global displayLose
+displayLose:
+	push 	{r4, lr}
+	// actual print lose
+	/*
+	ldr 	r0, =gameOver 
+	mov 	r1, #160
+	mov 	r2, #160
+	mov 	r3, #704
+	mov 	r4, #384
+	push 	{r0-r4}
+	bl 	DrawImage
+	*/
+	ldr	r0, =loseString
+	mov	r1, #900
+	mov	r2, #0
+	ldr 	r3, =0xFFFF
+	bl	DrawString
+
+	pop 	{r4, pc}
+
 
 .global PrintLives
 PrintLives:
@@ -940,6 +938,10 @@ testString:
 
 livesString:
 	.asciz "Lives:"
+winString:
+	.asciz "Win!"
+loseString:
+	.asciz "Lose!"
 
 fuelAmount:
 	.int 	3	
