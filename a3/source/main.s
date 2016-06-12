@@ -109,9 +109,26 @@ mainLoop:
 	bl 	GenerateNewCars
 	
 	bl	UpdateGameState
-	//bl	VerifyGameState
+	bl	VerifyGameState
+	cmp	r0, #0
+	bne	handleEndGame
 	
 	b 	mainLoop
+
+
+	handleEndGame:
+
+	cmp	r0, #1
+	bleq	displayLose
+
+	cmp	r0, #2
+	bleq	displayWin
+
+	bl	WaitForInput
+
+	mov	r5, #1
+	b	RestartGame
+
 
 .global 	haltLoop$
 haltLoop$:
@@ -679,7 +696,7 @@ PrintFuel:
 displayWin:
 	push 	{r4, lr}
 	// actual win
-	/*
+	
 	ldr 	r0, =win 
 	mov 	r1, #160
 	mov 	r2, #160
@@ -687,7 +704,7 @@ displayWin:
 	mov 	r4, #384
 	push 	{r0-r4}
 	bl 	DrawImage
-	*/
+	
 	ldr	r0, =winString
 	mov	r1, #900
 	mov	r2, #0
@@ -700,7 +717,7 @@ displayWin:
 displayLose:
 	push 	{r4, lr}
 	// actual print lose
-	/*
+	
 	ldr 	r0, =gameOver 
 	mov 	r1, #160
 	mov 	r2, #160
@@ -708,7 +725,7 @@ displayLose:
 	mov 	r4, #384
 	push 	{r0-r4}
 	bl 	DrawImage
-	*/
+	
 	ldr	r0, =loseString
 	mov	r1, #900
 	mov	r2, #0
