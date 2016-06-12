@@ -12,6 +12,15 @@ main:
 	bl	EnableJTAG
 	bl 	EnableL1Cache
 
+	//bl 	EnableTurbo
+	//bl 	CheckTurbo
+
+	//bl 	CheckArmClock
+	//bl 	SetArmClock
+	//bl 	CheckArmClock
+	//bl 	CheckCoreClock
+	//b 	haltLoop$
+
 	bl	InitFrameBuffer
 	bl  	InitializeSNES
 

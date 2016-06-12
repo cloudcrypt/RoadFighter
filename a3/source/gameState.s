@@ -134,8 +134,8 @@ loseFlag: 	.byte 	0
 .global	threeProb
 .global	twoProb
 .align	4
-leftCarProb:	.int	2
-rightCarProb:	.int	1
+leftCarProb:	.int	8
+rightCarProb:	.int	4
 oneProb:	.int	7	
 fourProb:	.int	8
 threeProb:	.int	15

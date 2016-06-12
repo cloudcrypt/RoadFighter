@@ -1,7 +1,7 @@
 .section 	.text
-.global EnableTurbo
+.global CheckTurbo
 .align 4
-EnableTurbo:
+CheckTurbo:
 
 	// load the address of the mailbox interface
 	mbox	.req	r2
@@ -9,7 +9,7 @@ EnableTurbo:
 
 	// load the address of the turbo init structure
 	turboInit	.req	r3
-	ldr		turboInit,	=TurboStruct
+	ldr		turboInit,	=CheckStruct
 
 mBoxFullLoop$:
 	// load the value of the mailbox status register
@@ -47,9 +47,9 @@ mBoxEmptyLoop$:
 
 	// if not, we need to read another message from the mailbox
 	bne		mBoxEmptyLoop$
-	endTurbo:
+	endCheckTurbo:
 
-	ldr		r0,	=TurboStruct
+	ldr		r0,	=CheckStruct
 	ldr		r1,	[r0, #0x04]	//load the request/response word from buffer
 	teq		r1,	#0x80000000	//test is the request was successful
 	movne		r0, 	#0		//return 0 if the request failed
@@ -60,15 +60,14 @@ mBoxEmptyLoop$:
 .section .data
 
 .align 4
-TurboStruct:
+CheckStruct:
 
-	.int	0x00000024	//Tag
+	.int	0x00000020	//Tag
 	.int	0			//Stuff
-	.int 	0x00038009
+	.int 	0x00030009
 	.int 	8
 	.int 	0
 	.int 	0x00000000
-	.int 	0x00000001
 	.int 	0
 	.int 	0
 
