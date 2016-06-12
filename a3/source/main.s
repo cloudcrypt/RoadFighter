@@ -85,6 +85,7 @@ mainLoop:
 	bl	ShiftMap
 	bl 	ShiftCarGrid
 
+	bl 	UpdateSNESInput
 	bl 	UpdatePlayerCar
 
 	//This is the Select button. Should go to main menu.
@@ -108,6 +109,7 @@ mainLoop:
 	bl 	GenerateNewCars
 	
 	bl	UpdateGameState
+	//bl	VerifyGameState
 	
 	b 	mainLoop
 

@@ -24,6 +24,23 @@ UpdateGameState:
 	streq	r1, [r0]
 	bleq	PrintFuel
 
+	// Verify playerFuel
+	ldr	r0, =playerFuel
+	ldr	r0, [r0]
+	cmp	r0, #0
+	bgt	notLoseState
+	// Verify playerLives
+	ldr	r0, =playerLives
+	ldr	r0, [r0]
+	cmp	r0, #0
+	bgt	notLoseState
+
+	ldr	r0, =loseFlag
+	ldrb	r1, [r0]
+	mov	r1, #1
+	strb	r1, [r0]
+
+	notLoseState:
 	ldr	r0, =finishThreshold
 	ldr	r0, [r0]
 	cmp	tickAmt, r0
@@ -125,7 +142,6 @@ ResetGameState:
 .global	refreshCounter
 .global	tickCounter
 .global	finishThreshold
-.global	finishModeFlag
 .global fuelTickAmt
 .global fuelTickCtr
 playerDefaultX:	.int	18 
@@ -138,9 +154,11 @@ playerFuel: 	.int  	100
 playerLives: 	.int 	3	
 tickCounter:	.int	0	
 finishThreshold:.int	50	
+
+.global	finishModeFlag
+.global	winFlag
+.global	loseFlag
 finishModeFlag:	.byte	0	
-
-
 winFlag: 	.byte 	0 
 loseFlag: 	.byte 	0 
 
