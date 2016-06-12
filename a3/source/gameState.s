@@ -59,7 +59,17 @@ ResetGameState:
 	str 	r0, [r1]
 	str 	r1, [r2]
 
-	
+	ldr 	r0, =playerFuel
+	mov 	r1, #100
+	str 	r1, [r0]
+
+	ldr 	r0, =playerLives
+	mov 	r1, #3
+	str 	r1, [r0]
+
+	ldr 	r0, =tickCounter
+	mov 	r1, #0
+	str 	r1, [r0]
 
 	bx 	lr
 
@@ -74,21 +84,23 @@ ResetGameState:
 .global	tickCounter
 .global	finishThreshold
 .global	finishModeFlag
-playerDefaultX:	.int	18
-playerDefaultY:	.int	18
-playerPosX:	.int 	18
-playerPosY: 	.int	18
-mapShiftWait:	.int	20
-mapShiftCtr:	.int	0
-playerFuel: 	.int  	100
-playerLives: 	.int 	3
-tickCounter:	.int	0
-finishThreshold:.int	50
-finishModeFlag:	.byte	0
+.global fuelTickAmt
+.global fuelTickCtr
+playerDefaultX:	.int	18 //
+playerDefaultY:	.int	18 //
+playerPosX:	.int 	18 //
+playerPosY: 	.int	18 //
+fuelTickAmt:	.int	20
+fuelTickCtr:	.int	0
+playerFuel: 	.int  	100	//
+playerLives: 	.int 	3	//
+tickCounter:	.int	0	//
+finishThreshold:.int	50	//
+finishModeFlag:	.byte	0	//
 
 
-winFlag: 	.byte 	0
-loseFlag: 	.byte 	0
+winFlag: 	.byte 	0 //
+loseFlag: 	.byte 	0 //
 
 .global	leftCarProb
 .global	rightCarProb
@@ -97,16 +109,14 @@ loseFlag: 	.byte 	0
 .global	threeProb
 .global	twoProb
 .align	4
-leftCarProb:	.int	4
-rightCarProb:	.int	2
+leftCarProb:	.int	2
+rightCarProb:	.int	1
 oneProb:		.int	7	
 fourProb:		.int	8
 threeProb:		.int	15
 twoProb:		.int	64
 
 .global	leftEdgeSize
-leftEdgeSize:
-	.int	5
 .global	rightEdgeSize
-rightEdgeSize:
-	.int	5
+leftEdgeSize:	.int	5
+rightEdgeSize:	.int	5
