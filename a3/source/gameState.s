@@ -1,4 +1,12 @@
 .section .text
+.global	IncrementTickCounter
+// IncrementTickCounter()
+IncrementTickCounter:
+	ldr	r0, =tickCounter
+	ldr	r1, [r0]
+	add	r1, #1
+	str	r1, [r0]
+	bx	lr
 
 .section .data
 .global playerPosX
@@ -35,3 +43,4 @@ oneProb:		.int	7
 fourProb:		.int	8
 threeProb:		.int	15
 twoProb:		.int	64
+

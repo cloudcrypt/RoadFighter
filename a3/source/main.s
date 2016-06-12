@@ -113,8 +113,8 @@ testLoop:
 .global	inputLoop
 inputLoop:
 
-	ldr 	r0, =100000
-	bl 	Wait
+	/*ldr 	r0, =100000
+	bl 	Wait*/
 
 	bl	ShiftMap
 	bl 	ShiftCarGrid
@@ -124,9 +124,10 @@ inputLoop:
 	bl 	CheckForCollision
 	
 	bl	GenerateNextRow
-	//bl 	GenerateNewCars
+	bl 	GenerateNewCars
 
 
+	// some fuel counter thing:
 	cmp 	r4, #2
 	blt 	noUpdateToScore
 	ldr 	r5, =playerFuel
@@ -138,70 +139,17 @@ inputLoop:
 	
 	mov 	r4, #-1
 
-	
 	noUpdateToScore:
 	add 	r4, #1
 
-
-	//bl	IncrementTickCounter
+	
+	bl	IncrementTickCounter
 	
 	b 	inputLoop
 
 .global 	haltLoop$
 haltLoop$:
 	b	haltLoop$
-
-InitialRenderMap:
-	push	{r4-r7, lr}
-	x	.req	r5
-	y	.req	r6
-	addrs	.req	r7
-	ldr	addrs, =grid
-	mov	y, #1
-
-	yLoop1:
-
-	mov	x, #0
-
-	xLoop1:
-
-	ldrb	r1, [addrs], #1
-
-	mov	r2, #0b10
-	tst	r1, r2
-	beq	ignoreTile
-
-	lsr	r1, #3
-
-	ldr 	r0, =tiles
-	ldr 	r0, [r0, r1, lsl #2]
-
-	mov	r1, x
-	mov	r2, y
-	//mov	r3, #32
-	//mov	r4, #32
-	//push	{r0, r1, r2, r3, r4}
-	bl	DrawPreciseImageMod
-
-	 bl 	PrintFuel
-
-	mov	r0, x
-	sub	r1, y, #1
-	bl	ClearChanged
-
-	ignoreTile:
-	add	x, #1
-	cmp	x, #32
-	bne	xLoop1
-
-	add	y, #1
-	cmp	y, #24
-	bne	yLoop1
-	
-	.unreq	x
-	.unreq	y
-	.unreq	addrs
-	pop	{r4-r7, pc}
 
 .global	RenderMap
 RenderMap:
