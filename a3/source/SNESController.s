@@ -1,4 +1,3 @@
-.section .text
 .global 	InitializeSNES
 .global 	UpdateSNESInput
 InitializeSNES:
