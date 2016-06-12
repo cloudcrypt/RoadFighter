@@ -134,7 +134,7 @@ InterpretInput:
 .global CheckForCollision
 CheckForCollision:
 
-	push 	{lr}
+	push 	{r4,r5,lr}
 
 	ldr	r0, =playerPosX
 	ldr 	r1, =playerPosY
@@ -142,27 +142,75 @@ CheckForCollision:
 	ldr 	r1, [r1]
 
 	// offset = (y * 32) + x
-	add	r2, r0, r1, lsl #5
+	add	r4, r0, r1, lsl #5
 	add 	r1, #1
-	add 	r3, r0, r1, lsl #5
+	add 	r5, r0, r1, lsl #5
 
 	ldr	r1, =grid
-	ldrb	r0, [r1, r2]
-	ldrb 	r1, [r1, r3] 
-
+	ldrb	r0, [r1, r4]
 	mov 	r2, #0b100
 	tst	r2, r0
-	movne	r0, #0
-	bne 	HandlePlayerCollision
+	bne 	collision
 
+	ldr	r1, =grid
+	ldrb 	r1, [r1, r5] 
+	mov 	r2, #0b100
 	tst	r2, r1
-	movne	r0, #1
-	bne 	HandlePlayerCollision
+	bne 	collision
 
-	pop 	{pc}
+	b 	otherCheck
 
-// HandlePlayerCollision(victimDir)
-// HandlePlayerCollision(r0)
+	collision:
+	bl 	HandlePlayerCollision
+	b 	checkForCollisionEnd
+
+	otherCheck:
+
+	//Is this fuel, top of car
+	lsr 	r0, #3
+	cmp 	r0, #17
+	bne 	nextCheck
+
+	ldr 	r3, =playerFuel
+	ldr 	r0, [r3]
+	add 	r0, #10
+	cmp 	r0, #100
+	movgt	r0, #101 	
+	str 	r0, [r3]
+
+	mov 	r0, #8
+	ldr 	r3, =grid
+	ldrb 	r2, [r3, r4]
+	and 	r2, #0b111
+	orr 	r0, r2
+	strb 	r0, [r3, r4]
+
+	//Is this fuel, bottom of car
+	nextCheck:
+	ldr	r1, =grid
+	ldrb 	r1, [r1, r5] 
+	lsr 	r1, #3
+	cmp 	r1, #17
+	bne 	checkForCollisionEnd
+
+	ldr 	r3, =playerFuel
+	ldr 	r0, [r3]
+	add 	r0, #10
+	cmp 	r0, #100
+	movgt	r0, #101 
+	str 	r0, [r3]
+
+	mov 	r0,#8
+	ldr 	r3,=grid
+	ldrb 	r2, [r3, r5]
+	and 	r2, #0b111
+	orr 	r0, r2
+	strb 	r0, [r3, r5]
+
+	checkForCollisionEnd:
+	pop 	{r4,r5,pc}
+
+// HandlePlayerCollision()
 HandlePlayerCollision:
 	push	{r4-r11, lr}
 	defaultX	.req	r5
@@ -188,14 +236,17 @@ HandlePlayerCollision:
 	ldr	r0, =1000000
 	bl	Wait
 
-	//cmp	victimDir, #0
-	//bne	searchDown
+	// check if collided with grass:
+	cmp	playerX, #26
+	bgt	clearPlayerCar
+	cmple	playerX, #4
+	ble	clearPlayerCar
 
 	mov	ctr, #-1
 	searchLoop:
 
 	sub	r0, playerX, #5
-	add	r1, playerY, #4		// add 4 and add 1 (to compensate for top row)
+	add	r1, playerY, #4
 	sub	r1, ctr
 	bl	GetCarCell
 	cmp	r0, #0
@@ -212,7 +263,6 @@ HandlePlayerCollision:
 	lsr	r0, #4
 	ldr	r1, =cars
 	ldr	r0, [r1, r0, lsl #2]
-lenb:
 	ldr	len, [r0]
 
 	// clear victim car and player car:
@@ -222,11 +272,18 @@ lenb:
 	add	r3, len, #1
 	bl	SetCarCell
 
+	clearPlayerCar:
 	mov	r0, playerX
 	mov	r1, playerY
 	bl	SetChanged
 	mov	r0, playerX
+	add	r1, playerY, #1
+	bl	SetChanged
+	mov	r0, playerX
 	mov	r1, playerY
+	bl	ClearCar
+	mov	r0, playerX
+	add	r1, playerY, #1
 	bl	ClearCar
 
 	// execute changes:
@@ -259,13 +316,6 @@ lenb:
 	ldr	r0, =150000
 	bl	Wait
 
-	// ldr	r0, =car
-	// mov	r1, defaultX
-	// add 	r2, defaultY, #1
-	// mov	r3, #32
-	// mov	r4, #57
-	// push	{r0, r1, r2, r3, r4}
-	// bl	DrawTileImage
 	ldr	r0, =car
 	ldr	r1, =playerPosX
 	ldr 	r2, =playerPosY

@@ -222,7 +222,7 @@ GenerateNextRow:
 	cmp 	r0, #1
 	movlt 	tileType, #17
 
-////////////////// end of fuel random //////////////////////
+	////////////////// end of fuel random //////////////////////
 	skipFuel:
 	cmp	x, leftEdge
 	movlt	tileType, #0
@@ -266,7 +266,24 @@ GenerateNextRow:
 	movne	tileType, #5	
 
 	prepareTile2:
+	mov	r0, tileType
 	lsl	tileType, #3
+
+	//If bush set to collide
+	cmp	r0, #0
+	beq	setCollide
+	//cmp 	r0, #17 fuel, dont collide
+	//beq 	setCollide
+	cmp	r0, #8
+	blt 	skipCollide
+	cmp 	r0, #15
+	bgt 	skipCollide
+
+	setCollide:
+
+	orr	tileType, #0b100
+
+	skipCollide:
 
 	strb	tileType, [addrs], #1
 
@@ -538,6 +555,12 @@ ClearCollideable:
 
 	ldr	r5, =grid
 	ldrb	r0, [r5, r4]
+
+	//Check for special cases, such as fuel and finish line.
+	//These should still be collideable
+	//lsr 	r2, r0, #3
+	//cmp 	r2, #17		//fuel code
+	//beq 	clearCollideableEnd
 
 	mov	r1, #0b100
 	bic	r0, r1
