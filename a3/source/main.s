@@ -111,8 +111,8 @@ testLoop:
 .global	inputLoop
 inputLoop:
 
-	ldr 	r0, =100000
-	bl 	Wait
+	//ldr 	r0, =100000
+	//bl 	Wait
 
 	bl	ShiftMap
 	bl 	ShiftCarGrid
