@@ -5,7 +5,7 @@
 displayMenu:
 	push {r4, lr}
 
-	/*
+	
 	ldr 	r0, =menuScreen
 	mov 	r1, #160 
 	mov 	r2, #192
@@ -13,7 +13,7 @@ displayMenu:
 	mov 	r4, #352
 	push 	{r0-r4}
 	bl 		DrawImage	
-	*/
+	
 	mov 	r4, #0 // 0 denotes start, 1 denotes quit
 	ldr 	r0, =menuStart
 	bl 		menuSelection
