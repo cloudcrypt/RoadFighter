@@ -18,33 +18,6 @@ main:
 
 	bl	InitializeMap
 
-
-/*	ldr 	r0, =grass
-	ldr 	r1, =car1
-	add 	r1, #4	
-	mov 	r2, #16
-	mov 	r3, #11
-	mov 	r4, #0
-	mov 	r5, #57
-	push 	{r0-r5}
-	bl 	DrawPreciseAroundVehicle
-
-	ldr 	r0, =grass
-	ldr 	r1, =car1
-	add 	r1, #4	
-	mov 	r2, #16
-	mov 	r3, #12
-	mov 	r4, #1
-	mov 	r5, #57
-	push 	{r0-r5}
-	bl 	DrawPreciseAroundVehicle
-
-//Can use for testing
-testLoop: 
-	
-	//
-	b	testLoop*/
-
 	ldr 	r2, =playerPosX
 	ldr 	r3, =playerPosY
 	ldr 	r0, [r2]
@@ -55,12 +28,7 @@ testLoop:
 	add 	r1, #1
 	bl 	SetCar
 
-	//bl	InitialRenderMap
 	bl 	RenderMap
-
-
-	
-
 
 	ldr	r0, =testString
 	mov	r1, #0
@@ -68,50 +36,19 @@ testLoop:
 	ldr 	r3, =0xFFFF
 	bl	DrawString
 
+	ldr 	r0, =livesString
+	mov 	r1, #200
+	mov 	r2, #0
+	ldr 	r3, =0xFFFF
+	bl 	DrawString
+	bl 	PrintLives
 
 	bl	GenerateNextRow
 
-	/*mov 	r0, #0b0100
-	mov 	r1, #4
-	mov 	r2, #2
-	bl 	SetCarCell	*/
-	//bl 	GenerateNewCars
-
-	// mov 	r0, #0b0001
-	// mov 	r1, #16
-	// mov 	r2, #4
-	// mov	r3, #2
-	// bl 	SetCarCell
-
-	/*ldr 	r0, =0b11100101
-	mov 	r1, #14
-	mov 	r2, #2
-	mov		r3, #2
-	bl 		SetCarCell
-
-	ldr 	r0, =0b11100100
-	mov 	r1, #14
-	mov 	r2, #12
-	mov		r3, #2
-	bl 		SetCarCell*/
-
-	// draw100:
-	// bl 	PrintFuel
-	// ldr 	r0, =playerFuel
-	// ldr 	r1, [r0]
-	// sub 	r1, #1
-	// str 	r1, [r0]
-	// ldr 	r0, =333000
-	// bl 	Wait
-	// b 	draw100	
-
-
-	//ldr	r0, =1000000
-	//bl	Wait
 	mov 	r4, #0
 
-.global	inputLoop
-inputLoop:
+.global	mainLoop
+mainLoop:
 
 	/*ldr 	r0, =100000
 	bl 	Wait*/
@@ -122,10 +59,9 @@ inputLoop:
 	bl 	UpdatePlayerCar
 	bl	RenderMap
 	bl 	CheckForCollision
-	
+
 	bl	GenerateNextRow
 	bl 	GenerateNewCars
-
 
 	// some fuel counter thing:
 	cmp 	r4, #2
@@ -133,10 +69,12 @@ inputLoop:
 	ldr 	r5, =playerFuel
 	ldr 	r4, [r5]
 	sub 	r4, #1
-	cmp 	r4, #-1
-	strne 	r4, [r5]
+	cmp 	r4, #0
+	strls 	r4, [r5]
+
+	str 	r4, [r5]
 	bl 	PrintFuel
-	
+
 	mov 	r4, #-1
 
 	noUpdateToScore:
@@ -145,11 +83,12 @@ inputLoop:
 	
 	bl	IncrementTickCounter
 	
-	b 	inputLoop
+	b 	mainLoop
 
 .global 	haltLoop$
 haltLoop$:
 	b	haltLoop$
+
 
 .global	RenderMap
 RenderMap:
@@ -161,7 +100,7 @@ RenderMap:
 	ldr	addrs, =grid
 	mov	y, #1
 
-	ldr 	r0, =100000 
+	//ldr 	r0, =100000 
 	//bl 	Wait
 
 	yLoop2:
@@ -276,8 +215,8 @@ RenderVehicleTile:
 	mov 	r1, r0
 	mov 	r2, x
 	mov 	r3, y
-	mov 	r0, r7
 	ldr	r5, [r0, #-4]
+	mov 	r0, r7
 	push 	{r0-r5}
 	bl 	DrawPreciseAroundVehicle
 	pop 	{x}
@@ -496,6 +435,53 @@ DrawTileImage:
 	bl	DrawImage
 	pop	{pc}
 
+.global	DrawHeaderImage
+// DrawImage(imgAddrs, startX, dimX, dimY)
+DrawHeaderImage:
+	push	{r4-r9, lr}
+
+	x		.req	r4
+	y		.req	r5
+	imgAddrs	.req	r6
+	startX		.req	r7
+	dimX		.req	r8
+	dimY		.req	r9
+
+	mov	imgAddrs, r0
+	add	dimX, r3, r1
+	add	dimY, #32
+	mov	startX, r1
+	mov	y, #0
+
+	1:
+	cmp	y, #32
+	beq	1f
+	mov	x, startX
+
+	2:
+	mov	r0, x
+	mov	r1, y
+	ldrh	r2, [imgAddrs], #2
+	cmp	r2, #0
+	blne	DrawPixel
+
+	add	x, #1
+	cmp	x, dimX
+	bne	2b
+
+	add	y, #1
+	cmp	y, dimY
+	bne	1b
+
+	1:
+	.unreq	x
+	.unreq	y
+	.unreq	imgAddrs
+	.unreq	startX
+	.unreq	dimX
+	.unreq	dimY
+	pop	{r4-r9, pc}
+
 .global	DrawImage
 // DrawImage(imgAddrs, startX, startY, dimX, dimY)
 DrawImage:
@@ -562,6 +548,7 @@ ClearScreen:
 // r1 - pos y
 // r2 - width
 // r3 - height
+.global ClearArea
 ClearArea:
 	push	{r4-r9, lr}
 
@@ -646,6 +633,7 @@ EnableL1Cache:
 
 	pop 	{pc}
 
+.global PrintFuel
 PrintFuel:
 	push 	{r4-r5, lr}
 
@@ -721,6 +709,44 @@ PrintFuel:
 
 	pop 	{r4-r5, pc}
 
+.global PrintLives
+PrintLives:
+	lives 	.req 	r5
+	posX 	.req 	r6
+	push 	{r4-r6, lr}
+
+
+	ldr 	r0, =playerLives
+	ldr 	lives, [r0]
+	mov 	posX, #512
+
+	mov 	r0, #512
+	mov 	r1, #0
+	mov 	r2, #100
+	mov 	r3, #32
+	bl 	ClearArea
+
+	1:
+	cmp 	lives, #0
+	beq 	1f
+	ldr 	r0, =tiles
+	add 	r0, #72
+	ldr	r0, [r0] // img addr
+	mov 	r1, posX // x
+	mov 	r2, #32  // width
+	mov 	r3, #32  // height
+	bl 	DrawHeaderImage
+
+	add 	posX, #32
+	sub 	lives, #1
+	b 	1b
+
+
+	1:
+	.unreq 	lives
+	.unreq  posX
+
+	pop 	{r4-r6, pc}
 
 DrawString:
 	push	{r4-r8, lr}
@@ -844,6 +870,10 @@ DrawChar:
 .align 4
 testString:
 	.asciz	"Fuel:"
+
+livesString:
+	.asciz "Lives:"
+
 fuelAmount:
 	.int 	3	
 	.asciz 	""
