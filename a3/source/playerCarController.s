@@ -161,8 +161,7 @@ CheckForCollision:
 
 	pop 	{pc}
 
-// HandlePlayerCollision(victimDir)
-// HandlePlayerCollision(r0)
+// HandlePlayerCollision()
 HandlePlayerCollision:
 	push	{r4-r11, lr}
 	defaultX	.req	r5
@@ -188,14 +187,17 @@ HandlePlayerCollision:
 	ldr	r0, =1000000
 	bl	Wait
 
-	//cmp	victimDir, #0
-	//bne	searchDown
+	// check if collided with grass:
+	cmp	playerX, #26
+	bgt	clearPlayerCar
+	cmple	playerX, #4
+	ble	clearPlayerCar
 
 	mov	ctr, #-1
 	searchLoop:
 
 	sub	r0, playerX, #5
-	add	r1, playerY, #4		// add 4 and add 1 (to compensate for top row)
+	add	r1, playerY, #4
 	sub	r1, ctr
 	bl	GetCarCell
 	cmp	r0, #0
@@ -212,7 +214,6 @@ HandlePlayerCollision:
 	lsr	r0, #4
 	ldr	r1, =cars
 	ldr	r0, [r1, r0, lsl #2]
-lenb:
 	ldr	len, [r0]
 
 	// clear victim car and player car:
@@ -222,11 +223,18 @@ lenb:
 	add	r3, len, #1
 	bl	SetCarCell
 
+	clearPlayerCar:
 	mov	r0, playerX
 	mov	r1, playerY
 	bl	SetChanged
 	mov	r0, playerX
+	add	r1, playerY, #1
+	bl	SetChanged
+	mov	r0, playerX
 	mov	r1, playerY
+	bl	ClearCar
+	mov	r0, playerX
+	add	r1, playerY, #1
 	bl	ClearCar
 
 	// execute changes:
@@ -259,13 +267,6 @@ lenb:
 	ldr	r0, =150000
 	bl	Wait
 
-	// ldr	r0, =car
-	// mov	r1, defaultX
-	// add 	r2, defaultY, #1
-	// mov	r3, #32
-	// mov	r4, #57
-	// push	{r0, r1, r2, r3, r4}
-	// bl	DrawTileImage
 	ldr	r0, =car
 	ldr	r1, =playerPosX
 	ldr 	r2, =playerPosY

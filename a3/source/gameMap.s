@@ -266,7 +266,22 @@ GenerateNextRow:
 	movne	tileType, #5	
 
 	prepareTile2:
+	mov	r0, tileType
 	lsl	tileType, #3
+
+	//If bush set to collide
+	cmp	r0, #0
+	beq	bush
+	cmp	r0, #8
+	blt 	noBush2
+	cmp 	r0, #15
+	bgt 	noBush2
+
+	bush:
+
+	orr	tileType, #0b100
+
+	noBush2:
 
 	strb	tileType, [addrs], #1
 
