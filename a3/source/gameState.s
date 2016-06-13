@@ -172,8 +172,9 @@ fuelTickAmt:	.int	2
 fuelTickCtr:	.int	0	
 playerFuel: 	.int  	100	
 playerLives: 	.int 	3	
-tickCounter:	.int	0	
+tickCounter:	.int	0
 finishThreshold:.int	200	
+
 
 .global	finishModeFlag
 .global	winFlag
