@@ -25,7 +25,7 @@ displayMenu:
 
 		bl	ShiftMap
 		bl	GenerateNextRow
-		bl 	RenderMap
+		bl 	RenderMapMenu
 
 		bl 	UpdateSNESInput
 
@@ -44,7 +44,7 @@ displayMenu:
 		ldreq 	r0, =menuQuit
 		ldrne 	r0, =menuStart
 		bl 		menuSelection
-		ldr 	r0, =330000 // delay to make selection easier
+		ldr 	r0, =10000 // delay to make selection easier
 		bl 		Wait
 		b 		awaitSelection
 
@@ -61,7 +61,7 @@ displayMenu:
 		ldreq 	r0, =menuQuit
 		ldrne 	r0, =menuStart
 		bl 		menuSelection	
-		ldr 	r0, =330000 // delay to make selection easier
+		ldr 	r0, =10000 // delay to make selection easier
 		bl 		Wait
 		b 		awaitSelection
 
