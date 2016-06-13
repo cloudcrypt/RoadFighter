@@ -161,6 +161,20 @@ WaitForInput:
 
 	pop	{pc}
 
+.globl	WaitForButtonA
+// WaitForInput()
+WaitForButtonA:
+	push	{lr}
+
+	waitForInputLoop2:
+
+	bl	UpdateSNESInput
+	ldr	r1, =0xFEFF
+	cmp	r0, r1
+	bne	waitForInputLoop2
+
+	pop	{pc}
+
 .section .data
 .global SNESInput
 .align 	4

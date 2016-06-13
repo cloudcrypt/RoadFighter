@@ -39,7 +39,7 @@ main:
 	bl	GenerateNextRow
 
  	cmp 	menuFlag, #1
- 	bne 	mainLoop
+ 	bne 	startGame
  	bleq 	displayMenu
 	mov 	r12, r0
 	cmp 	r12, #1
@@ -49,7 +49,12 @@ main:
 	mov 	menuFlag, #0
 	b 	RestartGame
 
+	startGame:
+	bl 	UpdatePlayerCar
+	bl	WaitForButtonA
+
 	mainLoop:
+
 
 	bl	ShiftMap
 	bl 	ShiftCarGrid
