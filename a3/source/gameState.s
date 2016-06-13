@@ -228,3 +228,25 @@ fuelProb:	.int	8
 .global	rightEdgeSize
 leftEdgeSize:	.int	5
 rightEdgeSize:	.int	5
+
+.global	grid
+grid:	.rept	736
+	.byte	0
+	.endr
+	.align
+
+.global	nextRow
+nextRow:
+	.rept	32
+	.byte	0
+	.endr
+	.align
+
+// 22x27 Grid (topExt + cars)
+.global	carGrid
+carGrid:	
+	.rept	594
+	.byte	0
+	.endr
+	.align
+	
