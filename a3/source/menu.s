@@ -1,6 +1,13 @@
-// returns r0 - 
-// 0 = start
-// 1 = quit
+/*
+ * Displays the menu image and reads in input, 
+ * exists and returns when an option is selected with A
+ *
+ * displayMenu()
+ *
+ * returns r0  
+ * 0 = start
+ * 1 = quit
+*/
 .globl 	displayMenu
 displayMenu:
 	push {r4, lr}
@@ -74,12 +81,15 @@ displayMenu:
 	pop 	{r4, pc}
 
 /*
-* menuSelection(imgAddress)
-* Draws the selected menu.
+ * menuSelection(imgAddress)
+ *
+ * Draws the selected menu.
 */
 menuSelection:
 	push {r4, lr}
 
+	// screen X and Y and dimensions of Quit/Start options 
+	// drawn on the menu image
 	ldr r1, =352
 	ldr r2, =379
 	mov r3, #244

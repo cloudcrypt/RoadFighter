@@ -164,7 +164,9 @@ GenerateNextRow:
 	cmp 	r0, #1
 	bge	skipFuel
 	bl	RandomNumber
-	cmp	r0, #20
+	ldr	r1, =fuelProb
+	ldr	r1, [r1]
+	cmp	r0, r1
 	movlt 	tileType, #17
 
 	////////////////// end of fuel random //////////////////////
