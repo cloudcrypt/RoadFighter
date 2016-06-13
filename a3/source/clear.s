@@ -2,6 +2,9 @@
 .global ClearArea
 .section .text
 .align 4
+/*
+* Calls clear area with the dimensions of the entire screen
+*/
 ClearScreen:
 	push 	{lr}
 
@@ -17,6 +20,7 @@ ClearScreen:
 // r1 - pos y
 // r2 - width
 // r3 - height
+// Draws black to the framebuffer in the area specified
 ClearArea:
 	push	{r4-r9, lr}
 
@@ -39,6 +43,7 @@ ClearArea:
 
 	xLoop3:
 
+	//Draw black to pixel, then loop
 	mov	r0, x
 	mov	r1, y
 	mov	r2, #0

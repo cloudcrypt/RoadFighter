@@ -118,7 +118,7 @@ main:
 	//Check if we won or lost the game
 	handleEndGame:
 
-	cmp	r0, #1
+	cmp	r0, #1	
 	bleq	DisplayLose
 
 	cmp	r0, #2

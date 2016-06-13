@@ -86,6 +86,7 @@ ClearCarGrid:
 	.unreq	addrs
 	pop 	{r4,r5,pc}	
 
+// Updates all of the cars in the car grid to a new position based on their speed.
 // start shifting from bottom up
 .global	ShiftCarGrid
 ShiftCarGrid:
