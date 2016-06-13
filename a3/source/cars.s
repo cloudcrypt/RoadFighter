@@ -4,7 +4,7 @@
 cars:	
 	.word	car1, car1_r, greencar, greencar_r, bluecar, bluecar_r
 	.word 	greycar, greycar_r, pickupTruck, pickupTruck_r, van, van_r
-	.word 	bike, bike_r, tanker, tanker_r //bluecar
+	.word 	bike, bike_r, tanker, tanker_r
 
 .global	car1
 .align 4

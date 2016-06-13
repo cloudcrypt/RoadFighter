@@ -248,16 +248,6 @@ ShiftCarGrid:
 	bl	SetCarCell
 	pop	{r2}
 
-	// push 	{r0-r4}
-	// ldr	r0, =car1
-	// add	r1, lane, #5
-	// sub 	r2, #3
-	// mov	r3, #32
-	// mov	r4, #57
-	// push	{r0, r1, r2, r3, r4}
-	// bl	DrawTileImage
-	// pop 	{r0-r4}
-
 	mov	r0, car
 	add	r1, lane, #5
 	sub	r2, #3
@@ -300,17 +290,6 @@ RemoveCarInGrid:
 	blt 	checkLoop
 	cmp 	y, #23
 	popge 	{pc}
-
-	//Do not set the next tile to clear if there is another car there
-	/*cmp 	len, #1
-	bne 	skipLen
-	push 	{r0-r3}
-	sub 	x, #5
-	add 	y, #4
-	bl 	GetCarCell 	
-	cmp 	r0, #0
-	pop 	{r0-r3}
-	beq 	finishUpdating*/
 
 	skipLen:
 
@@ -496,14 +475,10 @@ GetRandCar:
 	cmp	r0, #32
 	movlt	car, #8
 	blt	getRandCarEnd
-	//cmp	r0, #32
 	mov	car, #10
 	b	getRandCarEnd
 
 	twoCar:
-	// ldr	r1, =twoProb
-	// ldr	r1, [r1]
-	// cmp	rand, r1
 	bl	RandomNumber
 	cmp	r0, #22
 	movlt	car, #2
@@ -511,7 +486,6 @@ GetRandCar:
 	cmp	r0, #42
 	movlt	car, #4
 	blt	getRandCarEnd
-	//cmp	r0, #32
 	mov	car, #6
 
 	getRandCarEnd:
@@ -546,7 +520,6 @@ GetRandVelocity:
 	movlt	r0, #0b0101
 	blt	getRandVelocityEnd
 
-	//cmp	r1, #32
 	mov	r0, #0b0110
 	b	getRandVelocityEnd
 
@@ -560,7 +533,6 @@ GetRandVelocity:
 	movlt	r0, #0b1010
 	blt	getRandVelocityEnd
 
-	//cmp	r1, #32
 	mov	r0, #0b1011
 
 	getRandVelocityEnd:

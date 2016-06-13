@@ -3,8 +3,8 @@
 .section .text
 .align 4
 /*
-* Calls clear area with the dimensions of the entire screen
-*/
+ * Calls clear area with the dimensions of the entire screen
+ */
 ClearScreen:
 	push 	{lr}
 
