@@ -173,6 +173,16 @@ CheckForCollision:
 	streqb	r2, [r1]
 	beq	checkForCollisionEnd
 
+	//Is this finish line, bottom of car
+	ldr	r1, =grid
+	ldrb 	r1, [r1, r5] 
+	lsr 	r1, #3
+	cmp 	r1, #16
+	ldreq	r1, =winFlag
+	moveq	r2, #1
+	streqb	r2, [r1]
+	beq	checkForCollisionEnd
+
 	//Is this fuel, top of car
 	cmp 	r0, #17
 	bne 	nextCheck
