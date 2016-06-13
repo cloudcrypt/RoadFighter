@@ -66,6 +66,60 @@ RenderMap:
 	.unreq	addrs
 	pop	{r4-r8, pc}
 
+	.global	RenderMapMenu
+RenderMapMenu:
+	
+	push	{r4-r8, lr}
+	x	.req	r5
+	y	.req	r6
+	addrs	.req	r7
+	ldr	addrs, =grid
+	mov	y, #1
+
+	//ldr 	r0, =100000 
+	//bl 	Wait
+
+	yLoop5:
+
+	mov	x, #0
+
+	xLoop5:
+
+	cmp 	y, #6
+	blt 	drawNormal
+
+	cmp 	y, #16
+	bgt 	drawNormal
+
+	cmp 	x, #5
+	blt 	drawNormal
+
+	cmp 	x, #26
+	bgt 	drawNormal
+
+	b 	skipDraw
+
+	drawNormal:
+
+	mov	r0, x
+	mov	r1, y
+	bl	RenderMapTile
+
+	skipDraw:
+
+	add	x, #1
+	cmp	x, #32
+	bne	xLoop5
+
+	add	y, #1
+	cmp	y, #24
+	bne	yLoop5
+
+	.unreq	x
+	.unreq	y
+	.unreq	addrs
+	pop	{r4-r8, pc}
+
 .global	RenderMapTile
 RenderMapTile:
 	push	{r4-r8, lr}
