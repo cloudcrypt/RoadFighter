@@ -149,6 +149,7 @@ read_loop:
 
 .globl	WaitForInput
 // WaitForInput()
+//Waits for some input from the player
 WaitForInput:
 	push	{lr}
 
@@ -163,6 +164,8 @@ WaitForInput:
 
 .globl	WaitForButtonA
 // WaitForInput() = 0 if start moving, 1 if return to menu
+// As stated, waits until the player presses the A button then returns
+// Also checks for select so that the user can return to the main menu
 WaitForButtonA:
 	push	{lr}
 
