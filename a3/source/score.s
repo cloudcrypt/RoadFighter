@@ -2,6 +2,7 @@
 
 .global InitializeScore
 // InitializeScore()
+// Draws the score to the top of the screen
 InitializeScore:
 	push	{lr}
 
@@ -22,7 +23,7 @@ InitializeScore:
 
 	pop	{pc}
 
-
+//Draws the fuel amount to the top of the screen
 .global PrintFuel
 PrintFuel:
 	push 	{r4-r5, lr}
@@ -99,6 +100,7 @@ PrintFuel:
 
 	pop 	{r4-r5, pc}
 
+//Draws the lives to the top of the screen
 .global PrintLives
 PrintLives:
 	lives 	.req 	r5
@@ -177,6 +179,7 @@ PrintLives:
 
 	pop 	{r4-r6, pc}
 
+//Strings to print
 .section .data
 .align 4
 fuelString:
