@@ -508,18 +508,3 @@ ClearCollideable:
 	clearCollideableEnd:
 	pop	{r4, r5, pc}
 
-
-.section .data
-
-.global	grid
-grid:	.rept	736
-	.byte	0
-	.endr
-	.align
-
-.global	nextRow
-nextRow:
-	.rept	32
-	.byte	0
-	.endr
-	.align
