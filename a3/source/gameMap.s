@@ -357,6 +357,7 @@ GetRandomBush:
 	push 	{r4, lr}
 	mov 	chance, r0
 
+	//Decide whether we want a bush or not
 	bl 	RandomNumber
 	cmp 	r0, chance
 	movge 	r0, #0
@@ -364,6 +365,8 @@ GetRandomBush:
 
 	bl  	RandomNumber
 	
+	//If we decide to generate a bush,
+	//mod the random number by 8 to get the type of bush.
 	BushSelect:
 	cmp 	r0, #8
 	blt 	ReturnBush
