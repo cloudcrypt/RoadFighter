@@ -1,5 +1,8 @@
 .section .text
 .global InitializeMap
+/*
+* Sets up the entire starting map, and sets all tiles to changed so everything will be re-rendered
+*/
 InitializeMap:
 	push	{r4-r10, lr}
 	x		.req	r4
@@ -9,6 +12,7 @@ InitializeMap:
 	rightEdge 	.req	r8
 	dashType	.req	r9
 	tileType	.req	r10
+	//Load the addresses of important information
 	ldr	addrs, =grid
 	ldr	r0, =leftEdgeSize
 	ldr	leftEdge, [r0]
@@ -25,6 +29,7 @@ InitializeMap:
 	xLoop:
 	mov	tileType, #0
 
+	//Set grass on outside edges
 	cmp	x, rightEdge
 	movlt	tileType, #1
 
@@ -38,24 +43,31 @@ InitializeMap:
 	bl	GetRandomBush
 	mov	tileType, r0
 
+	//If not grass, we need to check which type of road we are
 	notGrass:
+	//middle line
 	cmp	x, #15
 	moveq	tileType, #2
 
+	//middle line
 	cmp	x, #16
 	moveq	tileType, #3
 
+	//road edge
 	sub 	r2, rightEdge, #1
 	cmp 	x, r2
 	moveq	tileType, #7
 
+	//
 	cmp	x, #10
 	cmpne	x, #21
 	bne	prepareTile
 
+	//road dash
 	cmp	dashType, #0
 	beq	evenRow
 
+	//Get dash type
 	cmp	x, #10
 	moveq	tileType, #4
 	cmp	x, #21
@@ -73,6 +85,7 @@ InitializeMap:
 	lsl	tileType, #3
 	cmp	r0, #0
 	orreq	tileType, #0b100
+	
 	//If bush set to collide
 	cmp	r0, #8
 	blt 	noBush
