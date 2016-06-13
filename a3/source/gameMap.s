@@ -323,23 +323,6 @@ ShiftMap:
 	.unreq	higherRow
 	pop	{r4-r10, pc}
 
-// .global	RandomizeTile
-// // RandomizeTile(value, chance)
-// // RandomizeTile(r0, r1)
-// // return(r0)
-// RandomizeTileType:
-// 	push	{r4-r5, lr}
-// 	mov	r4, r0
-// 	mov	r5, r1
-
-// 	bl	RandomNumber
-
-// 	cmp	r0, r5
-// 	movge	r0, #0
-// 	movlt	r0, r4	
-
-// 	pop	{r4-r5, pc}
-
 
 // input: r0 - chance
 // return: r0 - tile offset or 0 if no bush
@@ -375,6 +358,7 @@ GetRandomBush:
 
 .global SetChanged
 // setChanged(gridX, gridY)
+// Sets the changed bit to 1 for the given tile
 SetChanged:
 	push	{r4, r5, lr}
 	cmp	r1, #0
@@ -406,6 +390,7 @@ SetChanged:
 
 .global ClearChanged
 // clearChanged(gridX, gridY)
+// Sets the changed bit to 0 for the given tile
 ClearChanged:
 	push	{r4, r5, lr}
 	cmp	r1, #0
@@ -428,6 +413,7 @@ ClearChanged:
 
 .global SetCar
 //takes x and y tile values
+// Sets the car bit to 1 for the given tile
 SetCar:	
 	push	{r4, r5, lr}
 	cmp	r1, #0
@@ -451,6 +437,7 @@ SetCar:
 
 .global ClearCar
 //takes x and y tiles values
+// Sets the car bit to 0 for the given tile
 ClearCar:
 	push	{r4, r5, lr}
 	cmp	r1, #0
@@ -472,6 +459,7 @@ ClearCar:
 	pop	{r4, r5, pc}
 
 // SetCollideable(gridX, gridY)
+// Sets the collideable bit to 1 for the given tile
 .global	SetCollideable
 SetCollideable:
 
@@ -496,6 +484,7 @@ SetCollideable:
 	pop	{r4, r5, pc}
 
 // ClearCollideable(gridX, gridY)
+// Sets the collideable bit to 0 for the given tile
 .global	ClearCollideable
 ClearCollideable:
 
@@ -510,12 +499,6 @@ ClearCollideable:
 
 	ldr	r5, =grid
 	ldrb	r0, [r5, r4]
-
-	//Check for special cases, such as fuel and finish line.
-	//These should still be collideable
-	//lsr 	r2, r0, #3
-	//cmp 	r2, #17		//fuel code
-	//beq 	clearCollideableEnd
 
 	mov	r1, #0b100
 	bic	r0, r1
