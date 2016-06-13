@@ -149,6 +149,9 @@ GenerateNextRow:
 	beq	skipFuel
 	bl 	RandomNumber
 	cmp 	r0, #1
+	bge	skipFuel
+	bl	RandomNumber
+	cmp	r0, #20
 	movlt 	tileType, #17
 
 	////////////////// end of fuel random //////////////////////
