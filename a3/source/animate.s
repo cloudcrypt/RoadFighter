@@ -1,5 +1,8 @@
 .section .text
 .global Animate
+/*
+* Animate(tileArrayAddress, NumAnimationTiles, TileX, TileY)
+*/
 Animate:
 	push 	{r4-r8, lr}
 	numTiles	.req	r5
@@ -28,6 +31,8 @@ Animate:
 	bl 	DrawTileImage
 	add 	tile, #4
 	sub 	numTiles, #1
+	ldr 	r0, =100000
+	bl 	Wait
 	b 	animation
 
 	animationDone:

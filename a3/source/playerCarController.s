@@ -279,6 +279,20 @@ HandlePlayerCollision:
 	ldr	playerY, [r0]
 	str	defaultY, [r0]
 
+	ldr 	r0, =tiles
+	add 	r0, #84
+	mov 	r1, #6
+	mov 	r2, playerX
+	add 	r3, playerY, #1
+	bl 		Animate
+
+	ldr 	r0, =tiles
+	add 	r0, #84
+	mov 	r1, #6
+	mov 	r2, playerX
+	add 	r3, playerY, #2
+	bl 		Animate
+
 	//Wait for a second. Potentially animation spot
 	ldr	r0, =1000000
 	bl	Wait
