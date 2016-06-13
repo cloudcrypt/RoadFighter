@@ -1,5 +1,8 @@
 .section .text
 
+/*
+* Sets arguments and Draws the win screen
+*/
 .global DisplayWin
 DisplayWin:
 	push 	{r4, lr}
@@ -15,6 +18,9 @@ DisplayWin:
 
 	pop 	{r4, pc}
 
+/*
+* Sets arguments and Draws the lose screen
+*/
 .global DisplayLose
 DisplayLose:
 	push 	{r4, lr}
@@ -30,6 +36,10 @@ DisplayLose:
 
 	pop 	{r4, pc}
 
+/*
+* Iterates through each tile and calls another subroutine which decides whether to render 
+* the tile or not. Really just a subroutine for looping through all the tiles.
+*/
 .global	RenderMap
 RenderMap:
 	
@@ -40,11 +50,7 @@ RenderMap:
 	ldr	addrs, =grid
 	mov	y, #1
 
-	//ldr 	r0, =100000 
-	//bl 	Wait
-
 	yLoop2:
-
 	mov	x, #0
 
 	xLoop2:
@@ -66,7 +72,11 @@ RenderMap:
 	.unreq	addrs
 	pop	{r4-r8, pc}
 
-	.global	RenderMapMenu
+/*
+* Same functionality as RenderMap except it does not re-render the tiles that the main menu
+* starts on. 
+*/
+.global	RenderMapMenu
 RenderMapMenu:
 	
 	push	{r4-r8, lr}
@@ -76,15 +86,12 @@ RenderMapMenu:
 	ldr	addrs, =grid
 	mov	y, #1
 
-	//ldr 	r0, =100000 
-	//bl 	Wait
-
 	yLoop5:
-
 	mov	x, #0
 
 	xLoop5:
 
+	//Bounds checking to not draw over the main menu
 	cmp 	y, #6
 	blt 	drawNormal
 
@@ -120,6 +127,11 @@ RenderMapMenu:
 	.unreq	addrs
 	pop	{r4-r8, pc}
 
+/*
+* RenderMapTile(gridX, gridY)
+* Checks the tile specified in arguments, and may or may not re-render it depending on
+* its flags
+*/
 .global	RenderMapTile
 RenderMapTile:
 	push	{r4-r8, lr}
@@ -130,18 +142,23 @@ RenderMapTile:
 	mov	x, r0
 	mov	y, r1
 
+	//Get offset for tile and load it
 	sub	r0, y, #1
 	add	r0, x, r0, lsl #5
 	ldrb	r1, [addrs, r0]
 
+	//Check if this tile's changed bit is set. If not,do nothing
 	mov	r2, #0b10
 	tst	r1, r2
 	beq	ignoreTile1
 
+	//Check if this tile's car bit is set. If so, branch to the vehicle drawing method
 	mov 	r2, #0b1
 	tst 	r1, r2
 	bne 	vehicleTile
 
+	//Otherwise, render the tile normally.
+	//Pass in x,y and the tile byte
 	mov	r0, x
 	mov	r2, r1
 	mov	r1, y
@@ -151,11 +168,13 @@ RenderMapTile:
 
 	vehicleTile:
 
+	//Render vehicle tile, pass in x,y and tile byte
 	mov	r0, x
 	mov	r2, r1
 	mov	r1, y
 	bl	RenderVehicleTile
 
+	//Clear the changed bit so that it will not be rendered next iteration
 	clearTile:
 	mov	r0, x
 	sub	r1, y, #1
@@ -167,6 +186,10 @@ RenderMapTile:
 	.unreq	addrs
 	pop	{r4-r8, pc}
 
+/*
+* RenderNormalTile(x,y,TileByte)
+* Sets up arguments for precise image draw.
+*/
 RenderNormalTile:
 	push	{r4-r5, lr}
 	x	.req	r4
@@ -175,9 +198,12 @@ RenderNormalTile:
 	mov	y, r1
 	mov	r1, r2
 
+	//Get offset of image, set into r0 for function call
 	lsr	r1, #3
 	ldr 	r3, =tiles
 	ldr 	r0, [r3, r1, lsl #2]
+
+	//move x and y to argument positions
 	mov	r1, x
 	mov	r2, y
 	bl	DrawPreciseImage
@@ -186,6 +212,10 @@ RenderNormalTile:
 	.unreq	y
 	pop	{r4-r5, pc}
 
+/*
+* RenderVehicleTile(x,y,TileByte)
+* Sets up arguments for precise around vehicle draw.
+*/
 RenderVehicleTile:
 	push	{r4-r7, lr}
 	x	.req	r5
@@ -194,14 +224,16 @@ RenderVehicleTile:
 	mov	y, r1
 	mov	r1, r2
 
+	//Calculate offset and load image address
 	lsr	r1, #3
 	ldr 	r3, =tiles
 	ldr 	r7, [r3, r1, lsl #2]
 	
+	//Find the vehicle that we need to draw around. Pass in x and y
 	mov 	r0, x
 	sub 	r1, y, #1
 	bl	GetTileVehicle
-	// DrawPreciseAroundVehicle
+	// DrawPreciseAroundVehicle. Call this to only update pixels around vehicle
 	// (tileImgAddrs, vehicleAddrs, startTX, startTY, vehicleTileOffset, vehiclePixelEnd)
 	afterGetTileVehicle:
 	push 	{x} 
@@ -218,9 +250,13 @@ RenderVehicleTile:
 	.unreq	x
 	.unreq	y
 	pop	{r4-r7, pc}
-
-//Call this if a grid element contains a car. This will find the car, and return required
-//information. Returns car information: Address in array in r0, tile offset in r1
+/*
+* GetTileVehicle(x,y)
+* Call this if a grid element contains a car. This will find the car, and return required
+* information. 
+* Returns following information: Address in array in r0, tile offset in r1
+* Tile offset = are we on the front, middle, or end of vehicle. Used for drawing.
+*/
 GetTileVehicle:
 	push 	{r4-r10, lr}
 
@@ -240,7 +276,8 @@ GetTileVehicle:
 	bne 	aiCar
 	ldr 	r3, =playerPosY
 	ldr 	r3, [r3]
-	//sub 	r1, #1
+	
+	//Compare to player car
 	cmp 	r1, r3
 	moveq 	r0, #0
 	moveq 	y, #0
@@ -253,6 +290,7 @@ GetTileVehicle:
 	moveq 	originalY, #1
 	beq 	interpretByte
 
+	//If we arent a player car, then find the ai car
 	aiCar:
 
 	mov 	r0, x
@@ -263,7 +301,7 @@ GetTileVehicle:
 	subeq 	y, #1
 	beq 	aiCar 	
 
-
+	//Extract needed information from car and setup return
 	interpretByte:
 
 	lsr 	r0, #4
@@ -271,7 +309,7 @@ GetTileVehicle:
 	add 	r2, r0, lsl #2
 	ldr 	r0, [r2]
 	add 	r0, #8
-	sub 	r1, originalY, y	//This is the tile offset
+	sub 	r1, originalY, y	//This is the tile offset. (Where we are in the car)
 
 	.unreq 	x
 	.unreq 	y
@@ -279,10 +317,12 @@ GetTileVehicle:
 	
 	pop 	{r4-r10, pc}
 
-//Modified draw precise image so that it only needs the new tile, 
-//and reads the framebuffer for comparison
-//does not call draw pixel, contains that functionality
-//DrawPreciseImage(imgAddress1, startTX, startTY)
+/* 
+* DrawPreciseImage(imgAddress1, startTX, startTY)
+* Modified draw precise image so that it only needs the new tile, 
+* and reads the framebuffer for comparison
+* does not call draw pixel, contains that functionality
+*/
 DrawPreciseImage:
 	push 	{r4-r10, lr}
 
@@ -309,13 +349,16 @@ DrawPreciseImage:
 
 	inLoop1:
 
+	//load pixels for comparison
 	ldrh 	r2, [imgAddrs1], #2
 	lsl	r3, x, #1
 	ldrh 	r1, [frameBuffer, r3]
 	
+	//Compare pixels
 	cmp 	r1, r2
 	beq 	equalColour
 
+	//If not equal, overwrite buffer
 	add 	r0, xOffset, x
 	add 	r1, yOffset, y
 	
@@ -343,10 +386,14 @@ DrawPreciseImage:
 
 	pop 	{r4-r10, pc}
 
-//This method can be called to draw a tile under a car! (So as not to make the car flicker!!!)
-// DrawPreciseAroundVehicle(tileAddrs, vehicleAddrs, startTX, startTY, vehicleTileOffset, vehiclePixelEnd)
-// vehicleTileOffset is the offset of the tile from the top of the vehicle
-// vehiclePixelEnd is the height of the vehicle. I.E. player car is 57
+/*
+* DrawPreciseAroundVehicle(tileAddrs, vehicleAddrs, startTX, startTY, vehicleTileOffset, vehiclePixelEnd)
+* This method can be called to draw a tile under a car! (So as not to make the car flicker!!!)
+* vehicleTileOffset is the offset of the tile from the top of the vehicle
+* vehiclePixelEnd is the height of the vehicle. I.E. player car is 57
+* Essentially if we are outside the car, draw the pixels, but as soon as we are inside the car,
+* do not update the pixels.
+*/
 DrawPreciseAroundVehicle:
 	pop	{r0-r5}
 	push 	{r4-r10, lr}
@@ -375,23 +422,27 @@ DrawPreciseAroundVehicle:
 	mov 	x, #0
 	xLoop4:
 
+	//Are we under the car
 	cmp 	vehicleRows, #0
 	beq 	noVehicle
 
+	//Load pixel from vehicle and compare to 0. 0 denotes no car. (Yes this is also black)
 	ldrh 	r0, [vehImgAddrs]
 	cmp 	r0, #0
 	bne 	yesVehicle 		
 
+	//If not vehicle, draw the pixel from tile
 	noVehicle:
 
 	push 	{r3}
 	add 	r0, x, xOffset
 	add 	r1, y, yOffset	
 	ldrh 	r2, [tileImgAddrs]
-	//cmp	r2, #0
 	bl 	DrawPixel
 	pop 	{r3}
 
+	//If a vehicle, do nothing, increment addresses
+	//This also runs if there is no vehicle.
 	yesVehicle:
 
 	add 	vehImgAddrs, #2
@@ -418,7 +469,8 @@ DrawPreciseAroundVehicle:
 	pop 	{r4-r10, pc}
 
 .global DrawTileImage
-// DrawTileImage(imgAddrs, startTX, startTY, dimX, dimY)
+// DrawTileImage(imgAddrs, startTX, startTY, dimX, dimY)\
+// Same as DrawImage but takes Starting position in tile coordinates
 DrawTileImage:
 	pop	{r0, r1, r2, r3, r4}
 	push	{lr}
@@ -429,7 +481,10 @@ DrawTileImage:
 	pop	{pc}
 
 .global	DrawHeaderImage
-// DrawImage(imgAddrs, startX, dimX, dimY)
+// DrawHeaderImage(imgAddrs, startX, dimX, dimY)
+// Used to draw into the top row of the screen. The regular draw function
+// prevents all draws to the top of the screen.
+// Prevents all drawing below the top row of the screen
 DrawHeaderImage:
 	push	{r4-r9, lr}
 
@@ -446,11 +501,13 @@ DrawHeaderImage:
 	mov	startX, r1
 	mov	y, #0
 
+	//If we are at 32, return, do not draw
 	1:
 	cmp	y, #32
 	beq	1f
 	mov	x, startX
 
+	//otherwise draw pixel and loop again
 	2:
 	mov	r0, x
 	mov	r1, y
@@ -477,6 +534,8 @@ DrawHeaderImage:
 
 .global	DrawImage
 // DrawImage(imgAddrs, startX, startY, dimX, dimY)
+// Draws an image of arbitrary size to the screen. Does not draw into the top row
+// All arguments are in pixel coordinates
 DrawImage:
 	pop	{r0, r1, r2, r3, r4}
 	push	{r4, r5, r6, r7, r8, r9, lr}
@@ -494,6 +553,7 @@ DrawImage:
 	mov	y, r2
 
 	yLoop:
+	//Ensure we draw in bounds
 	cmp	y, #32
 	addlt	imgAddrs, #64
 	blt	ignoreRow
@@ -502,7 +562,7 @@ DrawImage:
 	mov	x, startX
 
 	xLoop:
-
+	//Load address and draw pixel
 	mov	r0, x
 	mov	r1, y
 	ldrh	r2, [imgAddrs], #2
