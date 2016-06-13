@@ -16,11 +16,18 @@ displayMenu:
 	
 	mov 	r4, #0 // 0 denotes start, 1 denotes quit
 	ldr 	r0, =menuStart
-	bl 		menuSelection
+	bl 	menuSelection
 
 	awaitSelection:
 
-		bl 		UpdateSNESInput
+		ldr 	r0, =100000
+		bl 	Wait
+
+		bl	ShiftMap
+		bl	GenerateNextRow
+		bl 	RenderMapMenu
+
+		bl 	UpdateSNESInput
 
 		// check if A was pressed
 		ldr		r2, =0xfeff
@@ -37,7 +44,7 @@ displayMenu:
 		ldreq 	r0, =menuQuit
 		ldrne 	r0, =menuStart
 		bl 		menuSelection
-		ldr 	r0, =330000 // delay to make selection easier
+		ldr 	r0, =10000 // delay to make selection easier
 		bl 		Wait
 		b 		awaitSelection
 
@@ -54,7 +61,7 @@ displayMenu:
 		ldreq 	r0, =menuQuit
 		ldrne 	r0, =menuStart
 		bl 		menuSelection	
-		ldr 	r0, =330000 // delay to make selection easier
+		ldr 	r0, =10000 // delay to make selection easier
 		bl 		Wait
 		b 		awaitSelection
 
@@ -79,4 +86,5 @@ menuSelection:
 
 .section .data
 .align 4
-
+.global menuOnFlag
+menuOnFlag: .int 1 	
