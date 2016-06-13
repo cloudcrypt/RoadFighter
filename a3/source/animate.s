@@ -1,7 +1,9 @@
 .section .text
 .global Animate
 /*
-* Animate(tileArrayAddress, NumAnimationTiles, TileX, TileY)
+ * Animate(tileArrayAddress, NumAnimationTiles, TileX, TileY)
+ * 
+ * cycles through tiles to animate at the given tile x,y
 */
 Animate:
 	push 	{r4-r8, lr}
@@ -25,9 +27,8 @@ Animate:
 	mov 	r2, yTile
 	mov 	r3, #32
 	mov 	r4, #32
-
+	// draw the tiles image and wait 100ms for smooth animation
 	push 	{r0-r4}
-	// DrawTileImage(imgAddrs, startTX, startTY, dimX, dimY)
 	bl 	DrawTileImage
 	add 	tile, #4
 	sub 	numTiles, #1

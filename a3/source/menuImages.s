@@ -1,3 +1,5 @@
+// main menu image and selection option image
+
 .global menuScreen
 .global menuStart
 .global menuQuit

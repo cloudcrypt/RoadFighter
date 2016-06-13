@@ -1,3 +1,5 @@
+// win and lose screen images
+
 .global 	win
 .global 	gameOver
 

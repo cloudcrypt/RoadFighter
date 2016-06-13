@@ -95,7 +95,7 @@ PrintFuel:
 	ldr 	r0, =fuelAmountString
 	mov 	r3, r5 	// set colour
 	mov 	r1, #40 // x 
-	mov 	r2, #0 // y
+	mov 	r2, #0 	// y
 	bl 	DrawString
 
 	pop 	{r4-r5, pc}
@@ -133,7 +133,7 @@ PrintLives:
 	b 	1b
 
 	1:
-	// animate life going away > probably could loop it
+	// animate life going away
 	ldr 	r0, =playerLives
 	ldr 	r0, [r0]
 	cmp 	r0, #3
@@ -183,7 +183,7 @@ PrintLives:
 .section .data
 .align 4
 fuelString:
-	.asciz	"Fuel:"
+	.asciz 	"Fuel:"
 
 livesString:
 	.asciz "Lives:"
