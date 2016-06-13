@@ -34,7 +34,7 @@ InitializeMap:
 
 	cmp	tileType, #0
 	bne	notGrass
-	mov	r0, #1
+	mov	r0, #3
 	bl	GetRandomBush
 	mov	tileType, r0
 
@@ -159,7 +159,7 @@ GenerateNextRow:
 
 	cmp	tileType, #0
 	bne	notGrass2
-	mov	r0, #1
+	mov	r0, #3
 	bl	GetRandomBush
 	mov	tileType, r0
 	b	prepareTile2

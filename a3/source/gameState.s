@@ -28,13 +28,16 @@ UpdateGameState:
 	ldr	r0, =playerFuel
 	ldr	r0, [r0]
 	cmp	r0, #0
-	bgt	notLoseState
+	ble	loseState
 	// Verify playerLives
 	ldr	r0, =playerLives
 	ldr	r0, [r0]
 	cmp	r0, #0
-	bgt	notLoseState
+	ble	loseState
 
+	b	notLoseState
+
+	loseState:
 	ldr	r0, =loseFlag
 	ldrb	r1, [r0]
 	mov	r1, #1
@@ -136,7 +139,7 @@ ResetGameState:
 
 	//Reset finish threshold value, as well as car generation probabilities
 	ldr 	r0, =finishThreshold
-	mov 	r1, #50
+	mov 	r1, #200
 	str 	r1, [r0]
 
 	ldr 	r0, =leftCarProb
@@ -170,7 +173,7 @@ fuelTickCtr:	.int	0
 playerFuel: 	.int  	100	
 playerLives: 	.int 	3	
 tickCounter:	.int	0	
-finishThreshold:.int	50	
+finishThreshold:.int	200	
 
 .global	finishModeFlag
 .global	winFlag
