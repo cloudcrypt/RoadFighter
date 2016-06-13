@@ -92,6 +92,7 @@ VerifyGameState:
 	bx	lr
 
 
+//Call to reset all of the flags in the gameState
 .global ResetGameState
 ResetGameState:
 
