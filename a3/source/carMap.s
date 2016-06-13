@@ -1,6 +1,10 @@
 .section .text
 
 .global	GenerateNewCars
+/*
+* Prepares new cars and stages them above the map-rendered
+* visible grid of tiles
+*/
 GenerateNewCars:
 	push	{r4-r5, lr}
 	laneCtr	.req	r4
@@ -9,6 +13,7 @@ GenerateNewCars:
 
 	laneLoop:
 
+	// Check if the staging area is available
 	mov	r0, laneCtr
 	bl	CheckLane
 	cmp	r0, #1
@@ -20,11 +25,13 @@ GenerateNewCars:
 	cmp	laneCtr, #10
 	bgt	rightSide
 
+	// get randomNumber and verify with global leftCarProb
 	ldr	r1, =leftCarProb
 	ldr	r1, [r1]
 	cmp	r0, r1
 	bge	ignoreLane
 
+	// get a random car based on carDirection
 	mov	r0, #1
 	bl	GetRandCar
 	mov	car, r0
@@ -32,15 +39,18 @@ GenerateNewCars:
 	b	placeCar
 
 	rightSide:
+	// get randomNumber and verify with global rightCarProb
 	ldr	r1, =rightCarProb
 	ldr	r1, [r1]
 	cmp	r0, r1
 	bge	ignoreLane
 
+	// get a random car based on carDirection
 	mov	r0, #0
 	bl	GetRandCar
 	mov	car, r0
 
+	// place the car into the correct lane in the car staging area
 	placeCar:
 	lsr	r0, car, #4
 	ldr	r1, =cars
