@@ -39,7 +39,7 @@ displayMenu:
 		bl 	UpdateSNESInput
 
 		// check if A was pressed
-		ldr		r2, =0xfeff
+		ldr	r2, =0xfeff
 		teq 	r0, r2 // #0b100000000	
 		beq 	optionSelected
 
@@ -52,16 +52,16 @@ displayMenu:
 		movne	r4, #0
 		ldreq 	r0, =menuQuit
 		ldrne 	r0, =menuStart
-		bl 		menuSelection
+		bl 	menuSelection
 		ldr 	r0, =10000 // delay to make selection easier
-		bl 		Wait
-		b 		awaitSelection
+		bl 	Wait
+		b 	awaitSelection
 
 		
 
 		checkDownButton:
 		//check if down was pressed
-		ldr		r2, =0xff5f
+		ldr	r2, =0xff5f
 		teq 	r0, r2 // #0b100000
 		bne 	awaitSelection
 		cmp 	r4, #0
@@ -69,11 +69,10 @@ displayMenu:
 		movne	r4, #0
 		ldreq 	r0, =menuQuit
 		ldrne 	r0, =menuStart
-		bl 		menuSelection	
+		bl 	menuSelection	
 		ldr 	r0, =10000 // delay to make selection easier
-		bl 		Wait
-		b 		awaitSelection
-
+		bl 	Wait
+		b 	awaitSelection
 		
 
 	optionSelected:
