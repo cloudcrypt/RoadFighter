@@ -51,7 +51,6 @@ main:
 	b 	RestartGame
 
 	mainLoop:
-
 	bl	ShiftMap
 	bl 	ShiftCarGrid
 
@@ -86,7 +85,7 @@ main:
 
 	handleEndGame:
 
-	cmp	r0, #1
+	cmp	r0, #1	
 	bleq	DisplayLose
 
 	cmp	r0, #2
