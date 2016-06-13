@@ -242,7 +242,7 @@ nextRow:
 	.endr
 	.align
 
-// 22x27 Grid (topExt + cars)
+// 22x27 Grid (staging area + cars)
 .global	carGrid
 carGrid:	
 	.rept	594

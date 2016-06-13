@@ -1,6 +1,10 @@
 .section .text
 
 .global	DrawString
+/*
+* DrawString(stringAddrs, startX, startY, colour)
+* Draw a series of characters at a specific X/Y coordinate, in colour
+*/
 DrawString:
 	push	{r4-r8, lr}
 	string	.req	r4
@@ -14,10 +18,12 @@ DrawString:
 	mov 	colour, r3
 	mov	charCtr, #0
 	charLoop:
+	// increment through the string and check for the null terminator
 	ldrb	r0, [string, charCtr]
 	cmp	r0, #0
 	beq	drawStringEnd
 
+	// offset each character by an amount to add spaces between the characters
 	add	r1, startX, charCtr, lsl #3
 	mov	r2, startY
 	mov 	r3, colour
@@ -34,6 +40,10 @@ DrawString:
 	.unreq	charCtr
 	pop	{r4-r8, pc}
 
+/*
+* DrawString(charAddrs, startX, startY, colour)
+* Draw a scaled character an a specific X/Y coordinate, in colour
+*/
 DrawChar:
 	push	{r4-r10, lr}
 	char	.req	r4
@@ -49,12 +59,15 @@ DrawChar:
 	ldr	fontAd, =font
 	mov	byteCtr, #0
 
+	// loop through the bytes in the character from the font definitions file
 	byteLoop:
 	add	r0, fontAd, byteCtr
 	ldrb	byte, [r0, char, lsl #4]
 	mov	bitCtr, #0
 
 	bitLoop:
+	// for each pixel that would be in the font character
+	// draw an extra 3 pixels around it, to scale the character font size
 	mov	r0, #0b1
 	lsl	r0, bitCtr
 	tst	byte, r0
