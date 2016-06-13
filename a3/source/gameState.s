@@ -44,6 +44,28 @@ UpdateGameState:
 	strb	r1, [r0]
 
 	notLoseState:
+	ldr	r0, =rightCarProb
+	ldr	r0, [r0]
+	cmp	r0, #1
+	bne	noTrafficChange
+
+	ldr	r0, =increaseTrafficThreshold
+	ldr	r0, [r0]
+	cmp	tickAmt, r0
+	blt	noTrafficChange
+
+	ldr	r0, =leftCarProb
+	mov	r1, #4
+	str	r1, [r0]
+	ldr	r0, =rightCarProb
+	mov	r1, #2
+	str	r1, [r0]
+
+	ldr	r0, =fuelProb
+	mov	r1, #6
+	str	r1, [r0]
+
+	noTrafficChange:
 	ldr	r0, =finishThreshold
 	ldr	r0, [r0]
 	cmp	tickAmt, r0
@@ -53,7 +75,7 @@ UpdateGameState:
 	cmp	r0, #1
 	bge	incrementTickCounterEnd
 	bl	RandomNumber
-	cmp	r0, #32
+	cmp	r0, #20
 	bge	incrementTickCounterEnd
 	
 	ldr	r1, =finishModeFlag
@@ -138,17 +160,17 @@ ResetGameState:
 	mov 	r1, #0
 	str 	r1, [r0]
 
-	//Reset finish threshold value, as well as car generation probabilities
-	ldr 	r0, =finishThreshold
-	mov 	r1, #200
-	str 	r1, [r0]
-
+	//Reset car generation probabilities
 	ldr 	r0, =leftCarProb
-	mov 	r1, #4
+	mov 	r1, #2
 	str 	r1, [r0]
 
 	ldr 	r0, =rightCarProb
-	mov 	r1, #2
+	mov 	r1, #1
+	str 	r1, [r0]
+
+	ldr 	r0, =fuelProb
+	mov 	r1, #8
 	str 	r1, [r0]
 
 	bx 	lr
@@ -169,12 +191,14 @@ playerDefaultX:	.int	18
 playerDefaultY:	.int	18
 playerPosX:	.int 	18 
 playerPosY: 	.int	18 
-fuelTickAmt:	.int	2	
+fuelTickAmt:	.int	1	
 fuelTickCtr:	.int	0	
 playerFuel: 	.int  	100	
 playerLives: 	.int 	3	
 tickCounter:	.int	0
-finishThreshold:.int	200	
+finishThreshold:.int	350
+increaseTrafficThreshold:
+	.int	175	
 
 
 .global	finishModeFlag
@@ -190,13 +214,15 @@ loseFlag: 	.byte 	0
 .global	fourProb
 .global	threeProb
 .global	twoProb
+.global	fuelProb
 .align	4
-leftCarProb:	.int	4
-rightCarProb:	.int	2
+leftCarProb:	.int	2
+rightCarProb:	.int	1
 oneProb:	.int	7	
 fourProb:	.int	8
 threeProb:	.int	15
 twoProb:	.int	64
+fuelProb:	.int	8
 
 .global	leftEdgeSize
 .global	rightEdgeSize
