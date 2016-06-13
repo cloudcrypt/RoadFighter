@@ -279,6 +279,7 @@ HandlePlayerCollision:
 	ldr	playerY, [r0]
 	str	defaultY, [r0]
 
+	//Player car explodes
 	ldr 	r0, =tiles
 	add 	r0, #84
 	mov 	r1, #6
@@ -293,7 +294,7 @@ HandlePlayerCollision:
 	add 	r3, playerY, #2
 	bl 		Animate
 
-	//Wait for a second. Potentially animation spot
+	//Wait for a second. 
 	ldr	r0, =1000000
 	bl	Wait
 	mov 	r4, #1
@@ -416,12 +417,14 @@ HandlePlayerCollision:
 	add	r1, playerY, #2
 	bl	RenderMapTile
 
+	//Get movement and move car
 	bl 	UpdateSNESInput
 	bl 	InterpretInput
 
 	ldr	r0, =150000
 	bl	Wait
 
+	//Render the player car
 	mov	r0, #0
 	ldr	r1, =playerPosX
 	ldr 	r2, =playerPosY
@@ -433,6 +436,7 @@ HandlePlayerCollision:
 	ldr	r0, =150000
 	bl	Wait
 
+	//Flash 10 times before restarting
 	add	flashCtr, #1
 	cmp	flashCtr, #10
 	bne	flashCar
