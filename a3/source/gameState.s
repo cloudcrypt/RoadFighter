@@ -144,11 +144,11 @@ ResetGameState:
 	str 	r1, [r0]
 
 	ldr 	r0, =leftCarProb
-	mov 	r1, #2
+	mov 	r1, #4
 	str 	r1, [r0]
 
 	ldr 	r0, =rightCarProb
-	mov 	r1, #1
+	mov 	r1, #2
 	str 	r1, [r0]
 
 	bx 	lr
@@ -191,8 +191,8 @@ loseFlag: 	.byte 	0
 .global	threeProb
 .global	twoProb
 .align	4
-leftCarProb:	.int	2
-rightCarProb:	.int	1
+leftCarProb:	.int	4
+rightCarProb:	.int	2
 oneProb:	.int	7	
 fourProb:	.int	8
 threeProb:	.int	15

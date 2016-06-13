@@ -611,3 +611,31 @@ DrawPixel:
 	.unreq	offset
 
 	pop	{r4, pc}
+
+// RenderCar(car, startTileX, startTileY)
+.global RenderCar
+RenderCar:
+	push	{r4-r7, lr}
+	x	.req	r5
+	y	.req	r6
+	struct	.req	r7
+	mov	x, r1
+	mov	y, r2
+
+	lsr	r0, #4
+	ldr	struct, =cars
+	ldr	struct, [struct, r0, lsl #2]
+
+	add	r0, struct, #8
+	mov	r1, x
+	mov 	r2, y
+	mov	r3, #32
+	ldr	r4, [struct, #4]
+	push	{r0, r1, r2, r3, r4}
+	bl	DrawTileImage
+
+	.unreq	x
+	.unreq	y
+	.unreq	struct
+	pop	{r4-r7, pc}
+
