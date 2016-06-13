@@ -3,7 +3,7 @@
 UpdatePlayerCar:
 
 	push 	{r4-r6, lr}
-break2:
+
 	ldr 	r2, =playerPosX
 	ldr 	r3, =playerPosY
 	ldr 	r0, [r2]
@@ -28,16 +28,13 @@ break2:
 	ldr	r0, [r0]
 	bl 	InterpretInput
 
-	ldr	r0, =car
+	mov	r0, #0
 	ldr	r1, =playerPosX
 	ldr 	r2, =playerPosY
 	ldr	r1, [r1]
 	ldr 	r2, [r2]
-	add 	r2, #1
-	mov	r3, #32
-	mov	r4, #57
-	push	{r0, r1, r2, r3, r4}
-	bl	DrawTileImage
+	add	r2, #1
+	bl	RenderCar
 
 	ldr 	r2, =playerPosX
 	ldr 	r3, =playerPosY
@@ -168,6 +165,16 @@ CheckForCollision:
 	//Is this finish line, top of car
 	lsr	r0, #3
 	cmp	r0, #16
+	ldreq	r1, =winFlag
+	moveq	r2, #1
+	streqb	r2, [r1]
+	beq	checkForCollisionEnd
+
+	//Is this finish line, bottom of car
+	ldr	r1, =grid
+	ldrb 	r1, [r1, r5] 
+	lsr 	r1, #3
+	cmp 	r1, #16
 	ldreq	r1, =winFlag
 	moveq	r2, #1
 	streqb	r2, [r1]
@@ -311,6 +318,20 @@ HandlePlayerCollision:
 	add	r1, playerY, #1
 	bl	ClearCar
 
+	// clear default spawn location:
+	mov	r0, defaultX
+	mov	r1, defaultY
+	bl	SetChanged
+	mov	r0, defaultX
+	add	r1, defaultY, #1
+	bl	SetChanged
+	mov	r0, defaultX
+	mov	r1, defaultY
+	bl	ClearCar
+	mov	r0, defaultX
+	add	r1, defaultY, #1
+	bl	ClearCar
+
 	// execute changes:
 	bl	RenderMap
 
@@ -341,16 +362,13 @@ HandlePlayerCollision:
 	ldr	r0, =150000
 	bl	Wait
 
-	ldr	r0, =car
+	mov	r0, #0
 	ldr	r1, =playerPosX
 	ldr 	r2, =playerPosY
 	ldr	r1, [r1]
 	ldr 	r2, [r2]
-	add 	r2, #1
-	mov	r3, #32
-	mov	r4, #57
-	push	{r0, r1, r2, r3, r4}
-	bl	DrawTileImage
+	add	r2, #1
+	bl	RenderCar
 
 	ldr	r0, =150000
 	bl	Wait

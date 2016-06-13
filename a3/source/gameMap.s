@@ -49,21 +49,21 @@ InitializeMap:
 	cmp 	x, r2
 	moveq	tileType, #7
 
-	cmp	x, #9
+	cmp	x, #10
 	cmpne	x, #21
 	bne	prepareTile
 
 	cmp	dashType, #0
 	beq	evenRow
 
-	cmp	x, #9
+	cmp	x, #10
 	moveq	tileType, #4
 	cmp	x, #21
 	moveq	tileType, #5
 	b	prepareTile
 
 	evenRow:
-	cmp	x, #9
+	cmp	x, #10
 	moveq	tileType, #5
 	cmp	x, #21
 	moveq	tileType, #4
@@ -149,6 +149,9 @@ GenerateNextRow:
 	beq	skipFuel
 	bl 	RandomNumber
 	cmp 	r0, #1
+	bge	skipFuel
+	bl	RandomNumber
+	cmp	r0, #20
 	movlt 	tileType, #17
 
 	////////////////// end of fuel random //////////////////////
@@ -179,7 +182,7 @@ GenerateNextRow:
 	cmp 	x, r2
 	moveq	tileType, #7
 
-	cmp	x, #9
+	cmp	x, #10
 	cmpne	x, #21
 	bne	prepareTile2	
 
@@ -188,7 +191,7 @@ GenerateNextRow:
 	cmp 	r2, #0
 	bne	notFirstGeneration
 
-	cmp 	x, #9
+	cmp 	x, #10
 	moveq	tileType, #4
 	cmp 	x, #21
 	moveq 	tileType, #5

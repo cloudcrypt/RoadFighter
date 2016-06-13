@@ -149,6 +149,7 @@ read_loop:
 
 .globl	WaitForInput
 // WaitForInput()
+//Waits for some input from the player
 WaitForInput:
 	push	{lr}
 
@@ -160,6 +161,35 @@ WaitForInput:
 	beq	waitForInputLoop
 
 	pop	{pc}
+
+.globl	WaitForButtonA
+// WaitForInput() = 0 if start moving, 1 if return to menu
+// As stated, waits until the player presses the A button then returns
+// Also checks for select so that the user can return to the main menu
+WaitForButtonA:
+	push	{lr}
+
+	waitForInputLoop2:
+
+	bl	UpdateSNESInput
+	ldr	r1, =0xFEFF
+	mov	r2, #0b100
+	cmp	r0, r1
+	moveq	r0, #0
+	beq	waitForButtonAEnd
+	tst	r0, r2
+	moveq	r0, #1
+	beq	waitForButtonAEnd
+	b	waitForInputLoop2
+
+	waitForButtonAEnd:
+	pop	{pc}
+
+
+	ldr 	r0, =SNESInput
+	ldr 	r0, [r0]
+	mov 	r1, #0b100
+	tst 	r0, r1
 
 .section .data
 .global SNESInput

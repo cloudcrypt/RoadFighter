@@ -5,14 +5,14 @@
 displayMenu:
 	push {r4, lr}
 
-	
+	//Draw the menu background
 	ldr 	r0, =menuScreen
 	mov 	r1, #160 
 	mov 	r2, #192
 	mov 	r3, #704
 	mov 	r4, #352
 	push 	{r0-r4}
-	bl 		DrawImage	
+	bl 	DrawImage	
 	
 	mov 	r4, #0 // 0 denotes start, 1 denotes quit
 	ldr 	r0, =menuStart
@@ -20,9 +20,11 @@ displayMenu:
 
 	awaitSelection:
 
+		//Controls the refresh rate of the background
 		ldr 	r0, =100000
 		bl 	Wait
 
+		//Move the map behind the menu for cool effects!
 		bl	ShiftMap
 		bl	GenerateNextRow
 		bl 	RenderMapMenu
@@ -71,6 +73,10 @@ displayMenu:
 	mov 	r0, r4
 	pop 	{r4, pc}
 
+/*
+* menuSelection(imgAddress)
+* Draws the selected menu.
+*/
 menuSelection:
 	push {r4, lr}
 
@@ -85,6 +91,4 @@ menuSelection:
 
 
 .section .data
-.align 4
-.global menuOnFlag
-menuOnFlag: .int 1 	
+.align 4	
