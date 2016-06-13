@@ -52,9 +52,14 @@ main:
 	startGame:
 	bl 	UpdatePlayerCar
 	bl	WaitForButtonA
+	cmp	r0, #1
+	moveq	menuFlag, #1
+	beq	RestartGame
+
+	ldr	r0, =400000
+	bl	Wait
 
 	mainLoop:
-
 
 	bl	ShiftMap
 	bl 	ShiftCarGrid
@@ -67,7 +72,7 @@ main:
 	ldr 	r0, [r0]
 	mov 	r1, #0b100
 	tst 	r0, r1
-	moveq 	r5, #1
+	moveq 	menuFlag, #1
 	beq 	RestartGame
 
 	//This is the start button. Should restart game.
@@ -98,7 +103,7 @@ main:
 
 	bl	WaitForInput
 
-	mov	r5, #1
+	mov	menuFlag, #1
 	b	RestartGame
 
 haltLoop$:

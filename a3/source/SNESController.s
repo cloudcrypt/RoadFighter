@@ -162,7 +162,7 @@ WaitForInput:
 	pop	{pc}
 
 .globl	WaitForButtonA
-// WaitForInput()
+// WaitForInput() = 0 if start moving, 1 if return to menu
 WaitForButtonA:
 	push	{lr}
 
@@ -170,10 +170,23 @@ WaitForButtonA:
 
 	bl	UpdateSNESInput
 	ldr	r1, =0xFEFF
+	mov	r2, #0b100
 	cmp	r0, r1
-	bne	waitForInputLoop2
+	moveq	r0, #0
+	beq	waitForButtonAEnd
+	tst	r0, r2
+	moveq	r0, #1
+	beq	waitForButtonAEnd
+	b	waitForInputLoop2
 
+	waitForButtonAEnd:
 	pop	{pc}
+
+
+	ldr 	r0, =SNESInput
+	ldr 	r0, [r0]
+	mov 	r1, #0b100
+	tst 	r0, r1
 
 .section .data
 .global SNESInput
