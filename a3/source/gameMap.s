@@ -125,6 +125,10 @@ InitializeMap:
 	pop	{r4-r10, pc}
 
 .global	GenerateNextRow
+/*
+* Generates a new row that will be shifted down onto the top of the map
+* in the next refresh cycle
+*/
 GenerateNextRow:
 	push	{r4-r10, lr}
 	x		.req	r4
@@ -142,6 +146,9 @@ GenerateNextRow:
 	rsb	rightEdge, #32
 	mov	x, #0
 
+	// Check if the finishModeFlag has been newly set
+	// If it was set, set it to 2 to prevent future set
+	// and set finishMode accordingly
 	ldr	r0, =finishModeFlag
 	ldrb	r1, [r0]
 	mov	finishMode, r1
@@ -150,14 +157,13 @@ GenerateNextRow:
 	streqb	r1, [r0]
 
 	rowLoop2:
-	mov	tileType, #0
+	mov	tileType, #0		// set grass tile
 
 	cmp	x, rightEdge
-	movlt	tileType, #1
+	movlt	tileType, #1		// set road tile
 
 	bge 	skipFuel
-	//////////////////// FUEL RANDOM /////////////////////////////
-	// add random  fuel
+	// add random fuel (if not in finishMode)
 	cmp	finishMode, #2
 	beq	skipFuel
 	bl 	RandomNumber
@@ -167,45 +173,53 @@ GenerateNextRow:
 	ldr	r1, =fuelProb
 	ldr	r1, [r1]
 	cmp	r0, r1
-	movlt 	tileType, #17
+	movlt 	tileType, #17		// set fuel tile
 
-	////////////////// end of fuel random //////////////////////
 	skipFuel:
 	cmp	x, leftEdge
-	movlt	tileType, #0
-	moveq	tileType, #6
+	movlt	tileType, #0		// set grass tile
+	moveq	tileType, #6		// set road edge
 
 	cmp	tileType, #0
 	bne	notGrass2
+	// if not grass tile, set tileType to a random bush tile type
 	mov	r0, #3
 	bl	GetRandomBush
 	mov	tileType, r0
 	b	prepareTile2
 
 	notGrass2:
+	// if road tile and in finishMode, set tile type to finish line
 	cmp	finishMode, #1
 	moveq	tileType, #16
 	beq	prepareTile2
 
+	// yellow line right
 	cmp	x, #15
 	moveq	tileType, #2
 
+	// yellow line left
 	cmp	x, #16
 	moveq	tileType, #3
 
+	// road edge right
 	sub 	r2, rightEdge, #1
 	cmp 	x, r2
 	moveq	tileType, #7
 
+	// set white dashed line type
 	cmp	x, #10
 	cmpne	x, #21
 	bne	prepareTile2	
 
+	// if first generation of next row, set dashed lines to 
+	// default first generation type
 	ldrb	r2, [addrs]
 	lsr	r2, #3
 	cmp 	r2, #0
 	bne	notFirstGeneration
 
+	// correctly pick dashed line
 	cmp 	x, #10
 	moveq	tileType, #4
 	cmp 	x, #21
@@ -221,13 +235,9 @@ GenerateNextRow:
 	mov	r0, tileType
 	lsl	tileType, #3
 
-	//If bush set to collide
+	//If bush or grass set to collide
 	cmp	r0, #0
 	beq	setCollide
-	//cmp	r0, #16 finish, dont collide
-	//beq	setCollide
-	//cmp 	r0, #17 fuel, dont collide
-	//beq 	setCollide
 	cmp	r0, #8
 	blt 	skipCollide
 	cmp 	r0, #15
@@ -255,6 +265,9 @@ GenerateNextRow:
 	pop	{r4-r10, pc}
 
 .global	ShiftMap
+/*
+* Shift the grid down one row
+*/
 ShiftMap:
 	push	{r4-r10, lr}
 	addrs	.req	r4
@@ -269,7 +282,11 @@ ShiftMap:
 
 	rowLoop:
 	mov	wordCtr, #7
+	// load and analyse the grid 4 bytes at a time,
+	// because this is SO much more efficient...
 	wordLoop:
+	// load the current row, and the row above that is being shifted
+	// down, 4 bytes at a time
 	lsl	r0, row, #5
 	lsl	r1, wordCtr, #2
 	add	r0, r1
@@ -283,12 +300,17 @@ ShiftMap:
 
 	mov	byteCtr, #0
 	byteLoop:
+	// load and mask the current byte to analyse, from the row,
+	// and the row above that is being shifted down
 	lsl	r1, byteCtr, #3
-	mov	r0, #0xF8
+	mov	r0, #0xF8		// mask the tile byte to get the tile type
 	lsl	r0, r1
 	and	r2, currentRow, r0
 	and	r3, higherRow, r0	
 
+	// if the tile type of the tile is higherRow is different from the 
+	// tile in currentRow, set the changed bit to the tile in the 
+	// higherRow
 	cmp	r2, r3
 	beq	noChange
 	mov	r0, #0b10
@@ -301,6 +323,8 @@ ShiftMap:
 	cmp	byteCtr, #4
 	bne	byteLoop
 
+	// store the higherRow down into the position of the currentRow
+	// thus shifting it
 	lsl	r0, row, #5
 	lsl	r1, wordCtr, #2
 	add	r0, r1
@@ -333,6 +357,7 @@ GetRandomBush:
 	push 	{r4, lr}
 	mov 	chance, r0
 
+	//Decide whether we want a bush or not
 	bl 	RandomNumber
 	cmp 	r0, chance
 	movge 	r0, #0
@@ -340,6 +365,8 @@ GetRandomBush:
 
 	bl  	RandomNumber
 	
+	//If we decide to generate a bush,
+	//mod the random number by 8 to get the type of bush.
 	BushSelect:
 	cmp 	r0, #8
 	blt 	ReturnBush
@@ -508,18 +535,3 @@ ClearCollideable:
 	clearCollideableEnd:
 	pop	{r4, r5, pc}
 
-
-.section .data
-
-.global	grid
-grid:	.rept	736
-	.byte	0
-	.endr
-	.align
-
-.global	nextRow
-nextRow:
-	.rept	32
-	.byte	0
-	.endr
-	.align

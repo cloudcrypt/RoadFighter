@@ -1,6 +1,10 @@
 .section .text
 
 .global	GenerateNewCars
+/*
+* Prepares new cars and stages them above the map-rendered
+* visible grid of tiles
+*/
 GenerateNewCars:
 	push	{r4-r5, lr}
 	laneCtr	.req	r4
@@ -9,6 +13,7 @@ GenerateNewCars:
 
 	laneLoop:
 
+	// Check if the staging area is available
 	mov	r0, laneCtr
 	bl	CheckLane
 	cmp	r0, #1
@@ -20,11 +25,13 @@ GenerateNewCars:
 	cmp	laneCtr, #10
 	bgt	rightSide
 
+	// get randomNumber and verify with global leftCarProb
 	ldr	r1, =leftCarProb
 	ldr	r1, [r1]
 	cmp	r0, r1
 	bge	ignoreLane
 
+	// get a random car based on carDirection
 	mov	r0, #1
 	bl	GetRandCar
 	mov	car, r0
@@ -32,15 +39,18 @@ GenerateNewCars:
 	b	placeCar
 
 	rightSide:
+	// get randomNumber and verify with global rightCarProb
 	ldr	r1, =rightCarProb
 	ldr	r1, [r1]
 	cmp	r0, r1
 	bge	ignoreLane
 
+	// get a random car based on carDirection
 	mov	r0, #0
 	bl	GetRandCar
 	mov	car, r0
 
+	// place the car into the correct lane in the car staging area
 	placeCar:
 	lsr	r0, car, #4
 	ldr	r1, =cars
@@ -99,7 +109,7 @@ ShiftCarGrid:
 	len	.req	r9
 	lenCtr	.req	r10
 	redrwCtr	.req	r11
-	mov 	row, #26
+	mov 	row, #26 	// start on bottom
 
 	rowLoop:
 	mov 	lane, #0
@@ -107,14 +117,15 @@ ShiftCarGrid:
 	laneLoop2:
 	mov	r0, lane
 	mov	r1, row
+	//Load car cell and check to see if there is a car present. If not, skip
 	bl	GetCarCell
 	mov	car, r0
 	cmp	car, #0
 	beq	ignoreLane2
 
-	// vel
+	// get velocity
 	and	vel, car, #0b11
-	// velAlt
+	// get alternate velocity
 	and	r1, car, #0b1100
 	lsr	r1, #2
 	// swap vel and velAlt in car
@@ -140,13 +151,13 @@ ShiftCarGrid:
 	bl 	SetCarCell
 
 	//check if there is a car 
-	//add	r0, lane, #5
 	mov	r0, lane
 	add	r1, row, len
 	bl	GetCarCell
 	cmp	r0, #0
 	bne 	ignoreLane2
 
+	//Reset values in TileGrid
 	add	r0, lane, #5
 	sub	r1, row, #4
 	add	r1, len
@@ -158,7 +169,7 @@ ShiftCarGrid:
 	b 	ignoreLane2
 
 	hasVelocity:
-	// get car len
+	// get car len 
 	lsr	r0, car, #4
 	ldr	r1, =cars
 	ldr	r0, [r1, r0, lsl #2]
@@ -179,6 +190,7 @@ ShiftCarGrid:
 	// validate car's entire shift path for entire length of car
 	mov	velCtr, #1
 
+	// If this car "Collides with" another car
 	velLoop:
 	mov	lenCtr, #0
 
@@ -189,9 +201,11 @@ ShiftCarGrid:
 	push	{r1}		// save potential victimCar row
 	bl	GetCarCell
 	pop	{r1}
+	//Have we collided with another vehicle
 	cmp	r0, #0
 	bne	accidentHandler
 
+	//Loop for the length and velocity
 	add	lenCtr, #1
 	cmp	lenCtr, len
 	blt	lenLoop
@@ -207,6 +221,7 @@ ShiftCarGrid:
 	mov	r3, len
 	bl	SetCarCell
 
+	//Update all of the tiles for this car
 	mov	redrwCtr, #0
 	redrawLoop:
 	mov	r2, #3
@@ -222,6 +237,7 @@ ShiftCarGrid:
 	cmp	redrwCtr, len
 	blt	redrawLoop
 
+	//Rander the actual car
 	underGrid:
 
 	mov	r0, car
@@ -232,6 +248,8 @@ ShiftCarGrid:
 
 	b	ignoreLane2
 
+	//If this vehicle collided with another, reduce its speed to match that of the 
+	//vehicle it collided with. 
 	accidentHandler:
 	// victimCar in r0, victimCar row in r1
 	mov	r2, r1
@@ -248,11 +266,13 @@ ShiftCarGrid:
 	bl	SetCarCell
 	pop	{r2}
 
+	//Render the car
 	mov	r0, car
 	add	r1, lane, #5
 	sub	r2, #3
 	bl	RenderCar
 
+	
 	ignoreLane2:
 	add	lane, #1
 	cmp	lane, #22
@@ -270,6 +290,7 @@ ShiftCarGrid:
 	.unreq	lenCtr
 	pop	{r4-r10, pc}
 
+//RemoveCarInGrid(Tilex, Tiley, Length)
 //Takes a tile position and length, and removes the car values from the car grid
 RemoveCarInGrid:
 	
@@ -293,6 +314,7 @@ RemoveCarInGrid:
 
 	skipLen:
 
+	//Clear the grid for each position in the car
 	push 	{r0-r3}
 	bl 	ClearCar
 	pop 	{r0-r3}
@@ -317,6 +339,7 @@ RemoveCarInGrid:
 
 	pop 	{pc}
 
+//AddCarInGrid (TileX, TileY, Length)
 //Takes a tile position and length, and adds the car values to the tile grid
 AddCarInGrid:
 
@@ -337,6 +360,7 @@ AddCarInGrid:
 	cmp 	y, #23
 	popge 	{pc}
 
+	//Set the grid for each position in the car
 	push 	{r0-r3}
 	bl 	SetCar
 	pop 	{r0-r3}
@@ -360,6 +384,7 @@ AddCarInGrid:
 	pop 	{pc}
 
 // GetCarCell(gridX, gridY) = r0
+// Returns the car byte for a given cell
 .global	GetCarCell
 GetCarCell:
 	cmp 	r1, #26
@@ -374,6 +399,8 @@ GetCarCell:
 	bx	lr
 
 // SetCarCell(car, gridX, gridY, len)
+// Calls either RemoveCarInGrid or AddCarInGrid
+// If car is 0, then Remove, otherwise add
 .global	SetCarCell
 SetCarCell:
 	push	{r4, lr}
@@ -382,6 +409,7 @@ SetCarCell:
 	bgt	setCarCellEnd
 	mov	len, r3
 
+	//Compare the car byte with 0 to see if we should add or remove
 	cmp	r0, #0
 	push	{r0-r2}
 	mov	r0, r1
@@ -401,6 +429,7 @@ SetCarCell:
 	pop	{r4, pc}
 
 // CheckLane(gridX)
+// Returns either 0 or 1 denoting whether a lane is clear for generation
 .global	CheckLane
 CheckLane:
 	push	{r4, lr}
@@ -408,6 +437,7 @@ CheckLane:
 	mov	x, r0
 	mov	r2, #0
 
+	//Checks 1st, 2nd, 3rd, and 4th tile in carGrid
 	mov	r0, x
 	mov	r1, #0
 	bl	GetCarCell
@@ -443,6 +473,7 @@ CheckLane:
 
 // GetRandCar(dir (0 == normal, 1 == down)) = carByte
 // GetRandCar(r0) = r0
+// Returns a car byte representing the car to be generated
 GetRandCar:
 	push	{r4-r6, lr}
 	dir	.req	r4
@@ -454,23 +485,27 @@ GetRandCar:
 	bl	RandomNumber
 	mov	rand, r0
 
+	//Load and check probability of motorcyle
 	ldr	r1, =oneProb
 	ldr	r1, [r1]
 	cmp	rand, r1
 	movlt	car, #12
 	blt	getRandCarEnd
 
+	//Load and check probaboloty of large tanker truck
 	ldr	r1, =fourProb
 	ldr	r1, [r1]
 	cmp	rand, r1
 	movlt	car, #14
 	blt	getRandCarEnd
 
+	//Load and check probability of 3 tile vehicle
 	ldr	r1, =threeProb
 	ldr	r1, [r1]
 	cmp	rand, r1
 	bge	twoCar
 
+	//Pick a 3 tile vehicle to return. (We have 2 choices)
 	bl	RandomNumber
 	cmp	r0, #32
 	movlt	car, #8
@@ -478,6 +513,8 @@ GetRandCar:
 	mov	car, #10
 	b	getRandCarEnd
 
+	//otherwise generate 2 tile vehicle
+	//Pick 1 of 3 different vehicles to return
 	twoCar:
 	bl	RandomNumber
 	cmp	r0, #22
@@ -488,6 +525,7 @@ GetRandCar:
 	blt	getRandCarEnd
 	mov	car, #6
 
+	//Take direction into account, and return
 	getRandCarEnd:
 	cmp	dir, #1
 	addeq	car, #1
@@ -502,6 +540,7 @@ GetRandCar:
 
 // GetRandVelocity(dir (0 == normal, 1 == down)) = altVel[3:2]vel[1:0]
 // GetRandVelocity(r0) = r0
+// Returns a random velocity based on the direction of the car
 GetRandVelocity:
 	push	{r4, lr}
 	dir	.req	r4
@@ -512,27 +551,31 @@ GetRandVelocity:
 	cmp	dir, #1
 	beq	getDownVel
 
+	//Check for slowest right speed
 	cmp	r1, #22
 	movlt	r0, #0b0100
 	blt	getRandVelocityEnd
-
+	//Check for median right speed
 	cmp	r1, #42
 	movlt	r0, #0b0101
 	blt	getRandVelocityEnd
-
+	//Otherwise return fastest right speed
 	mov	r0, #0b0110
 	b	getRandVelocityEnd
 
 	getDownVel:
 
+	//Check for slowest left speed
 	cmp	r1, #22
 	movlt	r0, #0b1001
 	blt	getRandVelocityEnd
 
+	//Check for median left speed
 	cmp	r1, #42
 	movlt	r0, #0b1010
 	blt	getRandVelocityEnd
 
+	//otherwise return fastest left speed
 	mov	r0, #0b1011
 
 	getRandVelocityEnd:
@@ -540,12 +583,3 @@ GetRandVelocity:
 	pop	{r4, pc}
 
 
-
-.section .data
-// 22x27 Grid (topExt + cars)
-.global	carGrid
-carGrid:	
-	.rept	594
-	.byte	0
-	.endr
-	.align
